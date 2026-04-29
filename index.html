@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ART × PLACEMAKING — JAPAN MAP</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:       #181818;
+      --bg2:      #1f1f1f;
+      --bg3:      #262626;
+      --line:     #2e2e2e;
+      --line2:    #3a3a3a;
+      --text:     #f0f0f0;
+      --muted:    #666;
+      --dim:      #444;
+      --accent:   #e8c96e;
+
+      --c-tohoku: #d4826a;
+      --c-kanto:  #e8c96e;
+      --c-chubu:  #8ecf6e;
+      --c-kansai: #6ecac8;
+      --c-chushi: #a06ec8;
+      --c-kyushu: #d46aa0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: stretch;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      z-index: 1000;
+      flex-shrink: 0;
+      height: 52px;
+    }
+
+    .hd-back {
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-right: 1px solid var(--line);
+      text-decoration: none;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .hd-back:hover { color: var(--text); background: var(--bg2); }
+    .hd-back::before { content: '←'; margin-right: 8px; font-size: 13px; }
+
+    .hd-brand {
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      border-right: 1px solid var(--line);
+      gap: 12px;
+    }
+
+    .hd-brand-num {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      opacity: 0.6;
+    }
+
+    .hd-brand h1 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .hd-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hd-spacer { flex: 1; }
+
+    .hd-count {
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      border-left: 1px solid var(--line);
+      gap: 8px;
+    }
+
+    .hd-count-num {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 22px;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .hd-count-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────────── */
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── SIDEBAR ─────────────────────────────────────────── */
+    .sidebar {
+      width: 280px;
+      background: var(--bg);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    /* Filter blocks */
+    .filter-block {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .fl-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .chip {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid var(--line2);
+      background: transparent;
+      color: var(--dim);
+      cursor: pointer;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .chip:hover { border-color: var(--muted); color: var(--text); }
+    .chip.active {
+      background: var(--text);
+      border-color: var(--text);
+      color: var(--bg);
+    }
+    .chip[data-region="北海道・東北"].active,
+    .chip[data-region="北海道・東北"]:hover { border-color: var(--c-tohoku); }
+    .chip[data-region="北海道・東北"].active { background: var(--c-tohoku); color: var(--bg); border-color: var(--c-tohoku); }
+
+    .chip[data-region="関東"].active { background: var(--c-kanto); color: var(--bg); border-color: var(--c-kanto); }
+    .chip[data-region="中部"].active { background: var(--c-chubu); color: var(--bg); border-color: var(--c-chubu); }
+    .chip[data-region="関西"].active { background: var(--c-kansai); color: var(--bg); border-color: var(--c-kansai); }
+    .chip[data-region="中国・四国"].active { background: var(--c-chushi); color: var(--bg); border-color: var(--c-chushi); }
+    .chip[data-region="九州・沖縄"].active { background: var(--c-kyushu); color: var(--bg); border-color: var(--c-kyushu); }
+
+    .chip[data-impact="経済"].active { background: var(--c-kanto); color: var(--bg); border-color: var(--c-kanto); }
+    .chip[data-impact="社会"].active { background: var(--c-kansai); color: var(--bg); border-color: var(--c-kansai); }
+    .chip[data-impact="文化"].active { background: var(--c-chushi); color: var(--bg); border-color: var(--c-chushi); }
+
+    /* Search */
+    .search-block {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .search-block input {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--line2);
+      padding: 8px 12px;
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-block input:focus { border-color: var(--dim); }
+    .search-block input::placeholder {
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    /* List */
+    .festival-list { flex: 1; overflow-y: auto; }
+    .festival-list::-webkit-scrollbar { width: 2px; }
+    .festival-list::-webkit-scrollbar-thumb { background: var(--line2); }
+
+    .list-region-header {
+      padding: 8px 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--bg2);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .list-region-header .rh-num {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 9px;
+      color: var(--line2);
+      letter-spacing: 0.05em;
+    }
+
+    .festival-item {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      transition: background 0.1s;
+    }
+    .festival-item:hover { background: var(--bg2); }
+    .festival-item.active { background: var(--bg3); border-left: 2px solid var(--accent); padding-left: 14px; }
+
+    .item-dot {
+      width: 6px; height: 6px;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .item-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      line-height: 1.3;
+      margin-bottom: 2px;
+      color: var(--text);
+    }
+    .item-pref {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .item-tagline {
+      font-family: 'Barlow', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      color: var(--dim);
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── MAP ─────────────────────────────────────────────── */
+    .map-wrapper { position: relative; flex: 1; min-height: 0; }
+    #map { width: 100%; height: 100%; }
+
+    .leaflet-container { background: #1e1e1e !important; }
+    .leaflet-tile-pane {
+      filter: invert(100%) hue-rotate(180deg) brightness(0.82) contrast(0.88) saturate(0.6);
+    }
+
+    .leaflet-control-zoom {
+      border: 1px solid var(--line) !important;
+      border-radius: 0 !important;
+    }
+    .leaflet-control-zoom a {
+      background: var(--bg) !important;
+      color: var(--text) !important;
+      border-bottom: 1px solid var(--line) !important;
+      border-radius: 0 !important;
+      font-family: 'Archivo Black', sans-serif !important;
+      font-size: 14px !important;
+      line-height: 26px !important;
+      width: 26px !important;
+      height: 26px !important;
+    }
+    .leaflet-control-zoom a:hover { background: var(--bg2) !important; color: var(--accent) !important; }
+    .leaflet-control-attribution {
+      background: rgba(20,20,20,0.85) !important;
+      color: #555 !important;
+      font-size: 9px !important;
+      font-family: 'Barlow Condensed', sans-serif !important;
+    }
+    .leaflet-control-attribution a { color: #555 !important; }
+
+    /* Popup override */
+    .leaflet-popup-content-wrapper {
+      background: var(--bg) !important;
+      border: 1px solid var(--line2) !important;
+      border-radius: 0 !important;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.5) !important;
+      padding: 0 !important;
+    }
+    .leaflet-popup-tip-container { display: none; }
+    .leaflet-popup-content { margin: 0 !important; width: 260px !important; }
+    .leaflet-popup-close-button {
+      color: var(--muted) !important;
+      font-size: 18px !important;
+      top: 10px !important;
+      right: 10px !important;
+      font-family: 'Archivo Black', sans-serif !important;
+    }
+    .leaflet-popup-close-button:hover { color: var(--text) !important; }
+
+    .popup-inner { padding: 18px 18px 16px; }
+
+    .popup-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .popup-region {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .popup-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .popup-tagline {
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--dim);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .popup-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-bottom: 12px;
+    }
+
+    .popup-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 2px 6px;
+      border: 1px solid currentColor;
+    }
+
+    .popup-divider {
+      height: 1px;
+      background: var(--line);
+      margin-bottom: 10px;
+    }
+
+    .popup-desc {
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+    .popup-btn-row { display: flex; gap: 6px; }
+
+    .popup-link, .popup-link-url {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 6px 8px;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      text-align: center;
+    }
+    .popup-link { color: var(--bg); background: var(--text); }
+    .popup-link:hover { background: var(--accent); color: var(--bg); }
+    .popup-link-url { color: var(--accent); background: transparent; border: 1px solid var(--accent); }
+    .popup-link-url:hover { background: var(--accent); color: var(--bg); }
+
+    /* ── LEGEND ──────────────────────────────────────────── */
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      right: 10px;
+      z-index: 800;
+      background: var(--bg);
+      border: 1px solid var(--line2);
+    }
+
+    .legend-head {
+      padding: 8px 12px 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .legend-body { padding: 8px 12px; }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .legend-item:last-child { margin-bottom: 0; }
+
+    .legend-sq {
+      width: 10px; height: 10px;
+      flex-shrink: 0;
+    }
+
+    .legend-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="hd-back" href="https://bawb199765-bot.github.io/Art_PlaceMaking/database/index.html">Database</a>
+  <div class="hd-brand">
+    <div>
+      <div class="hd-brand-num">001</div>
+      <h1>Art × Placemaking</h1>
+      <div class="hd-sub">Japan — 47 Prefectures</div>
+    </div>
+  </div>
+
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="filter-block">
+      <div class="fl-label">取り組みカテゴリー</div>
+      <div class="chips" id="cat-filters">
+        <button class="chip active" data-cat="all">ALL</button>
+        <button class="chip" data-cat="都市型芸術祭型">都市型芸術祭型</button>
+        <button class="chip" data-cat="地域型芸術祭型">地域型芸術祭型</button>
+        <button class="chip" data-cat="小規模プロジェクト型">小規模プロジェクト型</button>
+        <button class="chip" data-cat="エリアマネジメント型">エリアマネジメント型</button>
+        <button class="chip" data-cat="AIR・制作拠点型">AIR・制作拠点型</button>
+        <button class="chip" data-cat="ミュージアム・拠点型">ミュージアム・拠点型</button>
+        <button class="chip" data-cat="産業・工芸連携型">産業・工芸連携型</button>
+      </div>
+    </div>
+
+    <div class="filter-block">
+      <div class="fl-label">次回開催年</div>
+      <div class="chips" id="year-filters">
+        <button class="chip active" data-year="all">ALL</button>
+        <button class="chip" data-year="通年">通年</button>
+        <button class="chip" data-year="2026">2026</button>
+        <button class="chip" data-year="2027">2027</button>
+        <button class="chip" data-year="2028">2028</button>
+      </div>
+    </div>
+
+    <div class="filter-block">
+      <div class="fl-label">東京からの所要時間</div>
+      <div class="chips" id="access-filters">
+        <button class="chip active" data-access="all">ALL</button>
+        <button class="chip" data-access="1">〜1時間</button>
+        <button class="chip" data-access="2">〜2時間</button>
+        <button class="chip" data-access="3">〜3時間</button>
+        <button class="chip" data-access="4">〜4時間</button>
+        <button class="chip" data-access="99">それ以上</button>
+      </div>
+    </div>
+
+    <div class="search-block">
+      <input type="text" id="search-input" placeholder="Search cases…" />
+    </div>
+
+    <div class="festival-list" id="festival-list"></div>
+
+  </aside>
+
+  <!-- MAP -->
+  <div class="map-wrapper">
+    <div id="map"></div>
+    <div class="legend">
+      <div class="legend-head">Category</div>
+      <div class="legend-body">
+        <div class="legend-item"><div class="legend-sq" style="background:#e8c96e"></div><span class="legend-label">都市型芸術祭型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#8ecf6e"></div><span class="legend-label">地域型芸術祭型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#f0a050"></div><span class="legend-label">小規模プロジェクト型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#6ecac8"></div><span class="legend-label">エリアマネジメント型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#a06ec8"></div><span class="legend-label">AIR・制作拠点型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#d4826a"></div><span class="legend-label">ミュージアム・拠点型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#d46aa0"></div><span class="legend-label">産業・工芸連携型</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const CAT_COLORS = {
+  "都市型芸術祭型":       "#e8c96e",
+  "地域型芸術祭型":       "#8ecf6e",
+  "小規模プロジェクト型": "#f0a050",
+  "エリアマネジメント型": "#6ecac8",
+  "AIR・制作拠点型":      "#a06ec8",
+  "ミュージアム・拠点型": "#d4826a",
+  "産業・工芸連携型":     "#d46aa0",
+};
+
+const IMPACT_COLORS = {
+  "1-①": "#e8c96e", "1-②": "#e8c96e", "1-③": "#e8c96e",
+  "2-①": "#6ecac8", "2-②": "#6ecac8", "2-③": "#6ecac8",
+  "3-①": "#a06ec8", "3-②": "#a06ec8", "3-③": "#a06ec8",
+};
+
+function tagColor(tag) { return IMPACT_COLORS[tag.split(" ")[0]] || "#666"; }
+
+const CASES = [
+  { pref:"北海道", name:"札幌国際芸術祭（SIAF）", tagline:"都市型・メディアアートの拠点化", region:"北海道・東北", lat:43.06, lng:141.35, slug:"hokkaido", cat:"都市型芸術祭型", tags:[], desc:"札幌市の創造都市という思想と、豊かな自然と都市機能の調和、大学やIT産業が集まるメディアアーツ都市という特徴を生かした创造的な環境づくり。", url:"https://siaf.jp/", nextYear:"2027", tokyoHours:4 },
+  { pref:"青森", name:"AOMORI GOKAN", tagline:"ミュージアム連携で県全体を編集", region:"北海道・東北", lat:40.82, lng:140.74, slug:"aomori", cat:"ミュージアム・拠点型", tags:[], desc:"県内の5つの美術館・アートセンターが連携し、青森のアートの魅力を国内外に発信するプロジェクト。県民及び観光客による県内の周遊を通して文化・経済・教育など幅広い分野での地域振興を目的とする。", url:"https://aomorigokan.com/", nextYear:"2026", tokyoHours:4 },
+  { pref:"岩手", name:"三陸国際芸術祭", tagline:"郷土芸能×創造的復興", region:"北海道・東北", lat:39.7, lng:141.93, slug:"iwate", cat:"地域型芸術祭型", tags:[], desc:"三陸の伝統芸能に国内外のアーティストが共鳴することで、東日本大震災で被災した郷土芸能や文化芸術の復興を図るとともに、次世代の担い手育成や多様性のある文化の理解促進、国内外への三陸の魅力発信を目指す。", url:"https://sanfes.com/", nextYear:"不明", tokyoHours:3 },
+  { pref:"宮城", name:"リボーンアートフェス", tagline:"震災復興と文化の接続", region:"北海道・東北", lat:38.43, lng:141.3, slug:"miyagi", cat:"地域型芸術祭型", tags:[], desc:"東日本大震災の被災地・石巻を舞台にしたアート/音楽/食の総合芸術祭。Reborn-Art＝人が生きる術をキーワードに、アーティストによる作品展示、地場食材を活かした食体験、多様な音楽ライブなどを実施。", url:"https://www.reborn-art-fes.jp/", nextYear:"不明", tokyoHours:3 },
+  { pref:"秋田", name:"かみこあにプロジェクト", tagline:"小規模自治体の等身大実装", region:"北海道・東北", lat:40.22, lng:140.44, slug:"akita", cat:"小規模プロジェクト型", tags:[], desc:"秋田県で最も高齢化が高いとされる上小阿仁村で毎年行われる、現代アート・音楽・伝統芸能の3つを軸にした展示やイベントを行うプロジェクト。地元住民が中心となって実行委員会を結成し、持続的な取り組みを続ける。", url:"https://www.kamikoani-project.com/", nextYear:"2026", tokyoHours:4 },
+  { pref:"山形", name:"山形ビエンナーレ", tagline:"街なか分散×文化回遊", region:"北海道・東北", lat:38.24, lng:140.36, slug:"yamagata", cat:"地域型芸術祭型", tags:[], desc:"東北芸術工科大学が主体となり2014年から隔年で開かれている芸術祭。街中の既存ストックを会場化して中心市街地活性化に寄与。2024年は初めて蔵王温泉で開催した。", url:"https://biennale.tuad.ac.jp/", nextYear:"2026", tokyoHours:3 },
+  { pref:"福島", name:"ハマカルアートプロジェクト", tagline:"復興地域の文化接点づくり", region:"北海道・東北", lat:37.42, lng:141.03, slug:"fukushima", cat:"AIR・制作拠点型", tags:[], desc:"経済産業省の補助金を活用し、現在も一部避難指示が継続されている浜通り12市町村において、学生とともにアート活動を行う事業者や現地に滞在しながらアート活動を行う芸術家を支援する事業。", url:"https://hamacul-project.com/", nextYear:"2026", tokyoHours:3.5 },
+  { pref:"茨城", name:"アーカスプロジェクト（ARCUS）", tagline:"AIRで関係人口を蓄積", region:"関東", lat:35.97, lng:140.07, slug:"ibaraki", cat:"AIR・制作拠点型", tags:[], desc:"茨城県を主催に1994年に始動した国内でも歴史の長いAIR。国際的に活動するアーティストが滞在制作を行うプログラムと、地域の方々が主体となれる場づくりやワークショップ等のラーニングプログラムを展開。", url:"https://www.arcus-project.com/", nextYear:"2027", tokyoHours:1.5 },
+  { pref:"茨城", name:"取手アートプロジェクト", tagline:"市民×芸大×行政の三者協働", region:"関東", lat:35.9, lng:140.04, slug:"ibaraki", cat:"小規模プロジェクト型", tags:[], desc:"1999年より市民と取手市、東京芸術大学の三者が共同で行っているアートプロジェクト。2010年以降はフェスティバル型から長期的視野の取り組みへ移行し、アートのある団地・半農半芸という2つのコアプログラムを展開。", url:"https://toride-ap.gr.jp/", nextYear:"通年", tokyoHours:1.5 },
+  { pref:"栃木", name:"KEAT 小砂環境芸術祭", tagline:"里山と芸術表現が対話する", region:"関東", lat:36.76, lng:140.26, slug:"tochigi", cat:"地域型芸術祭型", tags:[], desc:"日本でもっとも美しい村に認定された栃木県那珂川町小砂を舞台に、里山とアートとの関係性を提示する芸術祭。芸術表現を通じて地域の魅力を掘り起こし、環境とゆるやかに調和する新しい文化の形成を目指す。", url:"https://koisago-art.net/", nextYear:"2026", tokyoHours:3 },
+  { pref:"群馬", name:"中之条ビエンナーレ", tagline:"温泉地×分散会場の回遊設計", region:"関東", lat:36.59, lng:138.85, slug:"gunma", cat:"地域型芸術祭型", tags:[], desc:"群馬県中之条町で隔年開催されるAIR型国際現代芸術祭。アーティストは特色ある山村地域のアーティスト・イン・レジデンスで美しい里山文化に触れながら滞在制作を行い、その成果を中之条ビエンナーレで発表する。", url:"https://nakanojo-biennale.com/", nextYear:"2027", tokyoHours:2.5 },
+  { pref:"埼玉", name:"さいたま国際芸術祭", tagline:"大都市近郊の都市更新型", region:"関東", lat:35.86, lng:139.65, slug:"saitama", cat:"都市型芸術祭型", tags:[], desc:"さいたま市を舞台に3年に一度開催される芸術祭。市民と市民、市民とアーティスト、アーティストと地域が交流する機会を創出する市民参加型の芸術祭として、さいたま市内で広く開催される。", url:"https://artsaitama.jp/", nextYear:"2027", tokyoHours:0.5 },
+  { pref:"千葉", name:"千葉国際芸術祭", tagline:"都市近郊の回遊・再編集", region:"関東", lat:35.61, lng:140.12, slug:"chiba", cat:"都市型芸術祭型", tags:[], desc:"千葉市において3年に1回開催されるトリエンナーレ方式の芸術祭として2025年に始動。一時的な観光集客ではなく、千葉市内外に暮らす人々の創造性を刺激し、中長期的に日常を豊かにすることを重視する。", url:"https://artstriennale.city.chiba.jp/", nextYear:"2028", tokyoHours:0.5 },
+  { pref:"東京", name:"東京ビエンナーレ", tagline:"都市を実験場にするプロジェクト型", region:"関東", lat:35.7, lng:139.77, slug:"tokyo", cat:"都市型芸術祭型", tags:[], desc:"2020/21に始まった都市空間を舞台に2年に一度開催される国際芸術祭。千代田区・中央区・文京区・台東区で作品を展開。美術館ではなく街角や地下道、歴史的建築物など日常の風景の中でアートが展開される。", url:"https://tokyobiennale.jp/", nextYear:"2027", tokyoHours:0 },
+  { pref:"神奈川", name:"黄金町エリアマネジメント/バザール", tagline:"課題エリアをアートで再編集", region:"関東", lat:35.44, lng:139.63, slug:"kanagawa", cat:"エリアマネジメント型", tags:[], desc:"かつて特殊飲食店がひしめいていたエリアを2005年頃からアートを核に再生。2008年から年に1度の黄金町バザールを開始、2009年にNPO法人黄金町エリアマネジメントセンターが発足し継続的なまちづくりが進む。", url:"https://koganecho.net/", nextYear:"2026", tokyoHours:0.5 },
+  { pref:"新潟", name:"大地の芸術祭", tagline:"地域芸術祭のフラッグシップ", region:"中部", lat:37.09, lng:138.76, slug:"niigata", cat:"地域型芸術祭型", tags:[], desc:"世界最大級の国際芸術祭であり、日本中で開催されている地域芸術祭のパイオニア。アートを道しるべに里山を巡る新しい旅は、アートによる地域づくりの先進事例として国内外から注目を集める。3年に1回の芸術祭のほか期間外も季節ごとにイベントを開催。", url:"https://www.echigo-tsumari.jp/", nextYear:"2028", tokyoHours:2.5 },
+  { pref:"富山", name:"ガラスの街とやま", tagline:"産業×文化で都市ブランド形成", region:"中部", lat:36.7, lng:137.21, slug:"toyama", cat:"産業・工芸連携型", tags:[], desc:"富山の産業であるガラスの街づくりを市の施策として定め、2015年に完成したガラス美術館を軸に、造形研究所・ガラス工房など市全体でガラスを活用した街づくりを推進する。", url:"https://www.info-toyama.com/stories/summer2021/glass", nextYear:"通年", tokyoHours:2.5 },
+  { pref:"石川", name:"Go FOR KOGEI", tagline:"工芸を現代文脈に接続", region:"中部", lat:36.59, lng:136.63, slug:"ishikawa", cat:"産業・工芸連携型", tags:[], desc:"ものづくりが古くから受け継がれる北陸から新たな工芸の見方を発信するプロジェクト。地域の歴史・風土を体現する町並みや社寺を会場にした展覧会のほか、工芸をめぐるシンポジウムなども開催。2020年に開始。", url:"https://goforkogei.com/", nextYear:"通年", tokyoHours:3 },
+  { pref:"福井", name:"Zen AIR（禅×AIR）", tagline:"テーマ特化の滞在制作", region:"中部", lat:36.07, lng:136.22, slug:"fukui", cat:"AIR・制作拠点型", tags:[], desc:"禅の里として知られる福井県永平寺町を会場に、アーティストが禅文化に触れ地元住民と交流しながら制作・研究する機会を提供するテーマ特化型レジデンス。滞在成果を作品や研究として発信する。", url:"https://zen-air.org/", nextYear:"不明", tokyoHours:4 },
+  { pref:"山梨", name:"FUJI TEXTILE WEEK", tagline:"産地×デザインのブランディング", region:"中部", lat:35.47, lng:138.8, slug:"yamanashi", cat:"産業・工芸連携型", tags:[], desc:"1000年以上続く織物産地・山梨県富士吉田市の歴史を根底に、伝統産業および地域活性を目的として2021年よりスタートしたテキスタイルと芸術が融合する国内唯一の布の芸術祭。", url:"https://fujitextileweek.com/", nextYear:"2026", tokyoHours:2.5 },
+  { pref:"長野", name:"北アルプス国際芸術祭", tagline:"山岳地帯の自然とアートが共鳴", region:"中部", lat:36.5, lng:137.85, slug:"nagano", cat:"地域型芸術祭型", tags:[], desc:"自然豊かな長野県大町市を舞台に、まちの潜在的な魅力を引き出し市民が協働で個性的なまちづくりを進める一環として、2017年に第1回、2021年に第2回、2024年に第3回を開催。", url:"https://shinano-omachi.jp/", nextYear:"2029", tokyoHours:3 },
+  { pref:"岐阜", name:"美濃和紙あかりアート展", tagline:"参加型で市民の誇りをつくる", region:"中部", lat:35.54, lng:136.91, slug:"gifu", cat:"産業・工芸連携型", tags:[], desc:"美濃和紙を使った約300点のあかりアート作品が、うだつの上がる町並みを柔らかな光で包む四半世紀以上続く幻想的な展覧会。全国から作品を募集し、入賞作品を展示・審査する参加型イベント。", url:"https://www.akariart.jp/", nextYear:"2026", tokyoHours:3.5 },
+  { pref:"静岡", name:"アーツカウンシルしずおか", tagline:"支援制度で文化エコシステム形成", region:"中部", lat:34.98, lng:138.38, slug:"shizuoka", cat:"小規模プロジェクト型", tags:[], desc:"静岡県内の文化芸術活動を助成・相談・情報発信によって支える中間支援組織。単発の事業補助にとどまらず、アーティストやNPOの活動継続を長期的に伴走する仕組みを持ち、行政と民間の橋渡し役として機能する。", url:"https://artscouncil-shizuoka.jp/", nextYear:"通年", tokyoHours:1.5 },
+  { pref:"愛知", name:"国際芸術祭「あいち」", tagline:"大都市圏の国際芸術祭モデル", region:"中部", lat:35.18, lng:136.91, slug:"aichi", cat:"都市型芸術祭型", tags:[], desc:"愛知県が3年に1度開催する国際現代芸術祭。愛知芸術文化センターのほか県内都市のまちなかを会場として広域に展開。現代美術を基軸に、パフォーミングアーツ・ラーニングなどジャンルを横断してアートの多様性を発信。", url:"https://aichitriennale.jp/index.html", nextYear:"2028", tokyoHours:2 },
+  { pref:"三重", name:"亀山トリエンナーレ", tagline:"創作が生まれる場づくり型", region:"中部", lat:34.85, lng:136.45, slug:"mie", cat:"小規模プロジェクト型", tags:[], desc:"三重県亀山市が推進するアートまちづくり事業。このまちに暮らす人々の営みの中で培われ時代・世代を超えて継承される心動かすものをアートと捉え、2014年から3年に1度の芸術祭を実施。", url:"https://www.kankomie.or.jp/special/art-kameyama/#top", nextYear:"通年", tokyoHours:3 },
+  { pref:"滋賀", name:"BIWAKOビエンナーレ", tagline:"歴史ストック×分散展示", region:"関西", lat:35.13, lng:136.1, slug:"shiga", cat:"地域型芸術祭型", tags:[], desc:"滋賀県近江八幡市の古民家・町家・蔵などの歴史的建造物を主会場に、2年に1度開催される国際芸術祭。国内外のアーティストが建物の記憶や空間性に呼応したインスタレーションを制作し、街全体がミュージアムと化す。", url:"https://energyfield.org/biwakobiennale/", nextYear:"2027", tokyoHours:3 },
+  { pref:"京都", name:"KYOTOGRAPHIE", tagline:"分野特化で都市回遊を生む", region:"関西", lat:35.01, lng:135.77, slug:"kyoto", cat:"都市型芸術祭型", tags:[], desc:"京都の社寺・町家・近代建築・公共空間を会場に、毎年春に開催される国際写真フェスティバル。2013年に始まり、写真という単一分野に特化することで強いブランドを確立。市民参加型のKG+も同時開催される。", url:"https://www.kyotographie.jp/", nextYear:"2026", tokyoHours:2.5 },
+  { pref:"大阪", name:"北加賀屋クリエイティブ・ビレッジ", tagline:"民間主導の空間再生×制作拠点集積", region:"関西", lat:34.62, lng:135.49, slug:"osaka", cat:"エリアマネジメント型", tags:[], desc:"大阪市住之江区・北加賀屋の造船所跡地を地場の不動産会社・千島土地が民間主導で段階的に再生したアート拠点群。行政補助に依存せず、低廉な賃料と柔軟な空間運用によって多様なクリエイターを呼び込む。", url:"https://chishima-foundation.com/cruising", nextYear:"通年", tokyoHours:3.5 },
+  { pref:"兵庫", name:"神戸・新開地（アートひろば等）", tagline:"下町エリアの文化再生", region:"関西", lat:34.69, lng:135.19, slug:"hyogo", cat:"エリアマネジメント型", tags:[], desc:"かつて西日本最大の歓楽街として賑わい衰退した神戸・新開地エリアで展開するアートを核にした再生の取り組み。遊休ビルや空き店舗をアートスペース・稽古場・小劇場として活用し、地域の担い手育成と文化拠点化を進める。", url:"https://s-ah.jp/", nextYear:"通年", tokyoHours:3.5 },
+  { pref:"奈良", name:"はならぁと", tagline:"集落・空き家を面で使う", region:"関西", lat:34.69, lng:135.83, slug:"nara", cat:"小規模プロジェクト型", tags:[], desc:"奈良県内の集落・町家・空き家・寺社などを会場にした分散型芸術祭。橿原・宇陀・吉野など県内各地を複数エリアに分けて順次開催し、観光客が普段訪れない集落や空き家へと回遊を生む。", url:"https://hanarart.jp/2025/", nextYear:"不明", tokyoHours:3.5 },
+  { pref:"和歌山", name:"JAPAN WALLS（和歌山）", tagline:"国際ミューラルで景観を更新", region:"関西", lat:34.23, lng:135.17, slug:"wakayama", cat:"小規模プロジェクト型", tags:[], desc:"国内外のストリートアーティストを招聘し、和歌山市内の建物外壁に大型ウォールアートを制作するプロジェクト。街の景観を一変させるビジュアルインパクトの高さからSNSでの拡散力が強く、新たな来街者を生み出す。", url:"https://prtimes.jp/main/html/rd/p/000000015.000067444.html", nextYear:"通年", tokyoHours:5 },
+  { pref:"鳥取", name:"鳥取県立美術館の取り組み", tagline:"人づくりを核にした美術館整備", region:"中国・四国", lat:35.5, lng:134.24, slug:"tottori", cat:"AIR・制作拠点型", tags:[], desc:"2025年に倉吉市にオープンした鳥取県立美術館を核に、整備段階から地域との対話を重ねて進められてきた文化政策。民藝運動ゆかりの地・鳥取の風土を活かしながら、県民の学び・交流・創造活動の拠点として設計。", url:"https://tottori-moa.jp/", nextYear:"通年", tokyoHours:5.5 },
+  { pref:"島根", name:"石見アーツプロジェクト", tagline:"教育・地域定着の底上げ型", region:"中国・四国", lat:34.68, lng:131.98, slug:"shimane", cat:"小規模プロジェクト型", tags:[], desc:"島根県石見地域を対象にした文化芸術振興の取り組み。石見神楽・石見銀山・石州和紙といった地域固有の文化資源を現代のアート表現と接続しながら、若い世代のアーティストや文化関係者の移住・定住を促進する。", url:"https://artsiwami.localinfo.jp/", nextYear:"通年", tokyoHours:6 },
+  { pref:"岡山", name:"岡山芸術交流", tagline:"都市中核の国際展でブランド形成", region:"中国・四国", lat:34.66, lng:133.93, slug:"okayama", cat:"地域型芸術祭型", tags:[], desc:"岡山市の城下町エリアを主会場に、3年に1度開催される国際現代芸術展。林原美術館・旧内山下小学校など歴史的な建物や公共空間を使い、世界水準のインスタレーションを展開する。徒歩で回遊できるコンパクトな会場配置が特色。", url:"https://www.okayamaartsummit.jp/", nextYear:"2028", tokyoHours:3 },
+  { pref:"広島", name:"広島国際建築祭", tagline:"建築で都市を読み解く専門特化型", region:"中国・四国", lat:34.4, lng:133.4, slug:"hiroshima", cat:"地域型芸術祭型", tags:[], desc:"2025年から開始された建築という専門分野に特化した広島発の国際フェスティバル。福山市・尾道市などを中心に、現代建築を巡るツアーや展示・シンポジウムを通じて都市の記憶・復興・再生を多角的に問い直す。", url:"https://hiroshima-architecture-exhibition.jp/", nextYear:"2028", tokyoHours:4 },
+  { pref:"山口", name:"YCAM（山口情報芸術センター）", tagline:"公共R&D拠点型メディアアート", region:"中国・四国", lat:34.19, lng:131.47, slug:"yamaguchi", cat:"ミュージアム・拠点型", tags:[], desc:"山口市が設置した公共のメディアアート施設。アート・テクノロジー・研究を統合したR&D機能を持ち、展覧会・パフォーマンス・市民ワークショップから国際的な共同制作まで幅広く展開。アーティストとエンジニアが共同制作する体制が国内唯一レベル。", url:"https://www.ycam.jp/", nextYear:"通年", tokyoHours:5 },
+  { pref:"徳島", name:"神山AIR", tagline:"AIR起点の社会実装", region:"中国・四国", lat:33.85, lng:134.22, slug:"tokushima", cat:"AIR・制作拠点型", tags:[], desc:"徳島県神山町で展開するアーティスト・イン・レジデンスプログラム。1990年代後半から始まり、滞在制作を入口にITサテライトオフィスの誘致・移住者受け入れ・空き家再生へと波及。地方創生政策に大きな影響を与えた神山モデルの原点。", url:"https://www.in-kamiyama.jp/art/", nextYear:"通年", tokyoHours:5 },
+  { pref:"香川", name:"瀬戸内国際芸術祭", tagline:"広域分散×国際発信の代表格", region:"中国・四国", lat:34.33, lng:134.04, slug:"kagawa", cat:"地域型芸術祭型", tags:[], desc:"瀬戸内海の島々と港を舞台に3年に1度開催される大規模な国際芸術祭。直島・豊島・女木島・小豆島など12の島と2つの港を会場に、国内外のアーティストによる常設・期間限定作品が展開。来場者数は毎回100万人を超える。", url:"https://setouchi-artfest.jp/", nextYear:"2028", tokyoHours:5 },
+  { pref:"愛媛", name:"道後オンセアート", tagline:"成熟観光地をアートで再編集", region:"中国・四国", lat:33.84, lng:132.77, slug:"ehime", cat:"小規模プロジェクト型", tags:[], desc:"愛媛県松山市の道後温泉を舞台に開催されるアートフェスティバル。国内最古の温泉地として知られる道後の旅館・公衆浴場・商店街をギャラリーに見立て、国内外のアーティストによるインスタレーションや体験型作品を展開する。", url:"https://dogoonsenart.com/", nextYear:"通年", tokyoHours:3.5 },
+  { pref:"高知", name:"高知県芸術祭/KOCHI ART PROJECTS", tagline:"プロセス重視の思考実践", region:"中国・四国", lat:33.56, lng:133.53, slug:"kochi", cat:"小規模プロジェクト型", tags:[], desc:"高知県が毎年秋に開催する総合芸術祭（2025年で第75回）を母体に、アート×まちづくりをテーマにした助成・実践プログラムKOCHI ART PROJECTSを展開。演劇・音楽・美術・伝統文化など多彩な部門と地域まちづくりに直結するアートプロジェクトを組み合わせる。", url:"https://www.kochi-art.com/", nextYear:"2026", tokyoHours:4 },
+  { pref:"福岡", name:"Fukuoka Art Next", tagline:"文化政策としてのアート戦略", region:"九州・沖縄", lat:33.59, lng:130.4, slug:"fukuoka", cat:"小規模プロジェクト型", tags:[], desc:"福岡市が2022年度に始動した包括的な文化政策。産学官が連携し、市民がアートに触れる機会の創出とアーティストの成長・交流拠点の整備を同時に推進。Artist Cafe Fukuoka、ウォールアート掲出、アートフェアアジア福岡など多角的に展開する。", url:"https://fukuoka-art-next.jp/", nextYear:"通年", tokyoHours:3.5 },
+  { pref:"佐賀", name:"Creative Residency in Arita", tagline:"産地×AIRで有田焼を更新", region:"九州・沖縄", lat:33.19, lng:129.88, slug:"saga", cat:"産業・工芸連携型", tags:[], desc:"磁器発祥の地・有田で国内外のアーティストやデザイナーが3ヶ月間滞在し、地元の窯元・職人とのコラボレーションを通じた創作活動を行う。オランダ王国大使館との連携を基盤に2016年から始まり、有田焼ブランドの国際的更新を推進。", url:"https://cri-arita.com/ja/", nextYear:"2026", tokyoHours:4 },
+  { pref:"長崎", name:"南島原市アートビレッジ・シラキノ", tagline:"公共施設×AIRの実装", region:"九州・沖縄", lat:32.65, lng:130.31, slug:"nagasaki", cat:"ミュージアム・拠点型", tags:[], desc:"長崎県南島原市の廃校を若手芸術家の支援と地域文化の発展を目的とした芸術文化複合施設として改修。国内外のアーティストが一定期間滞在して制作を行い、地域住民との交流やワークショップを通じて地域に創造の拠点を築く。", url:"https://www.artvillage-shirakino.jp/", nextYear:"通年", tokyoHours:4.5 },
+  { pref:"熊本", name:"くまもとアートポリス", tagline:"制度化されたデザイン行政", region:"九州・沖縄", lat:32.8, lng:130.71, slug:"kumamoto", cat:"小規模プロジェクト型", tags:[], desc:"熊本県が1988年から継続する公共建築・空間デザイン向上施策。著名建築家をコミッショナーに迎え、県内の公共施設・橋梁・道路・公園など幅広いインフラにデザインの質を実装し続けている。現在のコミッショナーは伊東豊雄。", url:"https://www.pref.kumamoto.jp/soshiki/115/85889.html", nextYear:"通年", tokyoHours:4 },
+  { pref:"大分", name:"BEPPU PROJECT", tagline:"中間組織が都市を運用する", region:"九州・沖縄", lat:33.28, lng:131.49, slug:"oita", cat:"小規模プロジェクト型", tags:[], desc:"別府市を拠点とするNPOが主導するアートプロジェクト。温泉街の遊休施設を活用した国際芸術祭を起点に、AIR・人材育成・拠点運営・食と文化の発信まで多角的に展開。行政と民間の間で実装を回す中間支援型の運用体制が突出している。", url:"https://www.beppuproject.com/", nextYear:"通年", tokyoHours:4 },
+  { pref:"宮崎", name:"新富芸術祭", tagline:"小規模自治体の等身大芸術祭", region:"九州・沖縄", lat:32.07, lng:131.51, slug:"miyazaki", cat:"地域型芸術祭型", tags:[], desc:"新富町で開催される小規模自治体型の芸術祭。農村の田園風景・住民の日常・歴史的な祭祀空間をフィールドに、国内外のアーティストと地域住民が協働して作品を制作・展示。地域への負荷が小さく持続可能な設計が特徴。", url:"https://shintomi-art.jp/", nextYear:"不明", tokyoHours:5 },
+  { pref:"鹿児島", name:"霧島アートの森活用まちづくり", tagline:"強い拠点を市域へ波及", region:"九州・沖縄", lat:31.92, lng:130.86, slug:"kagoshima", cat:"ミュージアム・拠点型", tags:[], desc:"湧水町にある県立野外美術館・霧島アートの森を核にしたまちづくり。霧島連山の火山地形と豊かな自然の中に国内外の彫刻・インスタレーション作品が点在し、鑑賞・教育・自然体験が一体となった場を形成する。", url:"https://open-air-museum.org/", nextYear:"通年", tokyoHours:5 },
+  { pref:"沖縄", name:"やんばるアートフェスティバル", tagline:"自然共生・環境配慮型", region:"九州・沖縄", lat:26.72, lng:128.15, slug:"okinawa", cat:"地域型芸術祭型", tags:[], desc:"沖縄県北部・やんばる地域で開催される芸術祭。世界自然遺産に登録されたやんばるの亜熱帯の森・集落・海岸を会場に、自然との共生をテーマにした現代アートや伝統芸能・工芸を組み合わせたプログラムを展開する。", url:"https://yambaru-artfes.jp/", nextYear:"不明", tokyoHours:6 }
+];
+
+const IMPACT_PREFIX = { "経済": "1-", "社会": "2-", "文化": "3-" };
+const REGION_ORDER = ["北海道・東北","関東","中部","関西","中国・四国","九州・沖縄"];
+const REGION_NUM = { "北海道・東北":"01","関東":"02","中部":"03","関西":"04","中国・四国":"05","九州・沖縄":"06" };
+
+let activeCat = "all", activeYear = "all", activeAccess = "all", searchQ = "";
+
+function getFiltered() {
+  return CASES.filter(c => {
+    if (activeCat !== "all" && c.cat !== activeCat) return false;
+
+    // Year filter — match if nextYear contains the selected year string
+    if (activeYear !== "all") {
+      if (activeYear === "通年") {
+        if (c.nextYear !== "通年") return false;
+      } else {
+        if (!c.nextYear.includes(activeYear)) return false;
+      }
+    }
+
+    // Access filter
+    if (activeAccess !== "all") {
+      const h = c.tokyoHours;
+      const a = Number(activeAccess);
+      if (a === 1 && h > 1) return false;
+      if (a === 2 && (h <= 1 || h > 2)) return false;
+      if (a === 3 && (h <= 2 || h > 3)) return false;
+      if (a === 4 && (h <= 3 || h > 4)) return false;
+      if (a === 99 && h <= 4) return false;
+    }
+
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      if (!c.name.toLowerCase().includes(q) && !c.pref.includes(q) && !c.tagline.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+// MAP
+const map = L.map('map', { center: [36.2, 137.0], zoom: 6 });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 19
+}).addTo(map);
+
+let markers = [];
+
+function markerIcon(c, active) {
+  const color = CAT_COLORS[c.cat] || "#888";
+  const s = active ? 14 : 10;
+  const border = active ? `3px solid #fff` : `2px solid rgba(255,255,255,0.4)`;
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:${s}px;height:${s}px;background:${color};border:${border};box-shadow:0 2px 8px rgba(0,0,0,0.5);transition:all 0.15s;${active?'outline:2px solid '+color+';outline-offset:3px':''}"></div>`,
+    iconSize: [s, s],
+    iconAnchor: [s/2, s/2],
+    popupAnchor: [0, -(s/2+8)]
+  });
+}
+
+function popupHtml(c) {
+  const color = CAT_COLORS[c.cat] || "#888";
+  const accessLabel = c.tokyoHours === 0 ? '東京駅' : `東京から約${c.tokyoHours}h`;
+  const yearLabel = c.nextYear || '—';
+  return `<div class="popup-inner">
+    <div class="popup-head">
+      <div class="popup-region" style="color:${color}">${c.cat} · ${c.pref}</div>
+    </div>
+    <div class="popup-name">${c.name}</div>
+    <div class="popup-tagline">${c.tagline}</div>
+    <div class="popup-meta" style="display:flex;gap:12px;margin-bottom:10px;">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:0.15em;color:var(--muted);">次回 <span style="color:var(--text)">${yearLabel}</span></span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:0.15em;color:var(--muted);">${accessLabel}</span>
+    </div>
+    <div class="popup-divider"></div>
+    <div class="popup-desc">${c.desc}</div>
+    <div class="popup-btn-row">
+      <a class="popup-link" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank">DB Detail</a>
+      ${c.url ? `<a class="popup-link-url" href="${c.url}" target="_blank">公式サイト ↗</a>` : ''}
+    </div>
+  </div>`;
+}
+
+function rebuild() {
+  markers.forEach(m => map.removeLayer(m.marker));
+  markers = [];
+  const filtered = getFiltered();
+
+  filtered.forEach((c, i) => {
+    const marker = L.marker([c.lat, c.lng], { icon: markerIcon(c, false) }).addTo(map);
+    marker.bindPopup(popupHtml(c), { maxWidth: 280, closeButton: true });
+    marker.on('click', () => { setActive(i); scrollListTo(i); });
+    markers.push({ marker, case: c, idx: i });
+  });
+  renderList(filtered);
+}
+
+function setActive(idx) {
+  markers.forEach((m, i) => m.marker.setIcon(markerIcon(m.case, i === idx)));
+}
+
+function scrollListTo(idx) {
+  document.querySelectorAll('.festival-item').forEach(el => el.classList.remove('active'));
+  const el = document.querySelector(`.festival-item[data-idx="${idx}"]`);
+  if (el) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function renderList(filtered) {
+  const list = document.getElementById('festival-list');
+  if (!filtered.length) { list.innerHTML = '<div class="empty-state">No results</div>'; return; }
+  const groups = {};
+  REGION_ORDER.forEach(r => { groups[r] = []; });
+  filtered.forEach((c, i) => { if (groups[c.region]) groups[c.region].push({ c, i }); });
+  let html2 = '';
+  REGION_ORDER.forEach(region => {
+    if (!groups[region].length) return;
+    const num = REGION_NUM[region] || '—';
+    html2 += `<div class="list-region-header"><span class="rh-num">.${num}</span>${region}</div>`;
+    groups[region].forEach(({ c, i }) => {
+      const color = CAT_COLORS[c.cat] || "#888";
+      html2 += `<div class="festival-item" data-idx="${i}" onclick="focusCase(${i})">
+        <div class="item-dot" style="background:${color}"></div>
+        <div>
+          <div class="item-name">${c.name}</div>
+          <div class="item-pref">${c.pref}</div>
+          <div class="item-tagline">${c.tagline}</div>
+        </div>
+      </div>`;
+    });
+  });
+  list.innerHTML = html2;
+}
+
+window.focusCase = function(idx) {
+  const m = markers[idx];
+  if (!m) return;
+  map.setView([m.case.lat, m.case.lng], 10, { animate: true });
+  setTimeout(() => m.marker.openPopup(), 350);
+  setActive(idx);
+  scrollListTo(idx);
+};
+
+document.querySelectorAll('#cat-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#cat-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    rebuild();
+  });
+});
+
+document.querySelectorAll('#year-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#year-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeYear = btn.dataset.year;
+    rebuild();
+  });
+});
+
+document.querySelectorAll('#access-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#access-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeAccess = btn.dataset.access;
+    rebuild();
+  });
+});
+
+document.getElementById('search-input').addEventListener('input', e => {
+  searchQ = e.target.value;
+  rebuild();
+});
+
+rebuild();
+</script>
+</body>
+</html>
