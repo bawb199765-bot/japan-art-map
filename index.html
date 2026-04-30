@@ -150,8 +150,7 @@
 
     /* ── MOBILE ───────────────────────────────────────────── */
     @media (max-width: 768px) {
-      /* Map fixed at top, sidebar scrolls below */
-      body { overflow: hidden; }
+      body { overflow: hidden; height: 100dvh; }
 
       .layout {
         flex-direction: column;
@@ -161,8 +160,8 @@
 
       .map-wrapper {
         order: -1;
-        height: 42vh;
-        min-height: 240px;
+        height: 55vh;
+        min-height: 280px;
         flex: none;
         position: relative;
       }
@@ -172,22 +171,20 @@
         border-right: none;
         border-top: 1px solid var(--line);
         flex: 1;
+        min-height: 0;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        /* Allow content to flow naturally */
+        display: block;
       }
 
+      /* Festival list: natural height inside scrollable sidebar */
       .festival-list {
-        max-height: none;
-        overflow-y: visible;
+        flex: none !important;
+        overflow-y: visible !important;
+        height: auto !important;
+        max-height: none !important;
       }
-
-      .legend {
-        bottom: 10px;
-        right: 8px;
-        padding: 6px 10px;
-      }
-      .legend-body { padding: 6px 10px; }
-      .legend-label { font-size: 9px; }
 
       .chips { gap: 4px; }
       .chip { font-size: 9px; padding: 3px 8px; }
@@ -540,7 +537,7 @@
     .legend-body {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       flex: 1;
     }
@@ -548,19 +545,19 @@
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     .legend-sq {
-      width: 7px; height: 7px;
+      width: 6px; height: 6px;
       flex-shrink: 0;
     }
 
     .legend-label {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9px;
+      font-size: 8px;
       font-weight: 500;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       color: rgba(240,240,240,0.7);
       white-space: nowrap;
     }
@@ -634,15 +631,15 @@
   <div class="map-wrapper">
     <div id="map"></div>
     <div class="legend">
-      <div class="legend-head">Category</div>
+      <div class="legend-head">Cat.</div>
       <div class="legend-body">
-        <div class="legend-item"><div class="legend-sq" style="background:#e8c96e"></div><span class="legend-label">都市型芸術祭型</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#8ecf6e"></div><span class="legend-label">地域型芸術祭型</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#f0a050"></div><span class="legend-label">小規模プロジェクト型</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#6ecac8"></div><span class="legend-label">エリアマネジメント型</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#a06ec8"></div><span class="legend-label">AIR・制作拠点型</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#d4826a"></div><span class="legend-label">ミュージアム・拠点型</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#d46aa0"></div><span class="legend-label">産業・工芸連携型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#e8c96e"></div><span class="legend-label">都市型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#8ecf6e"></div><span class="legend-label">地域型</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#f0a050"></div><span class="legend-label">小規模</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#6ecac8"></div><span class="legend-label">エリマネ</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#a06ec8"></div><span class="legend-label">AIR</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#d4826a"></div><span class="legend-label">ミュージアム</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#d46aa0"></div><span class="legend-label">産業・工芸</span></div>
       </div>
     </div>
   </div>
@@ -796,7 +793,7 @@ function popupHtml(c) {
     <div class="popup-divider"></div>
     <div class="popup-desc">${c.desc}</div>
     <div class="popup-btn-row">
-      <a class="popup-link" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank">DB Detail</a>
+      <a class="popup-link" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank">詳細を見る</a>
       ${c.url ? `<a class="popup-link-url" href="${c.url}" target="_blank">公式サイト ↗</a>` : ''}
     </div>
   </div>`;
