@@ -131,7 +131,11 @@
     }
 
     /* ── LAYOUT ──────────────────────────────────────────── */
-    .layout { display: flex; flex: 1; overflow: hidden; }
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
 
     /* ── SIDEBAR ─────────────────────────────────────────── */
     .sidebar {
@@ -142,6 +146,55 @@
       flex-direction: column;
       flex-shrink: 0;
       overflow: hidden;
+    }
+
+    /* ── MOBILE ───────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      /* Map fixed at top, sidebar scrolls below */
+      body { overflow: hidden; }
+
+      .layout {
+        flex-direction: column;
+        overflow: hidden;
+        height: 100%;
+      }
+
+      .map-wrapper {
+        order: -1;
+        height: 42vh;
+        min-height: 240px;
+        flex: none;
+        position: relative;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-top: 1px solid var(--line);
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .festival-list {
+        max-height: none;
+        overflow-y: visible;
+      }
+
+      .legend {
+        bottom: 10px;
+        right: 8px;
+        padding: 6px 10px;
+      }
+      .legend-body { padding: 6px 10px; }
+      .legend-label { font-size: 9px; }
+
+      .chips { gap: 4px; }
+      .chip { font-size: 9px; padding: 3px 8px; }
+
+      header { padding: 10px 14px; height: auto; flex-wrap: wrap; gap: 8px; }
+      .hd-brand h1 { font-size: 12px; }
+      .hd-sub { font-size: 8px; }
     }
 
     /* Filter blocks */
@@ -314,8 +367,12 @@
 
     .leaflet-container { background: #1e1e1e !important; }
     .leaflet-tile-pane {
-      filter: invert(100%) hue-rotate(180deg) brightness(0.82) contrast(0.88) saturate(0.6);
+      filter: invert(100%) hue-rotate(180deg) brightness(0.75) contrast(1.1) saturate(0.15);
     }
+    .leaflet-marker-pane,
+    .leaflet-popup-pane,
+    .leaflet-overlay-pane,
+    .leaflet-shadow-pane { filter: none !important; }
 
     .leaflet-control-zoom {
       border: 1px solid var(--line) !important;
@@ -451,47 +508,61 @@
     .popup-link-url:hover { background: var(--accent); color: var(--bg); }
 
     /* ── LEGEND ──────────────────────────────────────────── */
+    /* Legend: horizontal bar at bottom of map */
     .legend {
       position: absolute;
-      bottom: 20px;
-      right: 10px;
+      bottom: 0;
+      left: 0;
+      right: 0;
       z-index: 800;
-      background: var(--bg);
-      border: 1px solid var(--line2);
+      background: rgba(18,18,18,0.82);
+      border-top: 1px solid rgba(58,58,58,0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      padding: 6px 12px;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
     .legend-head {
-      padding: 8px 12px 6px;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 8px;
+      font-size: 7px;
       font-weight: 700;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.25em;
       text-transform: uppercase;
       color: var(--muted);
-      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    .legend-body { padding: 8px 12px; }
+    .legend-body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      flex: 1;
+    }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 5px;
+      gap: 5px;
     }
-    .legend-item:last-child { margin-bottom: 0; }
 
     .legend-sq {
-      width: 10px; height: 10px;
+      width: 7px; height: 7px;
       flex-shrink: 0;
     }
 
     .legend-label {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 500;
-      letter-spacing: 0.08em;
-      color: var(--text);
+      letter-spacing: 0.04em;
+      color: rgba(240,240,240,0.7);
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -515,7 +586,7 @@
   <aside class="sidebar">
 
     <div class="filter-block">
-      <div class="fl-label">カテゴリー</div>
+      <div class="fl-label">取り組みカテゴリー</div>
       <div class="chips" id="cat-filters">
         <button class="chip active" data-cat="all">ALL</button>
         <button class="chip" data-cat="都市型芸術祭型">都市型芸術祭型</button>
@@ -697,11 +768,11 @@ let markers = [];
 
 function markerIcon(c, active) {
   const color = CAT_COLORS[c.cat] || "#888";
-  const s = active ? 14 : 10;
+  const s = active ? 20 : 15;
   const border = active ? `3px solid #fff` : `2px solid rgba(255,255,255,0.4)`;
   return L.divIcon({
     className: '',
-    html: `<div style="width:${s}px;height:${s}px;background:${color};border:${border};box-shadow:0 2px 8px rgba(0,0,0,0.5);transition:all 0.15s;${active?'outline:2px solid '+color+';outline-offset:3px':''}"></div>`,
+    html: `<div style="width:${s}px;height:${s}px;background:${color};border:${border};box-shadow:0 3px 10px rgba(0,0,0,0.6);transition:all 0.15s;${active?'outline:2px solid '+color+';outline-offset:4px':''}"></div><div style="position:absolute;inset:-8px;cursor:pointer"></div>`,
     iconSize: [s, s],
     iconAnchor: [s/2, s/2],
     popupAnchor: [0, -(s/2+8)]
