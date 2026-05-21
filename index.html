@@ -7,38 +7,62 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <style>
     :root {
-      --bg:       #181818;
-      --bg2:      #1f1f1f;
-      --bg3:      #262626;
-      --line:     #2e2e2e;
-      --line2:    #3a3a3a;
-      --text:     #f0f0f0;
-      --muted:    #666;
-      --dim:      #444;
-      --accent:   #e8c96e;
+      /* paper / sumi / vermilion editorial palette */
+      --bg:       #14110d;
+      --bg2:      #1a1612;
+      --bg3:      #221d17;
+      --line:     #2a241c;
+      --line2:    #3b3328;
+      --text:     #f0e8d8;
+      --muted:    #8a8174;
+      --dim:      #5a5247;
+      --accent:   #d96650;   /* 朱 vermilion */
+      --accent-2: #e8c96e;   /* gold edge */
 
-      --c-tohoku: #d4826a;
-      --c-kanto:  #e8c96e;
-      --c-chubu:  #8ecf6e;
-      --c-kansai: #6ecac8;
-      --c-chushi: #a06ec8;
-      --c-kyushu: #d46aa0;
+      /* category hues — single saturated set */
+      --c-urban:    #d96650;
+      --c-region:   #e8c96e;
+      --c-micro:    #b8b06e;
+      --c-area:     #7fb3a8;
+      --c-air:      #b48cc6;
+      --c-museum:   #d49a6e;
+      --c-craft:    #c87a9a;
+
+      --serif: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      --sans:  Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      --mono:  Helvetica, 'Helvetica Neue', Arial, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body { height: 100vh; }
     body {
-      font-family: 'Barlow', sans-serif;
+      font-family: var(--sans);
       background: var(--bg);
       color: var(--text);
-      height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* subtle paper-grain on dark surfaces */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(rgba(255,240,210,0.012) 1px, transparent 1px);
+      background-size: 3px 3px;
+      mix-blend-mode: overlay;
+      z-index: 9999;
     }
 
     /* ── HEADER ─────────────────────────────────────────── */
@@ -49,86 +73,117 @@
       border-bottom: 1px solid var(--line);
       z-index: 1000;
       flex-shrink: 0;
-      height: 52px;
+      height: 64px;
     }
 
     .hd-back {
       display: flex;
       align-items: center;
-      padding: 0 20px;
+      padding: 0 22px;
       border-right: 1px solid var(--line);
       text-decoration: none;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.2em;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--muted);
-      transition: color 0.15s, background 0.15s;
+      transition: color 0.15s, background 0.15s, padding 0.15s;
       white-space: nowrap;
+      gap: 10px;
     }
     .hd-back:hover { color: var(--text); background: var(--bg2); }
-    .hd-back::before { content: '←'; margin-right: 8px; font-size: 13px; }
+    .hd-back::before { content: '←'; font-size: 13px; transition: transform 0.15s; }
+    .hd-back:hover::before { transform: translateX(-3px); }
 
     .hd-brand {
       display: flex;
       align-items: center;
       padding: 0 24px;
       border-right: 1px solid var(--line);
-      gap: 12px;
+      gap: 16px;
     }
 
+    .hd-mark {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      display: grid; place-items: center;
+      letter-spacing: 0;
+      flex-shrink: 0;
+    }
+
+    .hd-brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+
     .hd-brand-num {
-      font-family: 'Archivo Black', sans-serif;
-      font-size: 10px;
-      letter-spacing: 0.1em;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
       color: var(--accent);
-      opacity: 0.6;
+      margin-bottom: 4px;
     }
 
     .hd-brand h1 {
-      font-family: 'Archivo Black', sans-serif;
-      font-size: 14px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
       color: var(--text);
       white-space: nowrap;
     }
 
     .hd-sub {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
+      font-family: var(--mono);
+      font-size: 9px;
       font-weight: 400;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--muted);
+      margin-top: 3px;
     }
 
     .hd-spacer { flex: 1; }
 
-    .hd-count {
+    .hd-meta {
       display: flex;
       align-items: center;
-      padding: 0 24px;
       border-left: 1px solid var(--line);
-      gap: 8px;
     }
 
-    .hd-count-num {
-      font-family: 'Archivo Black', sans-serif;
-      font-size: 22px;
-      color: var(--accent);
-      line-height: 1;
+    .hd-meta-block {
+      display: flex;
+      flex-direction: column;
+      padding: 0 22px;
+      border-right: 1px solid var(--line);
+      justify-content: center;
+      height: 100%;
+      min-width: 110px;
     }
+    .hd-meta-block:last-child { border-right: none; }
 
-    .hd-count-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.2em;
+    .hd-meta-k {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--muted);
+      margin-bottom: 4px;
     }
+    .hd-meta-v {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .hd-meta-v .accent { color: var(--accent); }
+    .hd-meta-v .sub { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 4px; letter-spacing: 0.1em; }
 
     /* ── LAYOUT ──────────────────────────────────────────── */
     .layout {
@@ -139,7 +194,7 @@
 
     /* ── SIDEBAR ─────────────────────────────────────────── */
     .sidebar {
-      width: 280px;
+      width: 320px;
       background: var(--bg);
       border-right: 1px solid var(--line);
       display: flex;
@@ -151,21 +206,8 @@
     /* ── MOBILE ───────────────────────────────────────────── */
     @media (max-width: 768px) {
       body { overflow: hidden; height: 100dvh; }
-
-      .layout {
-        flex-direction: column;
-        overflow: hidden;
-        height: 100%;
-      }
-
-      .map-wrapper {
-        order: -1;
-        height: 55vh;
-        min-height: 280px;
-        flex: none;
-        position: relative;
-      }
-
+      .layout { flex-direction: column; overflow: hidden; height: 100%; }
+      .map-wrapper { order: -1; height: 50vh; min-height: 280px; flex: none; position: relative; }
       .sidebar {
         width: 100%;
         border-right: none;
@@ -174,197 +216,324 @@
         min-height: 0;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        /* Allow content to flow naturally */
         display: block;
       }
-
-      /* Festival list: natural height inside scrollable sidebar */
-      .festival-list {
-        flex: none !important;
-        overflow-y: visible !important;
-        height: auto !important;
-        max-height: none !important;
-      }
-
+      .festival-list { flex: none !important; overflow-y: visible !important; height: auto !important; max-height: none !important; }
       .chips { gap: 4px; }
-      .chip { font-size: 9px; padding: 3px 8px; }
-
-      header { padding: 10px 14px; height: auto; flex-wrap: wrap; gap: 8px; }
-      .hd-brand h1 { font-size: 12px; }
+      .chip { font-size: 9px; padding: 4px 8px; }
+      header { height: auto; flex-wrap: wrap; }
+      .hd-brand h1 { font-size: 13px; }
       .hd-sub { font-size: 8px; }
+      .hd-meta-block { padding: 10px 14px; min-width: 0; }
     }
 
     /* Filter blocks */
     .filter-block {
-      padding: 14px 16px;
+      padding: 18px 20px;
       border-bottom: 1px solid var(--line);
     }
 
     .fl-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.3em;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .fl-label-jp {
+      font-family: var(--serif);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.06em;
+    }
+    .fl-label-en {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 10px;
     }
 
-    .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; }
 
     .chip {
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: var(--mono);
       font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 4px 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      padding: 5px 9px;
       border: 1px solid var(--line2);
       background: transparent;
       color: var(--dim);
       cursor: pointer;
-      transition: all 0.12s;
+      transition: all 0.12s ease;
       white-space: nowrap;
+      position: relative;
     }
-    .chip:hover { border-color: var(--muted); color: var(--text); }
+    .chip[data-cat]:not([data-cat="all"]),
+    .chip[data-year]:not([data-year="all"]),
+    .chip[data-access]:not([data-access="all"]) {
+      font-family: var(--serif);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      font-weight: 500;
+    }
+    .chip:hover { border-color: var(--muted); color: var(--text); background: var(--bg2); }
     .chip.active {
-      background: var(--text);
-      border-color: var(--text);
+      background: var(--accent);
+      border-color: var(--accent);
       color: var(--bg);
     }
-    .chip[data-region="北海道・東北"].active,
-    .chip[data-region="北海道・東北"]:hover { border-color: var(--c-tohoku); }
-    .chip[data-region="北海道・東北"].active { background: var(--c-tohoku); color: var(--bg); border-color: var(--c-tohoku); }
-
-    .chip[data-region="関東"].active { background: var(--c-kanto); color: var(--bg); border-color: var(--c-kanto); }
-    .chip[data-region="中部"].active { background: var(--c-chubu); color: var(--bg); border-color: var(--c-chubu); }
-    .chip[data-region="関西"].active { background: var(--c-kansai); color: var(--bg); border-color: var(--c-kansai); }
-    .chip[data-region="中国・四国"].active { background: var(--c-chushi); color: var(--bg); border-color: var(--c-chushi); }
-    .chip[data-region="九州・沖縄"].active { background: var(--c-kyushu); color: var(--bg); border-color: var(--c-kyushu); }
-
-    .chip[data-impact="経済"].active { background: var(--c-kanto); color: var(--bg); border-color: var(--c-kanto); }
-    .chip[data-impact="社会"].active { background: var(--c-kansai); color: var(--bg); border-color: var(--c-kansai); }
-    .chip[data-impact="文化"].active { background: var(--c-chushi); color: var(--bg); border-color: var(--c-chushi); }
+    .chip.active::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -2px;
+      height: 2px;
+      background: var(--accent);
+    }
 
     /* Search */
     .search-block {
-      padding: 10px 16px;
+      padding: 14px 20px;
       border-bottom: 1px solid var(--line);
+      position: relative;
     }
-
+    .search-block::before {
+      content: '⌕';
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
     .search-block input {
       width: 100%;
       background: var(--bg2);
       border: 1px solid var(--line2);
-      padding: 8px 12px;
+      padding: 10px 12px 10px 30px;
       color: var(--text);
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: var(--sans);
       font-size: 12px;
       font-weight: 400;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.02em;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .search-block input:focus { border-color: var(--dim); }
+    .search-block input:focus { border-color: var(--accent); background: var(--bg3); }
     .search-block input::placeholder {
       color: var(--muted);
-      font-family: 'Barlow Condensed', sans-serif;
-      letter-spacing: 0.1em;
+      font-family: var(--mono);
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       font-size: 10px;
     }
 
     /* List */
     .festival-list { flex: 1; overflow-y: auto; }
-    .festival-list::-webkit-scrollbar { width: 2px; }
+    .festival-list::-webkit-scrollbar { width: 4px; }
     .festival-list::-webkit-scrollbar-thumb { background: var(--line2); }
+    .festival-list::-webkit-scrollbar-track { background: transparent; }
 
     .list-region-header {
-      padding: 8px 16px;
-      font-family: 'Barlow Condensed', sans-serif;
+      padding: 14px 20px 10px;
+      font-family: var(--mono);
       font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.3em;
+      font-weight: 500;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
       color: var(--muted);
-      background: var(--bg2);
+      background: var(--bg);
       border-bottom: 1px solid var(--line);
+      border-top: 1px solid var(--line);
       position: sticky;
       top: 0;
       z-index: 1;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
+    .list-region-header:first-child { border-top: none; }
 
     .list-region-header .rh-num {
-      font-family: 'Archivo Black', sans-serif;
-      font-size: 9px;
-      color: var(--line2);
-      letter-spacing: 0.05em;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+    .list-region-header .rh-jp {
+      font-family: var(--serif);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: none;
+      color: var(--text);
+    }
+    .list-region-header .rh-rule { flex: 1; height: 1px; background: var(--line2); }
+    .list-region-header .rh-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
     }
 
     .festival-item {
-      padding: 11px 16px;
+      padding: 14px 20px;
       border-bottom: 1px solid var(--line);
       cursor: pointer;
-      display: flex;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: 22px 1fr 12px;
+      gap: 10px;
       align-items: flex-start;
-      transition: background 0.1s;
+      transition: background 0.12s, padding 0.12s;
+      position: relative;
     }
     .festival-item:hover { background: var(--bg2); }
-    .festival-item.active { background: var(--bg3); border-left: 2px solid var(--accent); padding-left: 14px; }
+    .festival-item.active { background: var(--bg3); padding-left: 22px; }
+    .festival-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--accent);
+    }
 
-    .item-dot {
-      width: 6px; height: 6px;
-      flex-shrink: 0;
-      margin-top: 6px;
+    .item-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--dim);
+      letter-spacing: 0.08em;
+      padding-top: 5px;
+    }
+
+    .item-dot { display: none; } /* superseded by num + cat strip */
+
+    .item-cat-strip {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 6px;
+      vertical-align: middle;
+      transform: translateY(-1px);
     }
 
     .item-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
+      font-family: var(--serif);
+      font-size: 14px;
       font-weight: 600;
-      letter-spacing: 0.04em;
-      line-height: 1.3;
-      margin-bottom: 2px;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
+      margin-bottom: 4px;
       color: var(--text);
     }
     .item-pref {
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: var(--mono);
       font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
+      font-weight: 500;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--accent);
+      margin-bottom: 4px;
     }
     .item-tagline {
-      font-family: 'Barlow', sans-serif;
-      font-size: 10px;
-      font-weight: 300;
-      color: var(--dim);
-      line-height: 1.4;
-      margin-top: 2px;
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.5;
+      text-wrap: pretty;
     }
 
+    .item-arrow {
+      font-family: var(--serif);
+      font-size: 14px;
+      color: var(--dim);
+      align-self: center;
+      transition: color 0.15s, transform 0.15s;
+    }
+    .festival-item:hover .item-arrow { color: var(--accent); transform: translateX(3px); }
+
     .empty-state {
-      padding: 40px 20px;
+      padding: 60px 20px;
       text-align: center;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
+      font-family: var(--serif);
+      font-size: 13px;
+      letter-spacing: 0.04em;
       color: var(--muted);
+    }
+    .empty-state .es-en {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 6px;
+      display: block;
     }
 
     /* ── MAP ─────────────────────────────────────────────── */
-    .map-wrapper { position: relative; flex: 1; min-height: 0; }
+    .map-wrapper { position: relative; flex: 1; min-height: 0; background: var(--bg2); }
     #map { width: 100%; height: 100%; }
 
-    .leaflet-container { background: #1e1e1e !important; }
+    /* Map overlay: corner crosshairs for editorial feel */
+    .map-wrapper::before,
+    .map-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border: 1px solid var(--accent);
+      pointer-events: none;
+      z-index: 750;
+      opacity: 0.6;
+    }
+    .map-wrapper::before {
+      top: 18px; left: 18px;
+      border-right: none; border-bottom: none;
+    }
+    .map-wrapper::after {
+      bottom: 50px; right: 18px;
+      border-left: none; border-top: none;
+    }
+
+    /* Top-right map meta plate */
+    .map-meta {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 800;
+      background: rgba(20,17,13,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--line2);
+      padding: 7px 10px;
+      min-width: 0;
+      font-family: var(--mono);
+      font-size: 8.5px;
+    }
+    .map-meta-row { display: flex; justify-content: space-between; padding: 1.5px 0; gap: 14px; }
+    .map-meta-row .k { color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .map-meta-row .v { color: var(--text); letter-spacing: 0.04em; }
+    .map-meta-row .v.accent { color: var(--accent); }
+    .map-meta-rule { height: 1px; background: var(--line2); margin: 4px 0; }
+    .map-meta-title {
+      font-family: var(--serif);
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .map-meta-title:empty { display: none; }
+
+    .leaflet-container { background: #efe9dc !important; outline: none; }
+    /* Soften the basemap to a paper-toned canvas that matches the dark UI */
     .leaflet-tile-pane {
-      filter: invert(100%) hue-rotate(180deg) brightness(0.75) contrast(1.1) saturate(0.15);
+      filter: grayscale(0.4) sepia(0.25) brightness(0.92) contrast(0.95) saturate(0.7);
     }
     .leaflet-marker-pane,
     .leaflet-popup-pane,
@@ -372,172 +541,208 @@
     .leaflet-shadow-pane { filter: none !important; }
 
     .leaflet-control-zoom {
-      border: 1px solid var(--line) !important;
+      border: 1px solid var(--line2) !important;
       border-radius: 0 !important;
+      margin: 18px !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
     }
     .leaflet-control-zoom a {
       background: var(--bg) !important;
       color: var(--text) !important;
-      border-bottom: 1px solid var(--line) !important;
+      border-bottom: 1px solid var(--line2) !important;
       border-radius: 0 !important;
-      font-family: 'Archivo Black', sans-serif !important;
-      font-size: 14px !important;
-      line-height: 26px !important;
-      width: 26px !important;
-      height: 26px !important;
+      font-family: var(--serif) !important;
+      font-weight: 500 !important;
+      font-size: 16px !important;
+      line-height: 30px !important;
+      width: 30px !important;
+      height: 30px !important;
+      transition: all 0.12s !important;
     }
-    .leaflet-control-zoom a:hover { background: var(--bg2) !important; color: var(--accent) !important; }
+    .leaflet-control-zoom a:hover { background: var(--accent) !important; color: var(--bg) !important; }
     .leaflet-control-attribution {
-      background: rgba(20,20,20,0.85) !important;
-      color: #555 !important;
+      background: rgba(20,17,13,0.85) !important;
+      color: var(--muted) !important;
       font-size: 9px !important;
-      font-family: 'Barlow Condensed', sans-serif !important;
+      font-family: var(--mono) !important;
+      letter-spacing: 0.06em !important;
+      padding: 3px 8px !important;
+      border: 1px solid var(--line2) !important;
+      border-right: none !important;
+      border-bottom: none !important;
     }
-    .leaflet-control-attribution a { color: #555 !important; }
+    .leaflet-control-attribution a { color: var(--muted) !important; }
+    .leaflet-control-attribution a:hover { color: var(--accent) !important; }
 
     /* Popup override */
     .leaflet-popup-content-wrapper {
       background: var(--bg) !important;
       border: 1px solid var(--line2) !important;
       border-radius: 0 !important;
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.5) !important;
+      box-shadow: 6px 6px 0 rgba(217,102,80,0.18), 0 8px 24px rgba(0,0,0,0.6) !important;
       padding: 0 !important;
     }
     .leaflet-popup-tip-container { display: none; }
-    .leaflet-popup-content { margin: 0 !important; width: 260px !important; }
+    .leaflet-popup-content { margin: 0 !important; width: 280px !important; }
     .leaflet-popup-close-button {
       color: var(--muted) !important;
-      font-size: 18px !important;
-      top: 10px !important;
-      right: 10px !important;
-      font-family: 'Archivo Black', sans-serif !important;
+      font-size: 16px !important;
+      top: 12px !important;
+      right: 12px !important;
+      width: 20px !important;
+      height: 20px !important;
+      font-family: var(--mono) !important;
+      border: 1px solid var(--line2);
+      line-height: 18px !important;
     }
-    .leaflet-popup-close-button:hover { color: var(--text) !important; }
+    .leaflet-popup-close-button:hover { color: var(--accent) !important; border-color: var(--accent) !important; }
 
-    .popup-inner { padding: 18px 18px 16px; }
+    .popup-inner { padding: 22px 22px 18px; }
 
     .popup-head {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 6px;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line2);
+    }
+
+    .popup-cat-sq {
+      width: 8px; height: 8px;
+      flex-shrink: 0;
     }
 
     .popup-region {
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: var(--mono);
       font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.25em;
+      font-weight: 500;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--muted);
+      flex: 1;
     }
+    .popup-region .accent-mark { color: var(--accent); }
 
     .popup-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       line-height: 1.3;
       color: var(--text);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .popup-tagline {
-      font-family: 'Barlow', sans-serif;
-      font-size: 11px;
-      font-weight: 300;
-      color: var(--dim);
-      margin-bottom: 12px;
-      line-height: 1.4;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+      text-wrap: pretty;
     }
 
-    .popup-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3px;
-      margin-bottom: 12px;
-    }
-
-    .popup-tag {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      padding: 2px 6px;
-      border: 1px solid currentColor;
-    }
-
-    .popup-divider {
-      height: 1px;
-      background: var(--line);
-      margin-bottom: 10px;
-    }
-
-    .popup-desc {
-      font-family: 'Barlow', sans-serif;
-      font-size: 11px;
-      font-weight: 300;
-      line-height: 1.7;
-      color: var(--dim);
+    .popup-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
       margin-bottom: 14px;
     }
+    .popup-meta-item { display: flex; flex-direction: column; gap: 3px; }
+    .popup-meta-k {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .popup-meta-v {
+      font-family: var(--serif);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
 
-    .popup-btn-row { display: flex; gap: 6px; }
+    .popup-divider { display: none; }
 
-    .popup-link, .popup-link-url {
+    .popup-desc {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 18px;
+      text-wrap: pretty;
+      opacity: 0.85;
+    }
+
+    .popup-btn-row { display: flex; gap: 8px; }
+
+    .popup-link, .popup-link-url,
+    .popup-link:visited, .popup-link-url:visited {
       flex: 1;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Barlow Condensed', sans-serif;
+      gap: 6px;
+      font-family: var(--mono);
       font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
+      font-weight: 500;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      padding: 6px 8px;
+      padding: 10px 8px;
       text-decoration: none;
-      transition: background 0.15s, color 0.15s;
+      transition: all 0.15s;
       text-align: center;
+      color: #14110d !important;
     }
-    .popup-link { color: var(--bg); background: var(--text); }
-    .popup-link:hover { background: var(--accent); color: var(--bg); }
-    .popup-link-url { color: var(--accent); background: transparent; border: 1px solid var(--accent); }
-    .popup-link-url:hover { background: var(--accent); color: var(--bg); }
+    .popup-link,
+    .popup-link-url { background: #f0e8d8; border: 1px solid #f0e8d8; color: #14110d !important; }
+    .popup-link:hover,
+    .popup-link-url:hover { background: #d96650; border-color: #d96650; color: #14110d !important; }
 
     /* ── LEGEND ──────────────────────────────────────────── */
-    /* Legend: horizontal bar at bottom of map */
     .legend {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
       z-index: 800;
-      background: rgba(18,18,18,0.82);
-      border-top: 1px solid rgba(58,58,58,0.5);
+      background: rgba(20,17,13,0.92);
+      border-top: 1px solid var(--line2);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
-      padding: 6px 12px;
-      gap: 16px;
+      padding: 10px 20px;
+      gap: 18px;
       flex-wrap: wrap;
     }
 
     .legend-head {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 7px;
-      font-weight: 700;
-      letter-spacing: 0.25em;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--accent);
       white-space: nowrap;
       flex-shrink: 0;
+      padding-right: 18px;
+      border-right: 1px solid var(--line2);
     }
 
     .legend-body {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 16px;
       align-items: center;
       flex: 1;
     }
@@ -545,21 +750,29 @@
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
 
     .legend-sq {
-      width: 6px; height: 6px;
+      width: 8px; height: 8px;
       flex-shrink: 0;
     }
 
     .legend-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 8px;
+      font-family: var(--serif);
+      font-size: 11px;
       font-weight: 500;
-      letter-spacing: 0.03em;
-      color: rgba(240,240,240,0.7);
+      letter-spacing: 0.02em;
+      color: var(--text);
       white-space: nowrap;
+    }
+    .legend-label .en {
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-left: 4px;
     }
   </style>
 </head>
@@ -568,13 +781,25 @@
 <header>
   <a class="hd-back" href="https://bawb199765-bot.github.io/Art_PlaceMaking/database/index.html">Database</a>
   <div class="hd-brand">
-    <div>
-      <div class="hd-brand-num">001</div>
-      <h1>Art × Placemaking</h1>
-      <div class="hd-sub">Japan — 47 Prefectures</div>
+    <div class="hd-mark" style="width: 10px; height: 3px">
+</div>
+    <div class="hd-brand-text">
+      <div class="hd-brand-num">CHAPTER 001 / ATLAS</div>
+      <h1 style="font-size: 18px; font-weight: 600; font-family: Helvetica">芸術祭 × 街づくり</h1>
+      <div class="hd-sub">Art × Placemaking — 47 Prefectures</div>
     </div>
   </div>
-
+  <div class="hd-spacer"></div>
+  <div class="hd-meta">
+    <div class="hd-meta-block">
+      <div class="hd-meta-k">Edition</div>
+      <div class="hd-meta-v">2026.05<span class="sub">v.04</span></div>
+    </div>
+    <div class="hd-meta-block">
+      <div class="hd-meta-k">Records</div>
+      <div class="hd-meta-v"><span class="accent" id="hd-showing"></span><span class="sub">/ <span id="hd-total">000</span></span></div>
+    </div>
+  </div>
 </header>
 
 <div class="layout">
@@ -583,44 +808,53 @@
   <aside class="sidebar">
 
     <div class="filter-block">
-      <div class="fl-label">取り組みカテゴリー</div>
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">取り組みカテゴリー</span>
+        <span class="fl-label-en">Category</span>
+      </div>
       <div class="chips" id="cat-filters">
         <button class="chip active" data-cat="all">ALL</button>
-        <button class="chip" data-cat="都市型芸術祭型">都市型芸術祭型</button>
-        <button class="chip" data-cat="地域型芸術祭型">地域型芸術祭型</button>
-        <button class="chip" data-cat="小規模プロジェクト型">小規模プロジェクト型</button>
-        <button class="chip" data-cat="エリアマネジメント型">エリアマネジメント型</button>
-        <button class="chip" data-cat="AIR・制作拠点型">AIR・制作拠点型</button>
-        <button class="chip" data-cat="ミュージアム・拠点型">ミュージアム・拠点型</button>
-        <button class="chip" data-cat="産業・工芸連携型">産業・工芸連携型</button>
+        <button class="chip" data-cat="都市型芸術祭型">都市型</button>
+        <button class="chip" data-cat="地域型芸術祭型">地域型</button>
+        <button class="chip" data-cat="小規模プロジェクト型">小規模</button>
+        <button class="chip" data-cat="エリアマネジメント型">エリマネ</button>
+        <button class="chip" data-cat="AIR・制作拠点型">AIR</button>
+        <button class="chip" data-cat="ミュージアム・拠点型">ミュージアム</button>
+        <button class="chip" data-cat="産業・工芸連携型" style="font-family: Helvetica">産業・工芸</button>
       </div>
     </div>
 
     <div class="filter-block">
-      <div class="fl-label">次回開催年</div>
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">次回開催年</span>
+        <span class="fl-label-en">Next Edition</span>
+      </div>
       <div class="chips" id="year-filters">
         <button class="chip active" data-year="all">ALL</button>
-        <button class="chip" data-year="通年">通年</button>
-        <button class="chip" data-year="2026">2026</button>
-        <button class="chip" data-year="2027">2027</button>
+        <button class="chip" data-year="通年" style="font-family: Helvetica">通年</button>
+        <button class="chip" data-year="2026" style="font-family: Helvetica">2026</button>
+        <button class="chip" data-year="2027" style="font-family: Helvetica">2027</button>
         <button class="chip" data-year="2028">2028</button>
       </div>
     </div>
 
     <div class="filter-block">
-      <div class="fl-label">東京からの所要時間</div>
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">東京からの所要時間</span>
+        <span class="fl-label-en">From Tokyo</span>
+      </div>
       <div class="chips" id="access-filters">
         <button class="chip active" data-access="all">ALL</button>
-        <button class="chip" data-access="1">〜1時間</button>
-        <button class="chip" data-access="2">〜2時間</button>
-        <button class="chip" data-access="3">〜3時間</button>
-        <button class="chip" data-access="4">〜4時間</button>
-        <button class="chip" data-access="99">それ以上</button>
+        <button class="chip" data-access="1" style="font-family: Helvetica">〜1h</button>
+        <button class="chip" data-access="2" style="font-family: Helvetica">〜2h</button>
+        <button class="chip" data-access="3" style="font-family: Helvetica">〜3h</button>
+        <button class="chip" data-access="4" style="font-family: Helvetica">〜4h</button>
+        <button class="chip" data-access="99" style="font-family: Helvetica">それ以上</button>
       </div>
     </div>
 
     <div class="search-block">
-      <input type="text" id="search-input" placeholder="Search cases…" />
+      <input type="text" id="search-input" placeholder="検索  ·  Search cases" />
     </div>
 
     <div class="festival-list" id="festival-list"></div>
@@ -630,16 +864,29 @@
   <!-- MAP -->
   <div class="map-wrapper">
     <div id="map"></div>
+    <div class="map-meta">
+      <div class="map-meta-title">
+</div>
+      <div class="map-meta-row"><span class="k">
+</span><span class="v">
+</span></div>
+      <div class="map-meta-row"><span class="k">
+</span><span class="v accent" id="map-showing">
+</span></div>
+      <div class="map-meta-rule"></div>
+      <div class="map-meta-row"><span class="k">Scale</span><span class="v">1:6,400,000</span></div>
+      <div class="map-meta-row"><span class="k">Projection</span><span class="v">EPSG:3857</span></div>
+    </div>
     <div class="legend">
-      <div class="legend-head">Cat.</div>
+      <div class="legend-head">Cat. ／ カテゴリー</div>
       <div class="legend-body">
-        <div class="legend-item"><div class="legend-sq" style="background:#e8c96e"></div><span class="legend-label">都市型</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#8ecf6e"></div><span class="legend-label">地域型</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#f0a050"></div><span class="legend-label">小規模</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#6ecac8"></div><span class="legend-label">エリマネ</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#a06ec8"></div><span class="legend-label">AIR</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#d4826a"></div><span class="legend-label">ミュージアム</span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#d46aa0"></div><span class="legend-label">産業・工芸</span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#d96650"></div><span class="legend-label">都市型<span class="en">Urban</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#e8c96e"></div><span class="legend-label">地域型<span class="en">Regional</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#b8b06e"></div><span class="legend-label">小規模<span class="en">Micro</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#7fb3a8"></div><span class="legend-label">エリマネ<span class="en">Area Mgmt</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#b48cc6"></div><span class="legend-label">AIR<span class="en">Residency</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#d49a6e"></div><span class="legend-label">ミュージアム<span class="en">Museum</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#c87a9a"></div><span class="legend-label">産業・工芸<span class="en">Craft</span></span></div>
       </div>
     </div>
   </div>
@@ -648,13 +895,13 @@
 
 <script>
 const CAT_COLORS = {
-  "都市型芸術祭型":       "#e8c96e",
-  "地域型芸術祭型":       "#8ecf6e",
-  "小規模プロジェクト型": "#f0a050",
-  "エリアマネジメント型": "#6ecac8",
-  "AIR・制作拠点型":      "#a06ec8",
-  "ミュージアム・拠点型": "#d4826a",
-  "産業・工芸連携型":     "#d46aa0",
+  "都市型芸術祭型":       "#d96650",
+  "地域型芸術祭型":       "#e8c96e",
+  "小規模プロジェクト型": "#b8b06e",
+  "エリアマネジメント型": "#7fb3a8",
+  "AIR・制作拠点型":      "#b48cc6",
+  "ミュージアム・拠点型": "#d49a6e",
+  "産業・工芸連携型":     "#c87a9a",
 };
 
 const IMPACT_COLORS = {
@@ -754,47 +1001,59 @@ function getFiltered() {
   });
 }
 
-// MAP
-const map = L.map('map', { center: [36.2, 137.0], zoom: 6 });
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+// MAP — Stamen Toner Lite gives a clean editorial canvas; falls back gracefully.
+const map = L.map('map', { center: [37.0, 137.5], zoom: 6, zoomControl: true });
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  subdomains: 'abcd',
   maxZoom: 19
+}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+  subdomains: 'abcd',
+  maxZoom: 19,
+  pane: 'shadowPane',
+  opacity: 0.85
 }).addTo(map);
 
 let markers = [];
 
 function markerIcon(c, active) {
   const color = CAT_COLORS[c.cat] || "#888";
-  const s = active ? 20 : 15;
-  const border = active ? `3px solid #fff` : `2px solid rgba(255,255,255,0.4)`;
+  const s = active ? 26 : 18;
+  const inner = active ? 10 : 6;
+  const ring = active ? `box-shadow:0 0 0 1px #fff, 0 0 0 4px ${color}66, 0 4px 14px rgba(0,0,0,0.4);` : `box-shadow:0 0 0 1px rgba(255,255,255,0.85), 0 2px 8px rgba(0,0,0,0.35);`;
   return L.divIcon({
     className: '',
-    html: `<div style="width:${s}px;height:${s}px;background:${color};border:${border};box-shadow:0 3px 10px rgba(0,0,0,0.6);transition:all 0.15s;${active?'outline:2px solid '+color+';outline-offset:4px':''}"></div><div style="position:absolute;inset:-8px;cursor:pointer"></div>`,
+    html: `<div style="position:relative;width:${s}px;height:${s}px;">
+      <div style="position:absolute;inset:0;border-radius:50%;background:${color};${ring}transition:all 0.18s ease;"></div>
+      <div style="position:absolute;top:50%;left:50%;width:${inner}px;height:${inner}px;background:#fff;border-radius:50%;transform:translate(-50%,-50%);"></div>
+      <div style="position:absolute;inset:-8px;cursor:pointer"></div>
+    </div>`,
     iconSize: [s, s],
     iconAnchor: [s/2, s/2],
-    popupAnchor: [0, -(s/2+8)]
+    popupAnchor: [0, -(s/2+6)]
   });
 }
 
 function popupHtml(c) {
   const color = CAT_COLORS[c.cat] || "#888";
-  const accessLabel = c.tokyoHours === 0 ? '東京駅' : `東京から約${c.tokyoHours}h`;
+  const accessLabel = c.tokyoHours === 0 ? '都内' : `約 ${c.tokyoHours}h`;
   const yearLabel = c.nextYear || '—';
   return `<div class="popup-inner">
     <div class="popup-head">
-      <div class="popup-region" style="color:${color}">${c.cat} · ${c.pref}</div>
+      <div class="popup-cat-sq" style="background:${color}"></div>
+      <div class="popup-region"><span class="accent-mark">${c.cat}</span> · ${c.pref}</div>
     </div>
     <div class="popup-name">${c.name}</div>
     <div class="popup-tagline">${c.tagline}</div>
-    <div class="popup-meta" style="display:flex;gap:12px;margin-bottom:10px;">
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:0.15em;color:var(--muted);">次回 <span style="color:var(--text)">${yearLabel}</span></span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:0.15em;color:var(--muted);">${accessLabel}</span>
+    <div class="popup-meta">
+      <div class="popup-meta-item"><span class="popup-meta-k">Next Edition</span><span class="popup-meta-v">${yearLabel}</span></div>
+      <div class="popup-meta-item"><span class="popup-meta-k">From Tokyo</span><span class="popup-meta-v">${accessLabel}</span></div>
     </div>
-    <div class="popup-divider"></div>
     <div class="popup-desc">${c.desc}</div>
     <div class="popup-btn-row">
-      <a class="popup-link" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank">詳細を見る</a>
-      ${c.url ? `<a class="popup-link-url" href="${c.url}" target="_blank">公式サイト ↗</a>` : ''}
+      <a class="popup-link" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank">詳細を見る →</a>
+      ${c.url ? `<a class="popup-link-url" href="${c.url}" target="_blank">公式サイト<span style="font-size:0.75em;letter-spacing:0.04em;margin-left:2px;">など</span></a>` : ''}
     </div>
   </div>`;
 }
@@ -825,7 +1084,15 @@ function scrollListTo(idx) {
 
 function renderList(filtered) {
   const list = document.getElementById('festival-list');
-  if (!filtered.length) { list.innerHTML = '<div class="empty-state">No results</div>'; return; }
+  // header counters
+  const showEl = document.getElementById('hd-showing'); if (showEl) showEl.textContent = String(filtered.length).padStart(3,'0');
+  const totalEl = document.getElementById('hd-total');  if (totalEl) totalEl.textContent = String(CASES.length).padStart(3,'0');
+  const mapShow = document.getElementById('map-showing'); if (mapShow) mapShow.textContent = String(filtered.length).padStart(3,'0') + ' / ' + String(CASES.length).padStart(3,'0');
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state">該当する取り組みがありません<span class="es-en">No results</span></div>';
+    return;
+  }
   const groups = {};
   REGION_ORDER.forEach(r => { groups[r] = []; });
   filtered.forEach((c, i) => { if (groups[c.region]) groups[c.region].push({ c, i }); });
@@ -833,16 +1100,18 @@ function renderList(filtered) {
   REGION_ORDER.forEach(region => {
     if (!groups[region].length) return;
     const num = REGION_NUM[region] || '—';
-    html2 += `<div class="list-region-header"><span class="rh-num">.${num}</span>${region}</div>`;
-    groups[region].forEach(({ c, i }) => {
+    html2 += `<div class="list-region-header"><span class="rh-num">.${num}</span><span class="rh-jp">${region}</span><span class="rh-rule"></span><span class="rh-count">${String(groups[region].length).padStart(2,'0')}</span></div>`;
+    groups[region].forEach(({ c, i }, j) => {
       const color = CAT_COLORS[c.cat] || "#888";
+      const idx = String(i + 1).padStart(3, '0');
       html2 += `<div class="festival-item" data-idx="${i}" onclick="focusCase(${i})">
-        <div class="item-dot" style="background:${color}"></div>
+        <div class="item-num">${idx}</div>
         <div>
-          <div class="item-name">${c.name}</div>
           <div class="item-pref">${c.pref}</div>
+          <div class="item-name"><span class="item-cat-strip" style="background:${color}"></span>${c.name}</div>
           <div class="item-tagline">${c.tagline}</div>
         </div>
+        <div class="item-arrow">→</div>
       </div>`;
     });
   });
