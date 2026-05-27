@@ -279,29 +279,37 @@
       .map-meta-title { font-size: 8px; margin-bottom: 3px; }
       .map-meta-row { padding: 1px 0; gap: 10px; }
 
-      /* Legend → single row, compact, all labels fit */
+      /* Legend → single row, very compact, all 7 categories fit */
       .legend {
-        padding: 4px 8px;
-        gap: 6px;
+        padding: 4px 6px;
+        gap: 4px;
         flex-wrap: nowrap;
         justify-content: flex-start;
       }
       .legend-head {
-        font-size: 7px;
-        padding-right: 6px;
-        letter-spacing: 0.14em;
         display: none; /* hide on mobile to save space */
       }
       .legend-body {
         flex-wrap: nowrap;
-        gap: 6px;
+        gap: 4px;
         width: 100%;
         justify-content: space-between;
       }
-      .legend-item { flex-shrink: 0; gap: 3px; }
-      .legend-sq { width: 6px; height: 6px; }
-      .legend-label { font-size: 9px; letter-spacing: 0; }
+      .legend-item { flex-shrink: 1; gap: 2px; min-width: 0; }
+      .legend-sq { width: 5px; height: 5px; }
+      .legend-label { font-size: 8.5px; letter-spacing: 0; white-space: nowrap; }
       .legend-label .en { display: none; }
+
+      /* Shorten longest legend labels on mobile to fit one row */
+      .legend-item .legend-label { font-size: 0; }
+      .legend-item:nth-child(1) .legend-label::before { content: "都市型"; }
+      .legend-item:nth-child(2) .legend-label::before { content: "地域型"; }
+      .legend-item:nth-child(3) .legend-label::before { content: "小規模"; }
+      .legend-item:nth-child(4) .legend-label::before { content: "エリマネ"; }
+      .legend-item:nth-child(5) .legend-label::before { content: "AIR"; }
+      .legend-item:nth-child(6) .legend-label::before { content: "美術館"; }
+      .legend-item:nth-child(7) .legend-label::before { content: "工芸"; }
+      .legend-item .legend-label::before { font-size: 8.5px; font-family: var(--serif); }
 
       /* Crosshair corners: pull tighter to map edges so they don't overlap UI */
       .map-wrapper::before { top: 8px; left: 8px; width: 12px; height: 12px; }
@@ -997,17 +1005,19 @@
   <!-- MAP -->
   <div class="map-wrapper">
     <div id="map"></div>
-    <div class="map-meta" style="height: 50px; width: 149px; padding: 0px 10px 10px; opacity: 0.6; margin: 0px 0px 1px">
+    <div class="map-meta" style="opacity: 0.6; background-color: rgba(20, 17, 13, 0); border-color: rgba(59, 51, 40, 0)">
       <div class="map-meta-title">
 </div>
       <div class="map-meta-row" style="width: 0px; height: 0px"><span class="k">
 </span><span class="v">
 </span></div>
       <div class="map-meta-row"><span class="k">
-</span><span class="v accent" id="map-showing" style="font-size: 12px">
+</span><span class="v accent" id="map-showing" style="font-size: 12px; font-weight: 900">
 </span></div>
-      <div class="map-meta-rule"></div>
-      <div class="map-meta-row"><span class="k">Scale</span><span class="v">1:6,400,000</span></div>
+      <div class="map-meta-rule" style="background-color: rgba(59, 51, 40, 0)"></div>
+      <div class="map-meta-row"><span class="k">
+</span><span class="v">
+</span></div>
       <div class="map-meta-row"><span class="k">
 </span><span class="v">
 </span></div>
