@@ -219,12 +219,79 @@
         display: block;
       }
       .festival-list { flex: none !important; overflow-y: visible !important; height: auto !important; max-height: none !important; }
-      .chips { gap: 4px; }
-      .chip { font-size: 9px; padding: 4px 8px; }
+
+      /* Compact filter blocks */
+      .filter-block { padding: 10px 14px; }
+      .fl-label {
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        gap: 8px;
+      }
+      .fl-label-jp { font-size: 11px; letter-spacing: 0.04em; }
+      .fl-label-en { font-size: 7px; letter-spacing: 0.18em; }
+
+      /* Filter chips → single-row horizontal scroll */
+      .chips {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 5px;
+        padding-bottom: 4px;
+        margin: 0 -14px;
+        padding-left: 14px;
+        padding-right: 14px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        scroll-snap-type: x proximity;
+      }
+      .chips::-webkit-scrollbar { display: none; }
+      .chip {
+        font-size: 10px !important;
+        padding: 5px 10px !important;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+      }
+
       header { height: auto; flex-wrap: wrap; }
       .hd-brand h1 { font-size: 13px; }
       .hd-sub { font-size: 8px; }
       .hd-meta-block { padding: 10px 14px; min-width: 0; }
+
+      /* Map meta plate: shrink further to avoid covering coastline */
+      .map-meta { top: 8px; right: 8px; padding: 5px 8px; font-size: 8px; }
+      .map-meta-title { font-size: 8px; margin-bottom: 3px; }
+      .map-meta-row { padding: 1px 0; gap: 10px; }
+
+      /* Legend → single-row horizontal scroll, compact */
+      .legend {
+        padding: 5px 10px;
+        gap: 8px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .legend::-webkit-scrollbar { display: none; }
+      .legend-head {
+        font-size: 8px;
+        padding-right: 8px;
+        letter-spacing: 0.16em;
+      }
+      .legend-body {
+        flex-wrap: nowrap;
+        gap: 10px;
+      }
+      .legend-item { flex-shrink: 0; gap: 4px; }
+      .legend-sq { width: 6px; height: 6px; }
+      .legend-label { font-size: 10px; }
+      .legend-label .en { display: none; }
+
+      /* Crosshair corners: pull tighter to map edges so they don't overlap UI */
+      .map-wrapper::before { top: 8px; left: 8px; width: 12px; height: 12px; }
+      .map-wrapper::after  { bottom: 32px; right: 8px; width: 12px; height: 12px; }
+
+      .leaflet-control-zoom { margin: 8px !important; }
     }
 
     /* Filter blocks */
