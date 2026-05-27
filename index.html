@@ -73,7 +73,7 @@
       border-bottom: 1px solid var(--line);
       z-index: 1000;
       flex-shrink: 0;
-      height: 64px;
+      height: 50px;
     }
 
     .hd-back {
@@ -105,11 +105,11 @@
     }
 
     .hd-mark {
-      width: 36px; height: 36px;
+      width: 30px; height: 30px;
       background: var(--accent);
       color: #fff;
       font-family: var(--serif);
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
       display: grid; place-items: center;
       letter-spacing: 0;
@@ -124,12 +124,12 @@
       font-weight: 500;
       letter-spacing: 0.22em;
       color: var(--accent);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .hd-brand h1 {
       font-family: var(--serif);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       letter-spacing: 0.04em;
       color: var(--text);
@@ -308,6 +308,61 @@
       .map-wrapper::after  { bottom: 28px; right: 8px; width: 12px; height: 12px; }
 
       .leaflet-control-zoom { margin: 8px !important; }
+
+      /* ── Mobile popup → bottom sheet (anchored to map bottom, not marker) ── */
+      .map-wrapper .leaflet-popup {
+        position: absolute !important;
+        left: 8px !important;
+        right: 8px !important;
+        bottom: 34px !important;   /* clear of legend bar */
+        top: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        width: auto !important;
+        max-width: none !important;
+        animation: popupSlideUp 0.22s ease-out;
+      }
+      @keyframes popupSlideUp {
+        from { transform: translateY(20px) !important; opacity: 0; }
+        to   { transform: none !important; opacity: 1; }
+      }
+      .leaflet-popup-content-wrapper {
+        width: 100% !important;
+        box-shadow: 4px 4px 0 rgba(217,102,80,0.18), 0 -8px 28px rgba(0,0,0,0.55) !important;
+      }
+      .leaflet-popup-content {
+        width: 100% !important;
+        max-width: none !important;
+        max-height: 46vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .leaflet-popup-content::-webkit-scrollbar { width: 3px; }
+      .leaflet-popup-content::-webkit-scrollbar-thumb { background: var(--line2); }
+      .leaflet-popup-close-button {
+        width: 28px !important;
+        height: 28px !important;
+        line-height: 26px !important;
+        font-size: 18px !important;
+        top: 8px !important;
+        right: 8px !important;
+        background: var(--bg2) !important;
+        z-index: 2;
+      }
+      .popup-inner { padding: 16px 18px 14px; }
+      .popup-head { margin-bottom: 10px; padding-bottom: 8px; padding-right: 32px; }
+      .popup-region { font-size: 8.5px; letter-spacing: 0.14em; }
+      .popup-name { font-size: 15px; line-height: 1.3; margin-bottom: 4px; }
+      .popup-tagline { font-size: 11px; margin-bottom: 10px; line-height: 1.45; }
+      .popup-meta { gap: 6px 14px; padding: 8px 0; margin-bottom: 10px; }
+      .popup-meta-k { font-size: 7.5px; letter-spacing: 0.14em; }
+      .popup-meta-v { font-size: 12px; }
+      .popup-desc { font-size: 11px; line-height: 1.6; margin-bottom: 12px; }
+      .popup-btn-row { gap: 6px; }
+      .popup-link, .popup-link-url { font-size: 9.5px !important; padding: 9px 6px !important; letter-spacing: 0.1em !important; }
+
+      /* Map markers slightly bigger on touch for hit area */
+      .map-wrapper .leaflet-marker-icon { touch-action: manipulation; }
     }
 
     /* Filter blocks */
@@ -864,12 +919,11 @@
 <header>
   <a class="hd-back" href="https://bawb199765-bot.github.io/Art_PlaceMaking/database/index.html">Database</a>
   <div class="hd-brand">
-    <div class="hd-mark" style="width: 10px; height: 3px">
+    <div class="hd-mark" style="width: 10px">
 </div>
     <div class="hd-brand-text">
       <div class="hd-brand-num">CHAPTER 001 / ATLAS</div>
-      <h1 style="font-size: 18px; font-weight: 600; font-family: Helvetica">芸術祭 × 街づくり</h1>
-      <div class="hd-sub">Art × Placemaking — 47 Prefectures</div>
+      <h1>芸術祭 × 街づくり</h1>
     </div>
   </div>
   <div class="hd-spacer"></div>
@@ -877,10 +931,6 @@
     <div class="hd-meta-block">
       <div class="hd-meta-k">Edition</div>
       <div class="hd-meta-v">2026.05<span class="sub">v.04</span></div>
-    </div>
-    <div class="hd-meta-block">
-      <div class="hd-meta-k">Records</div>
-      <div class="hd-meta-v"><span class="accent" id="hd-showing"></span><span class="sub">/ <span id="hd-total">000</span></span></div>
     </div>
   </div>
 </header>
@@ -947,18 +997,20 @@
   <!-- MAP -->
   <div class="map-wrapper">
     <div id="map"></div>
-    <div class="map-meta">
+    <div class="map-meta" style="height: 50px; width: 149px; padding: 0px 10px 10px; opacity: 0.6; margin: 0px 0px 1px">
       <div class="map-meta-title">
 </div>
-      <div class="map-meta-row"><span class="k">
+      <div class="map-meta-row" style="width: 0px; height: 0px"><span class="k">
 </span><span class="v">
 </span></div>
       <div class="map-meta-row"><span class="k">
-</span><span class="v accent" id="map-showing">
+</span><span class="v accent" id="map-showing" style="font-size: 12px">
 </span></div>
       <div class="map-meta-rule"></div>
       <div class="map-meta-row"><span class="k">Scale</span><span class="v">1:6,400,000</span></div>
-      <div class="map-meta-row"><span class="k">Projection</span><span class="v">EPSG:3857</span></div>
+      <div class="map-meta-row"><span class="k">
+</span><span class="v">
+</span></div>
     </div>
     <div class="legend">
       <div class="legend-head">Cat. ／ カテゴリー</div>
@@ -1148,7 +1200,7 @@ function rebuild() {
 
   filtered.forEach((c, i) => {
     const marker = L.marker([c.lat, c.lng], { icon: markerIcon(c, false) }).addTo(map);
-    marker.bindPopup(popupHtml(c), { maxWidth: 280, closeButton: true });
+    marker.bindPopup(popupHtml(c), { maxWidth: 280, closeButton: true, autoPan: window.innerWidth > 768, autoPanPadding: [20, 20], keepInView: false });
     marker.on('click', () => { setActive(i); scrollListTo(i); });
     markers.push({ marker, case: c, idx: i });
   });
