@@ -221,36 +221,53 @@
       .festival-list { flex: none !important; overflow-y: visible !important; height: auto !important; max-height: none !important; }
 
       /* Compact filter blocks */
-      .filter-block { padding: 10px 14px; }
+      .filter-block { padding: 9px 10px; }
       .fl-label {
         margin-bottom: 6px;
         padding-bottom: 4px;
         gap: 8px;
       }
-      .fl-label-jp { font-size: 11px; letter-spacing: 0.04em; }
+      .fl-label-jp { font-size: 10.5px; letter-spacing: 0.04em; }
       .fl-label-en { font-size: 7px; letter-spacing: 0.18em; }
 
-      /* Filter chips → single-row horizontal scroll */
+      /* All chips on one row, natural width with small gap */
       .chips {
+        display: flex;
         flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-        gap: 5px;
-        padding-bottom: 4px;
-        margin: 0 -14px;
-        padding-left: 14px;
-        padding-right: 14px;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        scroll-snap-type: x proximity;
+        gap: 3px;
+        width: 100%;
+        justify-content: flex-start;
       }
-      .chips::-webkit-scrollbar { display: none; }
       .chip {
-        font-size: 10px !important;
-        padding: 5px 10px !important;
-        flex-shrink: 0;
-        scroll-snap-align: start;
+        font-size: 9.5px !important;
+        padding: 4px 6px !important;
+        letter-spacing: 0 !important;
+        flex: 0 0 auto;
+        white-space: nowrap;
       }
+      .chip[data-cat]:not([data-cat="all"]),
+      .chip[data-year]:not([data-year="all"]),
+      .chip[data-access]:not([data-access="all"]) {
+        font-size: 10px !important;
+        letter-spacing: 0 !important;
+      }
+
+      /* Mobile abbreviations — `.filter-block` prefix bumps specificity above the
+         desktop "non-ALL = serif" rule so font-size:0 actually takes effect */
+      .filter-block .chip[data-cat="都市型芸術祭型"]       { font-size: 0 !important; }
+      .filter-block .chip[data-cat="都市型芸術祭型"]::before { content: "都市型芸術祭"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="地域型芸術祭型"]       { font-size: 0 !important; }
+      .filter-block .chip[data-cat="地域型芸術祭型"]::before { content: "地域型芸術祭"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="小規模プロジェクト型"] { font-size: 0 !important; }
+      .filter-block .chip[data-cat="小規模プロジェクト型"]::before { content: "小規模"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="エリアマネジメント型"] { font-size: 0 !important; }
+      .filter-block .chip[data-cat="エリアマネジメント型"]::before { content: "エリマネ"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="AIR・制作拠点型"]      { font-size: 0 !important; }
+      .filter-block .chip[data-cat="AIR・制作拠点型"]::before { content: "AIR"; font-size: 10px; font-family: var(--mono); letter-spacing: 0.04em; }
+      .filter-block .chip[data-cat="ミュージアム・拠点型"] { font-size: 0 !important; }
+      .filter-block .chip[data-cat="ミュージアム・拠点型"]::before { content: "美術館"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="産業・工芸連携型"]     { font-size: 0 !important; }
+      .filter-block .chip[data-cat="産業・工芸連携型"]::before { content: "工芸"; font-size: 10px; font-family: var(--serif); }
 
       header { height: auto; flex-wrap: wrap; }
       .hd-brand h1 { font-size: 13px; }
@@ -262,34 +279,33 @@
       .map-meta-title { font-size: 8px; margin-bottom: 3px; }
       .map-meta-row { padding: 1px 0; gap: 10px; }
 
-      /* Legend → single-row horizontal scroll, compact */
+      /* Legend → single row, compact, all labels fit */
       .legend {
-        padding: 5px 10px;
-        gap: 8px;
+        padding: 4px 8px;
+        gap: 6px;
         flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
+        justify-content: flex-start;
       }
-      .legend::-webkit-scrollbar { display: none; }
       .legend-head {
-        font-size: 8px;
-        padding-right: 8px;
-        letter-spacing: 0.16em;
+        font-size: 7px;
+        padding-right: 6px;
+        letter-spacing: 0.14em;
+        display: none; /* hide on mobile to save space */
       }
       .legend-body {
         flex-wrap: nowrap;
-        gap: 10px;
+        gap: 6px;
+        width: 100%;
+        justify-content: space-between;
       }
-      .legend-item { flex-shrink: 0; gap: 4px; }
+      .legend-item { flex-shrink: 0; gap: 3px; }
       .legend-sq { width: 6px; height: 6px; }
-      .legend-label { font-size: 10px; }
+      .legend-label { font-size: 9px; letter-spacing: 0; }
       .legend-label .en { display: none; }
 
       /* Crosshair corners: pull tighter to map edges so they don't overlap UI */
       .map-wrapper::before { top: 8px; left: 8px; width: 12px; height: 12px; }
-      .map-wrapper::after  { bottom: 32px; right: 8px; width: 12px; height: 12px; }
+      .map-wrapper::after  { bottom: 28px; right: 8px; width: 12px; height: 12px; }
 
       .leaflet-control-zoom { margin: 8px !important; }
     }
