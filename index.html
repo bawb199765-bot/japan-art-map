@@ -326,41 +326,53 @@
 
       .leaflet-control-zoom { margin: 8px !important; }
 
-      /* ── Mobile popup → bottom sheet (anchored to map bottom, not marker) ── */
-      .map-wrapper .leaflet-popup {
-        position: absolute !important;
-        left: 8px !important;
-        right: 8px !important;
-        bottom: 34px !important;   /* clear of legend bar */
+      /* ── Mobile popup → true bottom sheet, fixed to the viewport (never moves with the map) ── */
+      .leaflet-popup {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
         top: auto !important;
         transform: none !important;
         margin: 0 !important;
-        width: auto !important;
+        width: 100% !important;
         max-width: none !important;
-        animation: popupSlideUp 0.22s ease-out;
+        z-index: 1200 !important;
+        opacity: 1 !important;
+        animation: popupSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: auto;
       }
+      /* Neutralise Leaflet's marker-anchored offset */
+      .leaflet-popup-tip-container,
+      .leaflet-popup-tip { display: none !important; }
+
       @keyframes popupSlideUp {
-        from { transform: translateY(20px) !important; opacity: 0; }
-        to   { transform: none !important; opacity: 1; }
+        from { transform: translateY(100%) !important; }
+        to   { transform: translateY(0) !important; }
       }
-      /* Force fully opaque popup so text is always readable on mobile */
-      .map-wrapper .leaflet-popup { opacity: 1 !important; }
+
       .leaflet-popup-content-wrapper {
         width: 100% !important;
         background: #14110d !important;
         opacity: 1 !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        border: 1px solid var(--line2) !important;
-        box-shadow: 4px 4px 0 rgba(217,102,80,0.18), 0 -8px 28px rgba(0,0,0,0.75) !important;
+        border: none !important;
+        border-top: 2px solid var(--accent) !important;
+        border-radius: 0 !important;
+        box-shadow: 0 -10px 34px rgba(0,0,0,0.8) !important;
       }
-      .popup-inner { background: #14110d; }
+      .popup-inner {
+        background: #14110d;
+        padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      }
       .leaflet-popup-content {
         width: 100% !important;
         max-width: none !important;
-        max-height: 62vh;
+        max-height: 58vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
       }
       .leaflet-popup-content::-webkit-scrollbar { width: 3px; }
       .leaflet-popup-content::-webkit-scrollbar-thumb { background: var(--line2); }
@@ -1211,10 +1223,20 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.
 }).addTo(map);
 
 // Mobile: hide the list area while a popup is open so map + popup own the screen
-map.on('popupopen', () => {
+map.on('popupopen', (e) => {
   if (window.innerWidth <= 768) {
     document.body.classList.add('popup-open');
-    setTimeout(() => map.invalidateSize(), 60);
+    setTimeout(() => {
+      map.invalidateSize();
+      // The sheet covers the lower part of the screen — keep the marker in the visible band above it
+      const sheet = document.querySelector('.leaflet-popup-content-wrapper');
+      const sheetH = sheet ? sheet.offsetHeight : Math.round(window.innerHeight * 0.45);
+      const mapH = map.getSize().y;
+      const visibleH = Math.max(mapH - sheetH, 120);
+      const targetY = visibleH / 2;              // middle of the visible band
+      const pt = map.latLngToContainerPoint(e.popup.getLatLng());
+      map.panBy([0, Math.round(pt.y - targetY)], { animate: true, duration: 0.25 });
+    }, 80);
   }
 });
 map.on('popupclose', () => {
@@ -1274,7 +1296,15 @@ function rebuild() {
 
   filtered.forEach((c, i) => {
     const marker = L.marker([c.lat, c.lng], { icon: markerIcon(c, false) }).addTo(map);
-    marker.bindPopup(popupHtml(c), { maxWidth: 280, closeButton: true, autoPan: true, autoPanPadding: [20, 20] });
+    const isMobile = window.innerWidth <= 768;
+    marker.bindPopup(popupHtml(c), {
+      maxWidth: 280,
+      closeButton: true,
+      autoPan: !isMobile,
+      autoPanPadding: [20, 20],
+      keepInView: false,
+      closeOnClick: false
+    });
     marker.on('click', () => { setActive(i); scrollListTo(i); });
     markers.push({ marker, case: c, idx: i });
   });
