@@ -532,7 +532,7 @@
       border-bottom: 1px solid var(--line);
       cursor: pointer;
       display: grid;
-      grid-template-columns: 22px 1fr 12px;
+      grid-template-columns: 44px 22px 1fr 12px;
       gap: 10px;
       align-items: flex-start;
       transition: background 0.12s, padding 0.12s;
@@ -555,6 +555,23 @@
       letter-spacing: 0.08em;
       padding-top: 5px;
     }
+
+    .item-thumb {
+      width: 44px;
+      height: 44px;
+      background: var(--bg2);
+      border: 1px solid var(--line2);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .item-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .item-thumb.is-empty { background: var(--bg2); }
+    .item-thumb.is-empty img { display: none; }
 
     .item-dot { display: none; } /* superseded by num + cat strip */
 
@@ -817,25 +834,6 @@
     }
 
     .popup-divider { display: none; }
-
-    .popup-thumb-wrap {
-      display: block;
-      width: 100%;
-      height: 150px;
-      background: var(--bg2);
-      border: 1px solid var(--line2);
-      overflow: hidden;
-      margin-bottom: 14px;
-      position: relative;
-    }
-    .popup-thumb-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: opacity 0.2s;
-    }
-    .popup-thumb-wrap.is-empty { display: none; }
 
     .popup-desc {
       font-family: var(--sans);
@@ -1135,7 +1133,29 @@ const CASES = [
   { pref:"静岡", name:"三島満願芸術祭2026", tagline:"三島発の現代アートの祭典", region:"中部", lat:35.12, lng:138.92, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"静岡県三島市を舞台にした現代アートの芸術祭。2023年11月に初開催し、2026年で3回目を迎える。市内各所を会場に地域と現代アートを接続する取り組みとして定着しつつある。", url:"https://mishima-event.com/", nextYear:"2026", tokyoHours:1 },
   { pref:"福島", name:"アラフドアートアゲイン", tagline:"温泉町×山々を舞台にした思想と表現の場", region:"北海道・東北", lat:37.68, lng:140.24, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"磐梯朝日国立公園に位置する福島市・土湯温泉町を囲む山々を舞台に、国内外のアーティストが思想と表現を展開するアートプロジェクト。温泉地の自然環境と現代アートが呼応する体験を提供する。", url:"https://www.f-kankou.jp/event/35003", nextYear:"2026", tokyoHours:2.5 },
   { pref:"兵庫", name:"神戸六甲ミーツ・アート2026 beyond", tagline:"六甲山上を舞台にした現代アートの芸術祭", region:"関西", lat:34.76, lng:135.25, slug:"", cat:"地域型芸術祭型", tags:[], desc:"神戸・六甲山上で毎年秋に開催される現代アートの芸術祭。2010年から継続しており、六甲山の豊かな自然環境の中に作品が点在する。神戸市街地からのアクセスの良さと自然体験を両立した都市近郊型の芸術祭。", url:"https://rokkomeetsart.jp/", nextYear:"2026", tokyoHours:3 },
-  { pref:"佐賀", name:"武雄のあかりめぐり", tagline:"チームラボと歴史的建造物が彩る光の芸術祭", region:"九州・沖縄", lat:33.19, lng:130.02, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀県武雄市の観光名所を光で彩る恒例イベント。国登録記念物・御船山楽園で行われるチームラボ「かみさまがすまう森」をはじめ、武雄温泉楼門・武雄神社・武雄市図書館など8施設があかりの会場になる。2026年で11回目。", url:"https://www.takeo-kk.net/season/summer.html", nextYear:"2026", tokyoHours:5.5 }
+  { pref:"佐賀", name:"武雄のあかりめぐり", tagline:"チームラボと歴史的建造物が彩る光の芸術祭", region:"九州・沖縄", lat:33.19, lng:130.02, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀県武雄市の観光名所を光で彩る恒例イベント。国登録記念物・御船山楽園で行われるチームラボ「かみさまがすまう森」をはじめ、武雄温泉楼門・武雄神社・武雄市図書館など8施設があかりの会場になる。2026年で11回目。", url:"https://www.takeo-kk.net/season/summer.html", nextYear:"2026", tokyoHours:5.5 },
+  { pref:"北海道", name:"飛生芸術祭", tagline:"森と旧校舎に生まれるおとぎ話の世界", region:"北海道・東北", lat:42.55, lng:141.35, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"北海道白老町の飛生（とびう）地区、廃校となった旧飛生小学校を拠点に1986年発足した飛生アートコミュニティーが開く年に一度の芸術祭。木造校舎と周囲の森を展覧会場に、多様な表現をお披露目し交流する。オープニングイベントTOBIU CAMPも同時開催。", url:"https://tobiu.com/about/", nextYear:"2026", tokyoHours:1.5 },
+  { pref:"福島", name:"福島ビエンナーレ2026", tagline:"双葉郡の歴史と現代アートで描く復興祈念の祭典", region:"北海道・東北", lat:37.35, lng:141.00, slug:"", cat:"地域型芸術祭型", tags:[], desc:"2004年から隔年開催されてきた現代アートの企画。東日本大震災15年復興祈念として、双葉郡8町村（浪江町・双葉町・大熊町・富岡町・楢葉町・広野町・葛尾村・川内村）を舞台に「Cinematic ∞ Art」をテーマに現代アートを展開する。福島大学と地域住民の協働による地域文化伝承の場。", url:"https://wa-art.com/bien/bien2026/index.html", nextYear:"2026", tokyoHours:3 },
+  { pref:"栃木", name:"AWANO 夢咲くART FESTIVAL 2026", tagline:"里山の花と芸術と食を楽しむ地域密着型芸術祭", region:"関東", lat:36.51, lng:139.66, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"栃木県鹿沼市粟野地域を舞台に2016年から開催される芸術祭。現役の粟野中学校とレトロな旧粟野中学校を中心に、そばの花・彼岸花など四季折々の里山景観の中でアーティストの展覧会・アートステージ・マルシェを展開する。2026年で9回目。", url:"https://awanoartfestival.com/", nextYear:"2026", tokyoHours:2 },
+  { pref:"千葉", name:"房総国際芸術祭 アート×ミックス2027", tagline:"北川フラム総合ディレクターによる房総半島縦断の芸術祭", region:"関東", lat:35.42, lng:140.10, slug:"", cat:"地域型芸術祭型", tags:[], desc:"千葉県市原市・木更津市・大多喜町を舞台にした新しい国際芸術祭。総合ディレクター北川フラム、総合プロデューサー小林武史のもと、房総半島を鉄道・車・自転車で旅しながらアートと音楽・食を楽しむ「みんなの美術工場」構想を展開する。", url:"https://boso-artmix.com/about", nextYear:"2027", tokyoHours:1.5 },
+  { pref:"神奈川", name:"横浜トリエンナーレ", tagline:"3年に1度、世界とつながる現代アートの国際展", region:"関東", lat:35.45, lng:139.63, slug:"", cat:"都市型芸術祭型", tags:[], desc:"2001年開始、日本を代表する国際現代アート展。みなとみらい地区をはじめとする横浜都心臨海部を会場に3年に1度開催。第9回はコスミン・コスティナシュとインティ・ゲレロがアーティスティック・ディレクターを務める。", url:"https://www.yokohamatriennale.jp/", nextYear:"不明", tokyoHours:0.5 },
+  { pref:"神奈川", name:"逗子アートフェスティバル", tagline:"アートを通じた地域づくりを実践する海辺の芸術祭", region:"関東", lat:35.30, lng:139.58, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"2013年から神奈川県逗子市で毎年開催されているアートイベント。「アートを通じた地域づくり」の実践を目指し、逗子の街なか・海辺を舞台に地域住民とアーティストが協働するプログラムを展開する。", url:"https://www.zushi-art.com/", nextYear:"2026", tokyoHours:1 },
+  { pref:"富山", name:"ART/X/TOYAMA（アートエクストヤマ）", tagline:"富山発信・4年に1度の国際現代美術展", region:"中部", lat:36.83, lng:137.41, slug:"", cat:"地域型芸術祭型", tags:[], desc:"富山県魚津市の新川文化ホールを会場に4年ごとに開催される国際現代美術展。1993年から続き、県内外・海外（フランス・トルコ・ドイツ・韓国・中国など）の作家が参加。2026年は第10回記念展として9カ国の作家が集う。", url:"https://art.p-alpha.ne.jp/", nextYear:"2026", tokyoHours:3 },
+  { pref:"石川", name:"いしかわ舞台芸術祭2026", tagline:"「人間はおもしろい説。」がテーマの秋の舞台芸術祭", region:"中部", lat:36.59, lng:136.63, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"石川県で開催される舞台芸術祭。国内外のアーティストを迎え、演劇・ダンス・音楽・美術のジャンルを超えた舞台作品を紹介する石川県秋の大型イベント。県民に新たな観劇体験と文化交流の機会を提供する。", url:"https://ishikawabutai.jp/", nextYear:"2026", tokyoHours:3 },
+  { pref:"福井", name:"熊川宿若狭芸術祭", tagline:"歴史的宿場町で「臨場と共生」をテーマに滞在制作", region:"中部", lat:35.48, lng:135.93, slug:"", cat:"AIR・制作拠点型", tags:[], desc:"福井県若狭町の熊川宿を「世界の文化交流拠点地域」として発展させることを目指し2023年度から開催。性別・年齢・国籍・障がいの有無を問わず多様な表現者が短期滞在制作・展覧会・音楽会を行う。海外アーティストも参加する若狭町・県共催の芸術祭。", url:"https://kumagawa-art.jp/", nextYear:"不明", tokyoHours:4 },
+  { pref:"長野", name:"浅間国際フォトフェスティバル（PHOTO MIYOTA）", tagline:"浅間山麓で写真を五感で味わう国際写真祭", region:"中部", lat:36.34, lng:138.55, slug:"", cat:"ミュージアム・拠点型", tags:[], desc:"長野県御代田町の文化複合施設MMoP（旧メルシャン軽井沢美術館）を中心会場に2018年から開催される国際写真フェスティバル。浅間山麓の自然の中で国内外の写真家の作品を展示。2026年は町内各所へ展示エリアを拡大し、来場者数は過去最多の3万3千人を記録。", url:"https://asamaphotofes.jp/", nextYear:"2026", tokyoHours:2.5 },
+  { pref:"静岡", name:"原泉アートデイズ！", tagline:"アーティスト・イン・レジデンスから生まれる里山の芸術祭", region:"中部", lat:34.87, lng:138.02, slug:"", cat:"AIR・制作拠点型", tags:[], desc:"静岡県掛川市北部・原泉地区で開催されるAIRプログラムと展覧会。原泉アートプロジェクトが2018年からHARAIZUMI AIRを運営し、国内外アーティストの滞在制作支援を継続。旧茶工場や古民家を会場に地区全域で展開する文化庁認定事業。", url:"https://haraizumiart.com/artdays/", nextYear:"2026", tokyoHours:2 },
+  { pref:"愛知", name:"大野芸術祭（OHNO ART BREW）", tagline:"海辺の町並みに現代アートが点在する常滑の芸術祭", region:"中部", lat:34.85, lng:136.82, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"愛知県常滑市大野町一帯を会場に2024年から開催される芸術祭。大野海岸・駅前広場・カフェなど町なかの日常空間にアート作品が点在し、入場無料で気軽に楽しめる地域密着型のイベントとして定着しつつある。", url:"https://oab.jpn.org/", nextYear:"2026", tokyoHours:2 },
+  { pref:"滋賀", name:"長浜国際芸術祭", tagline:"商店街を舞台に国内外作家が集う国際アートプロジェクト", region:"関西", lat:35.38, lng:136.28, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"滋賀県長浜市のまちなか商店街を会場に開催される国際アートプロジェクト。長浜の歴史と文化を背景に、国内外のアーティストと地域住民が出会い交流する場を創出。ポーランドとの国際交流も特徴で、2026年で第2回を迎える。", url:"https://nagahama-art-2026-2.jimdosite.com/", nextYear:"2026", tokyoHours:3 },
+  { pref:"京都", name:"KYOTO EXPERIMENT 京都国際舞台芸術祭2026", tagline:"演劇・ダンス・音楽を横断する実験的舞台芸術祭", region:"関西", lat:35.01, lng:135.77, slug:"", cat:"都市型芸術祭型", tags:[], desc:"2010年から京都市内で開催される舞台芸術祭。国内外の先鋭的なアーティストを迎え、演劇・ダンス・音楽・美術のジャンルを越境した作品を紹介。Kansai Studies・Shows・SKFの3プログラムで構成。2026年は10月3日〜25日開催。", url:"https://kyoto-ex.jp/", nextYear:"2026", tokyoHours:2.5 },
+  { pref:"大阪", name:"生きた建築ミュージアムフェスティバル大阪（イケフェス大阪）", tagline:"約200の建築を無料公開する日本最大級の建築イベント", region:"関西", lat:34.70, lng:135.50, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"大阪の魅力ある建築を毎年秋の週末に無料で一斉公開する日本最大級の建築イベント。歴史的建造物から現代建築、街場の喫茶店まで約200の「生きた建築」が扉を開く。2026年開催日は10月24日・25日。", url:"https://ikenchiku.jp/ikefes2025/", nextYear:"2026", tokyoHours:3 },
+  { pref:"和歌山", name:"紀南アートウィーク", tagline:"柑橘・漁業など紀南地域の生活文化とアートを接続", region:"関西", lat:33.73, lng:135.38, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"和歌山県紀南地域（田辺市など）を拠点に継続的に展開するアートプロジェクト。柑橘・漁業・地域の歴史や信仰といった紀南固有の生活文化をテーマにした展覧会・トークイベントを実施。地域資源を現代アートの視点で読み解く。", url:"https://kinan-art.jp/", nextYear:"不明", tokyoHours:4 },
+  { pref:"岡山", name:"森の芸術祭 晴れの国・岡山2027", tagline:"岡山県北部12市町村を舞台にした国際芸術祭", region:"中国・四国", lat:35.07, lng:133.75, slug:"", cat:"地域型芸術祭型", tags:[], desc:"岡山県北部12市町村（津山市・高梁市・新見市・真庭市・美作市など）を舞台にした国際芸術祭。2024年の常設作品（マイケル・リン、妹島和世ら）は引き続き鑑賞可能。次回2027年秋開催予定。", url:"https://forestartfest-okayama.jp/", nextYear:"不明", tokyoHours:4.5 },
+  { pref:"岡山", name:"瀬戸内産業芸術祭", tagline:"塩田・造船・製鉄など瀬戸内の産業をアートで再発見", region:"中国・四国", lat:34.50, lng:133.90, slug:"", cat:"産業・工芸連携型", tags:[], desc:"塩田・造船・製鉄など日本の発展を支えてきた瀬戸内海の産業を非日常的な視点で知る分散型美術館構想。参加企業の工場をアーティスト・クリエイターがプロデュースし、産業の本質を新しい視点で体験できる独自の芸術祭。", url:"https://www.sai-art.jp/", nextYear:"2026", tokyoHours:4 },
+  { pref:"広島", name:"MAFIN（Miyajima Art Festival in the Narrative）", tagline:"世界遺産・宮島の大聖院で歴史と現代アートが対話する", region:"中国・四国", lat:34.27, lng:132.32, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"広島県廿日市市・宮島弥山大本山大聖院を会場に毎年開催される現代アート展。「聖なる島」宮島で平和をテーマにアートを通して考察する。宮島の自然景観からインスピレーションを得た作品が、歴史ある寺院の空間と対話する。", url:"https://mafin.jp/", nextYear:"不明", tokyoHours:5 },
+  { pref:"福岡", name:"ART FAIR ASIA FUKUOKA（AFAF）", tagline:"日本とアジアをつなぐアートフェア", region:"九州・沖縄", lat:33.60, lng:130.40, slug:"", cat:"都市型芸術祭型", tags:[], desc:"福岡国際センターで開催される、日本とアジアの架け橋となるアートフェア。2026年で11回目を迎え、国内外の一流ギャラリーが集結。Fukuoka Art Nextとも連携し、福岡のアートエコシステムの一翼を担う。2026年は10月2日〜4日開催。", url:"https://artfair.asia/", nextYear:"2026", tokyoHours:3.5 },
+  { pref:"佐賀", name:"SAGA ARTIST FAIR 2027", tagline:"公募制の新進アーティストを紹介するアートフェア", region:"九州・沖縄", lat:33.25, lng:130.30, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀市を拠点に開催される公募制のアートフェア。新進アーティストの発掘・紹介を目的とし、開催のたびに公募でアーティストを募集する。2027年開催は2027年2月中旬を予定、応募開始は2026年8月中旬から。", url:"https://www.sagaartistfair.com/2027", nextYear:"不明", tokyoHours:4 },
+  { pref:"鹿児島", name:"種子島宇宙芸術祭", tagline:"宇宙センターを舞台に「宇宙芸術」を提唱する唯一無二の芸術祭", region:"九州・沖縄", lat:30.62, lng:130.97, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"鹿児島県南種子町・種子島宇宙センターを中心に開催される、宇宙をテーマにした唯一無二の芸術祭。天文学者カール・セーガンの思想を原点に「宇宙芸術」という新しい概念を提唱。夏はサマーキャンプ、冬はライトフェスティバルを開催。", url:"https://satfes.jp/2025/", nextYear:"不明", tokyoHours:5.5 }
 ];
 
 const IMPACT_PREFIX = { "経済": "1-", "社会": "2-", "文化": "3-" };
@@ -1214,9 +1234,7 @@ function popupHtml(c) {
   const color = CAT_COLORS[c.cat] || "#888";
   const accessLabel = c.tokyoHours === 0 ? '都内' : `約 ${c.tokyoHours}h`;
   const yearLabel = c.nextYear || '—';
-  const thumbUrl = c.url ? `https://api.microlink.io/?url=${encodeURIComponent(c.url)}&meta=false&embed=image.url` : '';
   return `<div class="popup-inner">
-    ${thumbUrl ? `<div class="popup-thumb-wrap"><img src="${thumbUrl}" alt="${c.name}" onerror="this.parentElement.classList.add('is-empty')" /></div>` : ''}
     <div class="popup-head">
       <div class="popup-cat-sq" style="background:${color}"></div>
       <div class="popup-region"><span class="accent-mark">${c.cat}</span> · ${c.pref}</div>
@@ -1281,7 +1299,9 @@ function renderList(filtered) {
     groups[region].forEach(({ c, i }, j) => {
       const color = CAT_COLORS[c.cat] || "#888";
       const idx = String(i + 1).padStart(3, '0');
+      const thumbUrl = c.url ? `https://api.microlink.io/?url=${encodeURIComponent(c.url)}&meta=false&embed=image.url` : '';
       html2 += `<div class="festival-item" data-idx="${i}" onclick="focusCase(${i})">
+        <div class="item-thumb">${thumbUrl ? `<img src="${thumbUrl}" loading="lazy" alt="" onerror="this.parentElement.classList.add('is-empty')" />` : ''}</div>
         <div class="item-num">${idx}</div>
         <div>
           <div class="item-pref">${c.pref}</div>
