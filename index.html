@@ -818,6 +818,25 @@
 
     .popup-divider { display: none; }
 
+    .popup-thumb-wrap {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: var(--bg2);
+      border: 1px solid var(--line2);
+      overflow: hidden;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .popup-thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.2s;
+    }
+    .popup-thumb-wrap.is-empty { display: none; }
+
     .popup-desc {
       font-family: var(--sans);
       font-size: 12px;
@@ -1195,7 +1214,9 @@ function popupHtml(c) {
   const color = CAT_COLORS[c.cat] || "#888";
   const accessLabel = c.tokyoHours === 0 ? '都内' : `約 ${c.tokyoHours}h`;
   const yearLabel = c.nextYear || '—';
+  const thumbUrl = c.url ? `https://api.microlink.io/?url=${encodeURIComponent(c.url)}&meta=false&embed=image.url` : '';
   return `<div class="popup-inner">
+    ${thumbUrl ? `<div class="popup-thumb-wrap"><img src="${thumbUrl}" loading="lazy" alt="${c.name}" onerror="this.parentElement.classList.add('is-empty')" /></div>` : ''}
     <div class="popup-head">
       <div class="popup-cat-sq" style="background:${color}"></div>
       <div class="popup-region"><span class="accent-mark">${c.cat}</span> · ${c.pref}</div>
