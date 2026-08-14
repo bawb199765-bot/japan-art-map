@@ -821,7 +821,7 @@
     .popup-thumb-wrap {
       display: block;
       width: 100%;
-      aspect-ratio: 16 / 9;
+      height: 150px;
       background: var(--bg2);
       border: 1px solid var(--line2);
       overflow: hidden;
@@ -1216,7 +1216,7 @@ function popupHtml(c) {
   const yearLabel = c.nextYear || '—';
   const thumbUrl = c.url ? `https://api.microlink.io/?url=${encodeURIComponent(c.url)}&meta=false&embed=image.url` : '';
   return `<div class="popup-inner">
-    ${thumbUrl ? `<div class="popup-thumb-wrap"><img src="${thumbUrl}" loading="lazy" alt="${c.name}" onerror="this.parentElement.classList.add('is-empty')" /></div>` : ''}
+    ${thumbUrl ? `<div class="popup-thumb-wrap"><img src="${thumbUrl}" alt="${c.name}" onerror="this.parentElement.classList.add('is-empty')" /></div>` : ''}
     <div class="popup-head">
       <div class="popup-cat-sq" style="background:${color}"></div>
       <div class="popup-region"><span class="accent-mark">${c.cat}</span> · ${c.pref}</div>
@@ -1242,7 +1242,7 @@ function rebuild() {
 
   filtered.forEach((c, i) => {
     const marker = L.marker([c.lat, c.lng], { icon: markerIcon(c, false) }).addTo(map);
-    marker.bindPopup(popupHtml(c), { maxWidth: 280, closeButton: true, autoPan: window.innerWidth > 768, autoPanPadding: [20, 20], keepInView: false });
+    marker.bindPopup(popupHtml(c), { maxWidth: 280, closeButton: true, autoPan: true, autoPanPadding: [20, 20] });
     marker.on('click', () => { setActive(i); scrollListTo(i); });
     markers.push({ marker, case: c, idx: i });
   });
