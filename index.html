@@ -41,7 +41,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body { height: 100vh; }
+    html, body { height: 100%; background: #14110d; }
     body {
       font-family: var(--sans);
       background: var(--bg);
@@ -205,7 +205,7 @@
 
     /* ── MOBILE ───────────────────────────────────────────── */
     @media (max-width: 768px) {
-      body { overflow: hidden; height: 100dvh; }
+      body { overflow: hidden; height: 100vh; height: 100svh; }
       .layout { flex-direction: column; overflow: hidden; height: 100%; }
       .map-wrapper { order: -1; height: 72vh; min-height: 380px; flex: none; position: relative; }
       .sidebar {
