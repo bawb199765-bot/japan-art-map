@@ -207,7 +207,7 @@
     @media (max-width: 768px) {
       body { overflow: hidden; height: 100dvh; }
       .layout { flex-direction: column; overflow: hidden; height: 100%; }
-      .map-wrapper { order: -1; height: 50vh; min-height: 280px; flex: none; position: relative; }
+      .map-wrapper { order: -1; height: 72vh; min-height: 380px; flex: none; position: relative; }
       .sidebar {
         width: 100%;
         border-right: none;
@@ -217,6 +217,15 @@
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         display: block;
+        transition: opacity 0.18s ease;
+      }
+      /* When a popup is open, hide the list area entirely so the map + popup own the screen */
+      body.popup-open .sidebar {
+        display: none;
+      }
+      body.popup-open .map-wrapper {
+        height: 100%;
+        flex: 1;
       }
       .festival-list { flex: none !important; overflow-y: visible !important; height: auto !important; max-height: none !important; }
 
@@ -334,14 +343,22 @@
         from { transform: translateY(20px) !important; opacity: 0; }
         to   { transform: none !important; opacity: 1; }
       }
+      /* Force fully opaque popup so text is always readable on mobile */
+      .map-wrapper .leaflet-popup { opacity: 1 !important; }
       .leaflet-popup-content-wrapper {
         width: 100% !important;
-        box-shadow: 4px 4px 0 rgba(217,102,80,0.18), 0 -8px 28px rgba(0,0,0,0.55) !important;
+        background: #14110d !important;
+        opacity: 1 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: 1px solid var(--line2) !important;
+        box-shadow: 4px 4px 0 rgba(217,102,80,0.18), 0 -8px 28px rgba(0,0,0,0.75) !important;
       }
+      .popup-inner { background: #14110d; }
       .leaflet-popup-content {
         width: 100% !important;
         max-width: none !important;
-        max-height: 46vh;
+        max-height: 62vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
@@ -532,7 +549,7 @@
       border-bottom: 1px solid var(--line);
       cursor: pointer;
       display: grid;
-      grid-template-columns: 44px 22px 1fr 12px;
+      grid-template-columns: 22px 1fr 12px;
       gap: 10px;
       align-items: flex-start;
       transition: background 0.12s, padding 0.12s;
@@ -555,23 +572,6 @@
       letter-spacing: 0.08em;
       padding-top: 5px;
     }
-
-    .item-thumb {
-      width: 44px;
-      height: 44px;
-      background: var(--bg2);
-      border: 1px solid var(--line2);
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .item-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .item-thumb.is-empty { background: var(--bg2); }
-    .item-thumb.is-empty img { display: none; }
 
     .item-dot { display: none; } /* superseded by num + cat strip */
 
@@ -1210,6 +1210,20 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.
   opacity: 0.85
 }).addTo(map);
 
+// Mobile: hide the list area while a popup is open so map + popup own the screen
+map.on('popupopen', () => {
+  if (window.innerWidth <= 768) {
+    document.body.classList.add('popup-open');
+    setTimeout(() => map.invalidateSize(), 60);
+  }
+});
+map.on('popupclose', () => {
+  document.body.classList.remove('popup-open');
+  if (window.innerWidth <= 768) {
+    setTimeout(() => map.invalidateSize(), 60);
+  }
+});
+
 let markers = [];
 
 function markerIcon(c, active) {
@@ -1299,9 +1313,7 @@ function renderList(filtered) {
     groups[region].forEach(({ c, i }, j) => {
       const color = CAT_COLORS[c.cat] || "#888";
       const idx = String(i + 1).padStart(3, '0');
-      const thumbUrl = c.url ? `https://api.microlink.io/?url=${encodeURIComponent(c.url)}&meta=false&embed=image.url` : '';
       html2 += `<div class="festival-item" data-idx="${i}" onclick="focusCase(${i})">
-        <div class="item-thumb">${thumbUrl ? `<img src="${thumbUrl}" loading="lazy" alt="" onerror="this.parentElement.classList.add('is-empty')" />` : ''}</div>
         <div class="item-num">${idx}</div>
         <div>
           <div class="item-pref">${c.pref}</div>
