@@ -485,6 +485,14 @@
     }
 
     @media (max-width: 768px) {
+      #month-filters {
+        flex-wrap: nowrap !important;
+        gap: 3px;
+      }
+      #month-filters .chip {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+      }
       #travel-tag-filters {
         flex-wrap: wrap !important;
         row-gap: 4px;
@@ -1380,6 +1388,14 @@
       </div>
     </div>
 
+    <div class="filter-block month-filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">何月に行く？</span>
+        <span class="fl-label-en">Month</span>
+      </div>
+      <div class="chips" id="month-filters"></div>
+    </div>
+
     <div class="filter-block travel-theme-block">
       <div class="fl-label">
         <span class="fl-label-jp" style="font-family: Helvetica">旅のテーマ</span>
@@ -1585,7 +1601,7 @@ const IMPACT_PREFIX = { "経済": "1-", "社会": "2-", "文化": "3-" };
 const REGION_ORDER = ["北海道・東北","関東","中部","関西","中国・四国","九州・沖縄"];
 const REGION_NUM = { "北海道・東北":"01","関東":"02","中部":"03","関西":"04","中国・四国":"05","九州・沖縄":"06" };
 
-let activeCat = "all", activeStatus = "all", activeTravelTag = "all", activeAccess = "all", searchQ = "";
+let activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeAccess = "all", searchQ = "";
 
 
 const TRAVEL_TAG_ORDER = ["島・海","温泉","建築","写真・映像","工芸","自然・里山","街歩き","食"];
@@ -1649,6 +1665,53 @@ function todayLocal() {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
+function monthRange(year, monthNumber) {
+  return {
+    start: new Date(year, monthNumber - 1, 1),
+    end: new Date(year, monthNumber, 0)
+  };
+}
+
+function eventOverlapsMonth(c, year, monthNumber) {
+  if (c.yearRound || c.nextYear === '通年') return true;
+  if (!c.startDate || !c.endDate) return false;
+
+  const eventStart = toLocalDay(c.startDate);
+  const eventEnd = toLocalDay(c.endDate);
+  if (!eventStart || !eventEnd) return false;
+
+  const range = monthRange(year, monthNumber);
+  return eventStart <= range.end && eventEnd >= range.start;
+}
+
+function renderMonthFilters() {
+  const wrap = document.getElementById('month-filters');
+  if (!wrap) return;
+
+  const today = todayLocal();
+  const currentMonth = today.getMonth() + 1;
+  const months = [];
+  for (let m = currentMonth; m <= 12; m++) months.push(m);
+
+  wrap.innerHTML = [
+    `<button class="chip ${activeMonth === 'all' ? 'active' : ''}" data-month="all">ALL</button>`,
+    ...months.map(m =>
+      `<button class="chip ${String(m) === activeMonth ? 'active' : ''}" data-month="${m}" style="font-family: Helvetica">${m}月</button>`
+    )
+  ].join('');
+
+  wrap.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMonth = btn.dataset.month;
+      selectedCaseName = null;
+      rebuild();
+    });
+  });
+}
+
+
 function formatMD(dateString) {
   const d = toLocalDay(dateString);
   return d ? `${d.getMonth()+1}/${d.getDate()}` : '';
@@ -1707,6 +1770,11 @@ function getFiltered() {
         const y = c.startDate ? toLocalDay(c.startDate).getFullYear() : parseInt(c.nextYear, 10);
         if (!(Number.isFinite(y) && y > currentYear)) return false;
       }
+    }
+
+    if (activeMonth !== "all") {
+      const monthNumber = parseInt(activeMonth, 10);
+      if (!eventOverlapsMonth(c, currentYear, monthNumber)) return false;
     }
 
     if (activeTravelTag !== "all" && !getTravelTags(c).includes(activeTravelTag)) return false;
@@ -1854,10 +1922,12 @@ function renderDiscoveryPanel(candidates = CASES) {
 
     <div class="recommend-block">
       <div class="recommend-kicker">ART TRIP PICKS · ${currentYear}</div>
-      <div class="recommend-title">今年行ける、おすすめの芸術祭</div>
-      <div class="recommend-lead">開催中、${currentYear}年にこれから始まるもの、通年で楽しめるものから3件をピックアップ。</div>
-      ${cards || '<div class="detail-empty-sub">現在、日程が確定しているおすすめを準備中です。</div>'}
-      <div class="discover-foot">「開催中」「${currentYear}年これから」「旅のテーマ」「旅のスタイル」で絞り込むと、候補をもっと探せます。</div>
+      <div class="recommend-title">${activeMonth !== 'all' ? `${activeMonth}月に行ける、おすすめの芸術祭` : '今年行ける、おすすめの芸術祭'}</div>
+      <div class="recommend-lead">${activeMonth !== 'all'
+        ? `${activeMonth}月に会期が重なる芸術祭から、今から行ける3件をピックアップ。`
+        : `開催中、${currentYear}年にこれから始まるもの、通年で楽しめるものから3件をピックアップ。`}</div>
+      ${cards || '<div class="detail-empty-sub">現在、この条件でおすすめできる芸術祭がありません。</div>'}
+      <div class="discover-foot">「開催中」「${currentYear}年これから」「何月に行く？」「旅のテーマ」「旅のスタイル」を組み合わせて探せます。</div>
     </div>
   </div>`;
   detailPanelContent.scrollTop = 0;
@@ -2053,6 +2123,7 @@ document.getElementById('search-input').addEventListener('input', e => {
 });
 
 updateDynamicFilterLabels();
+renderMonthFilters();
 rebuild();
 
 // 会期ステータスは訪問者の端末のローカル日付で判定。
@@ -2062,7 +2133,11 @@ function scheduleDateRolloverRefresh() {
   const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 2);
   const delay = Math.max(next - now, 1000);
   setTimeout(() => {
+    // If the calendar date/month/year changed while the page stayed open,
+    // refresh both status labels and the available month chips.
+    if (parseInt(activeMonth, 10) < todayLocal().getMonth() + 1) activeMonth = 'all';
     updateDynamicFilterLabels();
+    renderMonthFilters();
     rebuild();
     scheduleDateRolloverRefresh();
   }, delay);
