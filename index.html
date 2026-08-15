@@ -203,11 +203,150 @@
       overflow: hidden;
     }
 
+    /* ── DESKTOP FIXED DETAIL PANEL ───────────────────────── */
+    .detail-panel {
+      width: 360px;
+      min-width: 320px;
+      background: var(--bg);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .detail-panel-head {
+      height: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg2);
+    }
+
+    .detail-panel-head-jp {
+      font-family: var(--serif);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text);
+    }
+
+    .detail-panel-head-en {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .detail-panel-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line2) transparent;
+    }
+
+    .detail-panel-content::-webkit-scrollbar { width: 4px; }
+    .detail-panel-content::-webkit-scrollbar-thumb { background: var(--line2); }
+    .detail-panel-content::-webkit-scrollbar-track { background: transparent; }
+
+    .detail-empty {
+      height: 100%;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .detail-empty-mark {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--accent);
+      position: relative;
+      margin-bottom: 18px;
+      opacity: 0.75;
+    }
+
+    .detail-empty-mark::before,
+    .detail-empty-mark::after {
+      content: '';
+      position: absolute;
+      background: var(--accent);
+      opacity: 0.7;
+    }
+
+    .detail-empty-mark::before {
+      width: 14px;
+      height: 1px;
+      left: 9px;
+      top: 16px;
+    }
+
+    .detail-empty-mark::after {
+      width: 1px;
+      height: 14px;
+      left: 16px;
+      top: 9px;
+    }
+
+    .detail-empty-title {
+      font-family: var(--serif);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .detail-empty-sub {
+      font-family: var(--sans);
+      font-size: 11px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    /* Existing popup components are reused inside the fixed panel */
+    .detail-panel .popup-inner { padding: 18px 18px 22px; }
+    .detail-panel .popup-thumb {
+      height: 180px;
+      margin: -1px -1px 16px;
+      width: calc(100% + 2px);
+      border-left: none;
+      border-right: none;
+      border-top: none;
+    }
+    .detail-panel .popup-name { font-size: 20px; }
+    .detail-panel .popup-desc { line-height: 1.75; }
+    .detail-panel .popup-btn-row {
+      position: sticky;
+      bottom: 0;
+      padding-top: 8px;
+      background: linear-gradient(to bottom, rgba(20,17,13,0), var(--bg) 28%);
+    }
+
+    @media (min-width: 769px) and (max-width: 1180px) {
+      .sidebar { width: 280px; }
+      .detail-panel { width: 320px; min-width: 300px; }
+      .detail-panel .popup-inner { padding: 16px; }
+      .detail-panel .popup-thumb { height: 155px; }
+    }
+
     /* ── MOBILE ───────────────────────────────────────────── */
     @media (max-width: 768px) {
       body { overflow: hidden; height: 100vh; height: 100svh; height: var(--vh100, 100svh); }
       .layout { flex-direction: column; overflow: hidden; height: 100%; }
       .map-wrapper { order: -1; height: 72vh; min-height: 380px; flex: none; position: relative; }
+      .detail-panel { display: none !important; }
       .sidebar {
         width: 100%;
         border-right: none;
@@ -755,7 +894,7 @@
     .leaflet-control-attribution a { color: var(--muted) !important; }
     .leaflet-control-attribution a:hover { color: var(--accent) !important; }
 
-    /* Popup override */
+    /* Leaflet popup styling (mobile sheet reuses the same inner components) */
     .leaflet-popup-content-wrapper {
       background: var(--bg) !important;
       border: 1px solid var(--line2) !important;
@@ -1101,6 +1240,21 @@
 
   </aside>
 
+  <!-- DESKTOP FIXED DETAIL -->
+  <section class="detail-panel" id="detail-panel" aria-live="polite">
+    <div class="detail-panel-head">
+      <span class="detail-panel-head-jp">選択中の取り組み</span>
+      <span class="detail-panel-head-en">Selected Case</span>
+    </div>
+    <div class="detail-panel-content" id="detail-panel-content">
+      <div class="detail-empty">
+        <div class="detail-empty-mark"></div>
+        <div class="detail-empty-title">芸術祭を選択してください</div>
+        <div class="detail-empty-sub">左の一覧または地図上のポイントを押すと、<br>ここに詳細が固定表示されます。</div>
+      </div>
+    </div>
+  </section>
+
   <!-- MAP -->
   <div class="map-wrapper">
     <div id="map"></div>
@@ -1362,6 +1516,26 @@ function popupHtml(c) {
   </div>`;
 }
 
+
+let selectedCaseName = null;
+const detailPanelContent = document.getElementById('detail-panel-content');
+
+function clearDesktopDetail() {
+  if (!detailPanelContent) return;
+  detailPanelContent.innerHTML = `<div class="detail-empty">
+    <div class="detail-empty-mark"></div>
+    <div class="detail-empty-title">芸術祭を選択してください</div>
+    <div class="detail-empty-sub">左の一覧または地図上のポイントを押すと、<br>ここに詳細が固定表示されます。</div>
+  </div>`;
+}
+
+function openDesktopDetail(c) {
+  if (!detailPanelContent || window.innerWidth <= 768) return;
+  selectedCaseName = c.name;
+  detailPanelContent.innerHTML = popupHtml(c);
+  detailPanelContent.scrollTop = 0;
+}
+
 function rebuild() {
   markers.forEach(m => map.removeLayer(m.marker));
   markers = [];
@@ -1369,25 +1543,31 @@ function rebuild() {
 
   filtered.forEach((c, i) => {
     const marker = L.marker([c.lat, c.lng], { icon: markerIcon(c, false) }).addTo(map);
-    const isMobile = window.innerWidth <= 768;
-    if (!isMobile) {
-      marker.bindPopup(popupHtml(c), {
-        maxWidth: 280,
-        closeButton: true,
-        autoPan: true,
-        autoPanPadding: [20, 20]
-      });
-    }
     marker.on('click', () => {
       setActive(i);
       scrollListTo(i);
       if (window.innerWidth <= 768) {
         openMobileSheet(c);
+      } else {
+        openDesktopDetail(c);
       }
     });
     markers.push({ marker, case: c, idx: i });
   });
   renderList(filtered);
+
+  // Keep the desktop detail panel stable across filter/search rebuilds when possible.
+  if (window.innerWidth > 768 && selectedCaseName) {
+    const selectedIdx = filtered.findIndex(c => c.name === selectedCaseName);
+    if (selectedIdx >= 0) {
+      openDesktopDetail(filtered[selectedIdx]);
+      setActive(selectedIdx);
+      scrollListTo(selectedIdx);
+    } else {
+      selectedCaseName = null;
+      clearDesktopDetail();
+    }
+  }
 }
 
 // ── Standalone mobile bottom sheet (lives directly under <body>, unaffected by Leaflet's transformed panes) ──
@@ -1465,14 +1645,16 @@ function renderList(filtered) {
 window.focusCase = function(idx) {
   const m = markers[idx];
   if (!m) return;
-  map.setView([m.case.lat, m.case.lng], 10, { animate: true });
-  setTimeout(() => {
-    if (window.innerWidth <= 768) {
-      openMobileSheet(m.case);
-    } else {
-      m.marker.openPopup();
-    }
-  }, 350);
+
+  if (window.innerWidth <= 768) {
+    map.setView([m.case.lat, m.case.lng], 10, { animate: true });
+    setTimeout(() => openMobileSheet(m.case), 350);
+  } else {
+    // Desktop: keep list + fixed detail visible and move only the map.
+    openDesktopDetail(m.case);
+    map.setView([m.case.lat, m.case.lng], 9, { animate: true });
+  }
+
   setActive(idx);
   scrollListTo(idx);
 };
