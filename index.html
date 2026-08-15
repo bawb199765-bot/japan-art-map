@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ART × PLACEMAKING — JAPAN MAP</title>
+  <title>日本の芸術祭マップ</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -264,15 +264,15 @@
       /* Mobile abbreviations — `.filter-block` prefix bumps specificity above the
          desktop "non-ALL = serif" rule so font-size:0 actually takes effect */
       .filter-block .chip[data-cat="都市型芸術祭型"]       { font-size: 0 !important; }
-      .filter-block .chip[data-cat="都市型芸術祭型"]::before { content: "都市型芸術祭"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="都市型芸術祭型"]::before { content: "都市"; font-size: 10px; font-family: var(--serif); }
       .filter-block .chip[data-cat="地域型芸術祭型"]       { font-size: 0 !important; }
-      .filter-block .chip[data-cat="地域型芸術祭型"]::before { content: "地域型芸術祭"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="地域型芸術祭型"]::before { content: "里山・島"; font-size: 10px; font-family: var(--serif); }
       .filter-block .chip[data-cat="小規模プロジェクト型"] { font-size: 0 !important; }
       .filter-block .chip[data-cat="小規模プロジェクト型"]::before { content: "小規模"; font-size: 10px; font-family: var(--serif); }
       .filter-block .chip[data-cat="エリアマネジメント型"] { font-size: 0 !important; }
-      .filter-block .chip[data-cat="エリアマネジメント型"]::before { content: "エリマネ"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="エリアマネジメント型"]::before { content: "街歩き"; font-size: 10px; font-family: var(--serif); }
       .filter-block .chip[data-cat="AIR・制作拠点型"]      { font-size: 0 !important; }
-      .filter-block .chip[data-cat="AIR・制作拠点型"]::before { content: "AIR"; font-size: 10px; font-family: var(--mono); letter-spacing: 0.04em; }
+      .filter-block .chip[data-cat="AIR・制作拠点型"]::before { content: "制作拠点"; font-size: 10px; font-family: var(--serif); }
       .filter-block .chip[data-cat="ミュージアム・拠点型"] { font-size: 0 !important; }
       .filter-block .chip[data-cat="ミュージアム・拠点型"]::before { content: "美術館"; font-size: 10px; font-family: var(--serif); }
       .filter-block .chip[data-cat="産業・工芸連携型"]     { font-size: 0 !important; }
@@ -311,11 +311,11 @@
 
       /* Shorten longest legend labels on mobile to fit one row */
       .legend-item .legend-label { font-size: 0; }
-      .legend-item:nth-child(1) .legend-label::before { content: "都市型"; }
-      .legend-item:nth-child(2) .legend-label::before { content: "地域型"; }
+      .legend-item:nth-child(1) .legend-label::before { content: "都市"; }
+      .legend-item:nth-child(2) .legend-label::before { content: "里山・島"; }
       .legend-item:nth-child(3) .legend-label::before { content: "小規模"; }
-      .legend-item:nth-child(4) .legend-label::before { content: "エリマネ"; }
-      .legend-item:nth-child(5) .legend-label::before { content: "AIR"; }
+      .legend-item:nth-child(4) .legend-label::before { content: "街歩き"; }
+      .legend-item:nth-child(5) .legend-label::before { content: "制作拠点"; }
       .legend-item:nth-child(6) .legend-label::before { content: "美術館"; }
       .legend-item:nth-child(7) .legend-label::before { content: "工芸"; }
       .legend-item .legend-label::before { font-size: 8.5px; font-family: var(--serif); }
@@ -451,6 +451,21 @@
       left: 0; right: 0; bottom: -2px;
       height: 2px;
       background: var(--accent);
+    }
+
+    /* Quick-access "available now" chip — stands out even when not selected */
+    .chip-now {
+      border-color: var(--accent) !important;
+      color: var(--accent) !important;
+      font-weight: 600;
+    }
+    .chip-now::before {
+      content: '● ';
+      font-size: 8px;
+    }
+    .chip-now.active {
+      background: var(--accent) !important;
+      color: var(--bg) !important;
     }
 
     /* Search */
@@ -597,11 +612,19 @@
       color: var(--accent);
       margin-bottom: 4px;
     }
+    .item-now-dot {
+      display: inline-block;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-left: 6px;
+      vertical-align: middle;
+    }
     .item-tagline {
       font-family: var(--sans);
       font-size: 11px;
       font-weight: 400;
-      color: var(--muted);
+      color: #9c9384;
       line-height: 1.5;
       text-wrap: pretty;
     }
@@ -757,12 +780,38 @@
 
     .popup-inner { padding: 22px 22px 18px; }
 
+    .popup-pref-row {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .popup-now-badge {
+      font-family: var(--serif);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 2px 8px;
+    }
+
     .popup-head {
       display: flex;
       align-items: center;
       gap: 8px;
+      margin-top: 4px;
       margin-bottom: 14px;
+      padding-top: 12px;
       padding-bottom: 12px;
+      border-top: 1px solid var(--line2);
       border-bottom: 1px solid var(--line2);
     }
 
@@ -979,15 +1028,18 @@
     <div class="hd-mark" style="width: 10px">
 </div>
     <div class="hd-brand-text">
-      <div class="hd-brand-num">CHAPTER 001 / ATLAS</div>
-      <h1>芸術祭 × 街づくり</h1>
+      <h1>日本の芸術祭を旅する</h1>
     </div>
   </div>
   <div class="hd-spacer"></div>
   <div class="hd-meta">
     <div class="hd-meta-block">
-      <div class="hd-meta-k">Edition</div>
-      <div class="hd-meta-v">2026.05<span class="sub">v.04</span></div>
+      <div class="hd-meta-k">掲載数</div>
+      <div class="hd-meta-v"><span class="accent" id="hd-total">81</span><span class="sub">件</span></div>
+    </div>
+    <div class="hd-meta-block">
+      <div class="hd-meta-k">最終更新</div>
+      <div class="hd-meta-v" style="font-size:15px;">2026年5月</div>
     </div>
   </div>
 </header>
@@ -1004,13 +1056,13 @@
       </div>
       <div class="chips" id="cat-filters">
         <button class="chip active" data-cat="all">ALL</button>
-        <button class="chip" data-cat="都市型芸術祭型">都市型</button>
-        <button class="chip" data-cat="地域型芸術祭型">地域型</button>
+        <button class="chip" data-cat="都市型芸術祭型">都市</button>
+        <button class="chip" data-cat="地域型芸術祭型">里山・島</button>
         <button class="chip" data-cat="小規模プロジェクト型">小規模</button>
-        <button class="chip" data-cat="エリアマネジメント型">エリマネ</button>
-        <button class="chip" data-cat="AIR・制作拠点型">AIR</button>
-        <button class="chip" data-cat="ミュージアム・拠点型">ミュージアム</button>
-        <button class="chip" data-cat="産業・工芸連携型" style="font-family: Helvetica">産業・工芸</button>
+        <button class="chip" data-cat="エリアマネジメント型">街歩き</button>
+        <button class="chip" data-cat="AIR・制作拠点型">制作拠点</button>
+        <button class="chip" data-cat="ミュージアム・拠点型">美術館</button>
+        <button class="chip" data-cat="産業・工芸連携型" style="font-family: Helvetica">工芸</button>
       </div>
     </div>
 
@@ -1021,8 +1073,8 @@
       </div>
       <div class="chips" id="year-filters">
         <button class="chip active" data-year="all">ALL</button>
+        <button class="chip chip-now" data-year="now">2026年に行ける</button>
         <button class="chip" data-year="通年" style="font-family: Helvetica">通年</button>
-        <button class="chip" data-year="2026" style="font-family: Helvetica">2026</button>
         <button class="chip" data-year="2027" style="font-family: Helvetica">2027</button>
         <button class="chip" data-year="2028">2028</button>
       </div>
@@ -1030,16 +1082,14 @@
 
     <div class="filter-block">
       <div class="fl-label">
-        <span class="fl-label-jp" style="font-family: Helvetica">東京からの所要時間</span>
-        <span class="fl-label-en">From Tokyo</span>
+        <span class="fl-label-jp" style="font-family: Helvetica">旅のスタイル</span>
+        <span class="fl-label-en">Trip Length</span>
       </div>
       <div class="chips" id="access-filters">
         <button class="chip active" data-access="all">ALL</button>
-        <button class="chip" data-access="1" style="font-family: Helvetica">〜1h</button>
-        <button class="chip" data-access="2" style="font-family: Helvetica">〜2h</button>
-        <button class="chip" data-access="3" style="font-family: Helvetica">〜3h</button>
-        <button class="chip" data-access="4" style="font-family: Helvetica">〜4h</button>
-        <button class="chip" data-access="99" style="font-family: Helvetica">それ以上</button>
+        <button class="chip" data-access="daytrip" style="font-family: Helvetica">日帰り</button>
+        <button class="chip" data-access="overnight" style="font-family: Helvetica">1泊で行ける</button>
+        <button class="chip" data-access="longtrip" style="font-family: Helvetica">じっくり遠征</button>
       </div>
     </div>
 
@@ -1054,33 +1104,19 @@
   <!-- MAP -->
   <div class="map-wrapper">
     <div id="map"></div>
-    <div class="map-meta" style="opacity: 0.6; background-color: rgba(20, 17, 13, 0); border-color: rgba(59, 51, 40, 0)">
-      <div class="map-meta-title">
-</div>
-      <div class="map-meta-row" style="width: 0px; height: 0px"><span class="k">
-</span><span class="v">
-</span></div>
-      <div class="map-meta-row"><span class="k">
-</span><span class="v accent" id="map-showing" style="font-size: 12px; font-weight: 900">
-</span></div>
-      <div class="map-meta-rule" style="background-color: rgba(59, 51, 40, 0)"></div>
-      <div class="map-meta-row"><span class="k">
-</span><span class="v">
-</span></div>
-      <div class="map-meta-row"><span class="k">
-</span><span class="v">
-</span></div>
+    <div class="map-meta">
+      <div class="map-meta-row"><span class="k">表示中</span><span class="v accent" id="map-showing"></span></div>
     </div>
     <div class="legend">
       <div class="legend-head">Cat. ／ カテゴリー</div>
       <div class="legend-body">
-        <div class="legend-item"><div class="legend-sq" style="background:#d96650"></div><span class="legend-label">都市型<span class="en">Urban</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#e8c96e"></div><span class="legend-label">地域型<span class="en">Regional</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#d96650"></div><span class="legend-label">都市<span class="en">Urban</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#e8c96e"></div><span class="legend-label">里山・島<span class="en">Regional</span></span></div>
         <div class="legend-item"><div class="legend-sq" style="background:#b8b06e"></div><span class="legend-label">小規模<span class="en">Micro</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#7fb3a8"></div><span class="legend-label">エリマネ<span class="en">Area Mgmt</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#b48cc6"></div><span class="legend-label">AIR<span class="en">Residency</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#d49a6e"></div><span class="legend-label">ミュージアム<span class="en">Museum</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#c87a9a"></div><span class="legend-label">産業・工芸<span class="en">Craft</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#7fb3a8"></div><span class="legend-label">街歩き<span class="en">Area Walk</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#b48cc6"></div><span class="legend-label">制作拠点<span class="en">Residency</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#d49a6e"></div><span class="legend-label">美術館<span class="en">Museum</span></span></div>
+        <div class="legend-item"><div class="legend-sq" style="background:#c87a9a"></div><span class="legend-label">工芸<span class="en">Craft</span></span></div>
       </div>
     </div>
   </div>
@@ -1113,6 +1149,18 @@ const CAT_COLORS = {
   "産業・工芸連携型":     "#c87a9a",
 };
 
+// 来場者向けの表示ラベル（内部データ c.cat はそのまま。UI表示のみ変換）
+const CAT_LABELS = {
+  "都市型芸術祭型":       "都市で楽しむ芸術祭",
+  "地域型芸術祭型":       "里山・島を巡る芸術祭",
+  "小規模プロジェクト型": "こぢんまり楽しむアート",
+  "エリアマネジメント型": "アートな街歩き",
+  "AIR・制作拠点型":      "アーティストの制作拠点",
+  "ミュージアム・拠点型": "美術館・アート施設",
+  "産業・工芸連携型":     "伝統工芸×現代アート",
+};
+function catLabel(cat) { return CAT_LABELS[cat] || cat; }
+
 const IMPACT_COLORS = {
   "1-①": "#e8c96e", "1-②": "#e8c96e", "1-③": "#e8c96e",
   "2-①": "#6ecac8", "2-②": "#6ecac8", "2-③": "#6ecac8",
@@ -1122,86 +1170,86 @@ const IMPACT_COLORS = {
 function tagColor(tag) { return IMPACT_COLORS[tag.split(" ")[0]] || "#666"; }
 
 const CASES = [
-  { pref:"北海道", name:"札幌国際芸術祭（SIAF）", tagline:"都市型・メディアアートの拠点化", region:"北海道・東北", lat:43.06, lng:141.35, slug:"hokkaido", cat:"都市型芸術祭型", tags:[], desc:"札幌市の創造都市という思想と、豊かな自然と都市機能の調和、大学やIT産業が集まるメディアアーツ都市という特徴を生かした创造的な環境づくり。", url:"https://siaf.jp/", nextYear:"2027", tokyoHours:4 },
-  { pref:"青森", name:"AOMORI GOKAN", tagline:"ミュージアム連携で県全体を編集", region:"北海道・東北", lat:40.82, lng:140.74, slug:"aomori", cat:"ミュージアム・拠点型", tags:[], desc:"県内の5つの美術館・アートセンターが連携し、青森のアートの魅力を国内外に発信するプロジェクト。県民及び観光客による県内の周遊を通して文化・経済・教育など幅広い分野での地域振興を目的とする。", url:"https://aomorigokan.com/", nextYear:"2026", tokyoHours:4 },
-  { pref:"岩手", name:"三陸国際芸術祭", tagline:"郷土芸能×創造的復興", region:"北海道・東北", lat:39.7, lng:141.93, slug:"iwate", cat:"地域型芸術祭型", tags:[], desc:"三陸の伝統芸能に国内外のアーティストが共鳴することで、東日本大震災で被災した郷土芸能や文化芸術の復興を図るとともに、次世代の担い手育成や多様性のある文化の理解促進、国内外への三陸の魅力発信を目指す。", url:"https://sanfes.com/", nextYear:"不明", tokyoHours:3 },
-  { pref:"宮城", name:"リボーンアートフェス", tagline:"震災復興と文化の接続", region:"北海道・東北", lat:38.43, lng:141.3, slug:"miyagi", cat:"地域型芸術祭型", tags:[], desc:"東日本大震災の被災地・石巻を舞台にしたアート/音楽/食の総合芸術祭。Reborn-Art＝人が生きる術をキーワードに、アーティストによる作品展示、地場食材を活かした食体験、多様な音楽ライブなどを実施。", url:"https://www.reborn-art-fes.jp/", nextYear:"不明", tokyoHours:3 },
-  { pref:"秋田", name:"かみこあにプロジェクト", tagline:"小規模自治体の等身大実装", region:"北海道・東北", lat:40.22, lng:140.44, slug:"akita", cat:"小規模プロジェクト型", tags:[], desc:"秋田県で最も高齢化が高いとされる上小阿仁村で毎年行われる、現代アート・音楽・伝統芸能の3つを軸にした展示やイベントを行うプロジェクト。地元住民が中心となって実行委員会を結成し、持続的な取り組みを続ける。", url:"https://www.kamikoani-project.com/", nextYear:"2026", tokyoHours:4 },
-  { pref:"山形", name:"山形ビエンナーレ", tagline:"街なか分散×文化回遊", region:"北海道・東北", lat:38.24, lng:140.36, slug:"yamagata", cat:"地域型芸術祭型", tags:[], desc:"東北芸術工科大学が主体となり2014年から隔年で開かれている芸術祭。街中の既存ストックを会場化して中心市街地活性化に寄与。2024年は初めて蔵王温泉で開催した。", url:"https://biennale.tuad.ac.jp/", nextYear:"2026", tokyoHours:3 },
-  { pref:"福島", name:"ハマカルアートプロジェクト", tagline:"復興地域の文化接点づくり", region:"北海道・東北", lat:37.42, lng:141.03, slug:"fukushima", cat:"AIR・制作拠点型", tags:[], desc:"経済産業省の補助金を活用し、現在も一部避難指示が継続されている浜通り12市町村において、学生とともにアート活動を行う事業者や現地に滞在しながらアート活動を行う芸術家を支援する事業。", url:"https://hamacul-project.com/", nextYear:"2026", tokyoHours:3.5 },
-  { pref:"茨城", name:"アーカスプロジェクト（ARCUS）", tagline:"AIRで関係人口を蓄積", region:"関東", lat:35.97, lng:140.07, slug:"ibaraki", cat:"AIR・制作拠点型", tags:[], desc:"茨城県を主催に1994年に始動した国内でも歴史の長いAIR。国際的に活動するアーティストが滞在制作を行うプログラムと、地域の方々が主体となれる場づくりやワークショップ等のラーニングプログラムを展開。", url:"https://www.arcus-project.com/", nextYear:"2027", tokyoHours:1.5 },
-  { pref:"茨城", name:"取手アートプロジェクト", tagline:"市民×芸大×行政の三者協働", region:"関東", lat:35.9, lng:140.04, slug:"ibaraki", cat:"小規模プロジェクト型", tags:[], desc:"1999年より市民と取手市、東京芸術大学の三者が共同で行っているアートプロジェクト。2010年以降はフェスティバル型から長期的視野の取り組みへ移行し、アートのある団地・半農半芸という2つのコアプログラムを展開。", url:"https://toride-ap.gr.jp/", nextYear:"通年", tokyoHours:1.5 },
-  { pref:"栃木", name:"KEAT 小砂環境芸術祭", tagline:"里山と芸術表現が対話する", region:"関東", lat:36.76, lng:140.26, slug:"tochigi", cat:"地域型芸術祭型", tags:[], desc:"日本でもっとも美しい村に認定された栃木県那珂川町小砂を舞台に、里山とアートとの関係性を提示する芸術祭。芸術表現を通じて地域の魅力を掘り起こし、環境とゆるやかに調和する新しい文化の形成を目指す。", url:"https://koisago-art.net/", nextYear:"2026", tokyoHours:3 },
-  { pref:"群馬", name:"中之条ビエンナーレ", tagline:"温泉地×分散会場の回遊設計", region:"関東", lat:36.59, lng:138.85, slug:"gunma", cat:"地域型芸術祭型", tags:[], desc:"群馬県中之条町で隔年開催されるAIR型国際現代芸術祭。アーティストは特色ある山村地域のアーティスト・イン・レジデンスで美しい里山文化に触れながら滞在制作を行い、その成果を中之条ビエンナーレで発表する。", url:"https://nakanojo-biennale.com/", nextYear:"2027", tokyoHours:2.5 },
-  { pref:"埼玉", name:"さいたま国際芸術祭", tagline:"大都市近郊の都市更新型", region:"関東", lat:35.86, lng:139.65, slug:"saitama", cat:"都市型芸術祭型", tags:[], desc:"さいたま市を舞台に3年に一度開催される芸術祭。市民と市民、市民とアーティスト、アーティストと地域が交流する機会を創出する市民参加型の芸術祭として、さいたま市内で広く開催される。", url:"https://artsaitama.jp/", nextYear:"2027", tokyoHours:0.5 },
-  { pref:"千葉", name:"千葉国際芸術祭", tagline:"都市近郊の回遊・再編集", region:"関東", lat:35.61, lng:140.12, slug:"chiba", cat:"都市型芸術祭型", tags:[], desc:"千葉市において3年に1回開催されるトリエンナーレ方式の芸術祭として2025年に始動。一時的な観光集客ではなく、千葉市内外に暮らす人々の創造性を刺激し、中長期的に日常を豊かにすることを重視する。", url:"https://artstriennale.city.chiba.jp/", nextYear:"2028", tokyoHours:0.5 },
+  { pref:"北海道", name:"札幌国際芸術祭（SIAF）", tagline:"都市型・メディアアートの拠点化", region:"北海道・東北", lat:43.06, lng:141.35, slug:"hokkaido", cat:"都市型芸術祭型", tags:[], desc:"札幌市の創造都市という思想と、豊かな自然と都市機能の調和、大学やIT産業が集まるメディアアーツ都市という特徴を生かした创造的な環境づくり。", url:"https://siaf.jp/", nextYear:"2027", tokyoHours:4, artists:["坂本龍一（2017年ゲストディレクター）","大友良英","クリスチャン・マークレー","毛利悠子"] },
+  { pref:"青森", name:"AOMORI GOKAN", tagline:"ミュージアム連携で県全体を編集", region:"北海道・東北", lat:40.82, lng:140.74, slug:"aomori", cat:"ミュージアム・拠点型", tags:[], desc:"県内の5つの美術館・アートセンターが連携し、青森のアートの魅力を国内外に発信するプロジェクト。県民及び観光客による県内の周遊を通して文化・経済・教育など幅広い分野での地域振興を目的とする。", url:"https://aomorigokan.com/", nextYear:"2026", tokyoHours:4, artists:["草間彌生","奈良美智","ロン・ミュエク","エルヴィン・ヴルム"] },
+  { pref:"岩手", name:"三陸国際芸術祭", tagline:"郷土芸能×創造的復興", region:"北海道・東北", lat:39.7, lng:141.93, slug:"iwate", cat:"地域型芸術祭型", tags:[], desc:"三陸の伝統芸能に国内外のアーティストが共鳴することで、東日本大震災で被災した郷土芸能や文化芸術の復興を図るとともに、次世代の担い手育成や多様性のある文化の理解促進、国内外への三陸の魅力発信を目指す。", url:"https://sanfes.com/", nextYear:"不明", tokyoHours:3, artists:["鹿踊り・虎舞・神楽などの郷土芸能団体","アジア各地の芸能・ダンスグループ"] },
+  { pref:"宮城", name:"リボーンアートフェス", tagline:"震災復興と文化の接続", region:"北海道・東北", lat:38.43, lng:141.3, slug:"miyagi", cat:"地域型芸術祭型", tags:[], desc:"東日本大震災の被災地・石巻を舞台にしたアート/音楽/食の総合芸術祭。Reborn-Art＝人が生きる術をキーワードに、アーティストによる作品展示、地場食材を活かした食体験、多様な音楽ライブなどを実施。", url:"https://www.reborn-art-fes.jp/", nextYear:"不明", tokyoHours:3, artists:["草間彌生","小林武史","川俣正","伊勢谷友介","加藤泉"] },
+  { pref:"秋田", name:"かみこあにプロジェクト", tagline:"小規模自治体の等身大実装", region:"北海道・東北", lat:40.22, lng:140.44, slug:"akita", cat:"小規模プロジェクト型", tags:[], desc:"秋田県で最も高齢化が高いとされる上小阿仁村で毎年行われる、現代アート・音楽・伝統芸能の3つを軸にした展示やイベントを行うプロジェクト。地元住民が中心となって実行委員会を結成し、持続的な取り組みを続ける。", url:"https://www.kamikoani-project.com/", nextYear:"2026", tokyoHours:4, artists:["尾花賢一","迎英里子","永沢碧衣","秋田公立美術大学の学生作家"] },
+  { pref:"山形", name:"山形ビエンナーレ", tagline:"街なか分散×文化回遊", region:"北海道・東北", lat:38.24, lng:140.36, slug:"yamagata", cat:"地域型芸術祭型", tags:[], desc:"東北芸術工科大学が主体となり2014年から隔年で開かれている芸術祭。街中の既存ストックを会場化して中心市街地活性化に寄与。2024年は初めて蔵王温泉で開催した。", url:"https://biennale.tuad.ac.jp/", nextYear:"2026", tokyoHours:3, artists:["稲葉俊郎（芸術監督）","大和由佳","山本桂輔"] },
+  { pref:"福島", name:"ハマカルアートプロジェクト", tagline:"復興地域の文化接点づくり", region:"北海道・東北", lat:37.42, lng:141.03, slug:"fukushima", cat:"AIR・制作拠点型", tags:[], desc:"経済産業省の補助金を活用し、現在も一部避難指示が継続されている浜通り12市町村において、学生とともにアート活動を行う事業者や現地に滞在しながらアート活動を行う芸術家を支援する事業。", url:"https://hamacul-project.com/", nextYear:"2026", tokyoHours:3.5, artists:["タル・ベーラ（映画監督）","古川日出男","大森克己","藤浩志"] },
+  { pref:"茨城", name:"アーカスプロジェクト（ARCUS）", tagline:"AIRで関係人口を蓄積", region:"関東", lat:35.97, lng:140.07, slug:"ibaraki", cat:"AIR・制作拠点型", tags:[], desc:"茨城県を主催に1994年に始動した国内でも歴史の長いAIR。国際的に活動するアーティストが滞在制作を行うプログラムと、地域の方々が主体となれる場づくりやワークショップ等のラーニングプログラムを展開。", url:"https://www.arcus-project.com/", nextYear:"2027", tokyoHours:1.5, artists:["アヴニー・タンドゥン・ヴィエラ","イブラヒム・クルト","佐藤浩一"] },
+  { pref:"茨城", name:"取手アートプロジェクト", tagline:"市民×芸大×行政の三者協働", region:"関東", lat:35.9, lng:140.04, slug:"ibaraki", cat:"小規模プロジェクト型", tags:[], desc:"1999年より市民と取手市、東京芸術大学の三者が共同で行っているアートプロジェクト。2010年以降はフェスティバル型から長期的視野の取り組みへ移行し、アートのある団地・半農半芸という2つのコアプログラムを展開。", url:"https://toride-ap.gr.jp/", nextYear:"通年", tokyoHours:1.5, artists:["日野皓正","山下洋輔（取手ジャズフェスティバル出演）"] },
+  { pref:"栃木", name:"KEAT 小砂環境芸術祭", tagline:"里山と芸術表現が対話する", region:"関東", lat:36.76, lng:140.26, slug:"tochigi", cat:"地域型芸術祭型", tags:[], desc:"日本でもっとも美しい村に認定された栃木県那珂川町小砂を舞台に、里山とアートとの関係性を提示する芸術祭。芸術表現を通じて地域の魅力を掘り起こし、環境とゆるやかに調和する新しい文化の形成を目指す。", url:"https://koisago-art.net/", nextYear:"2026", tokyoHours:3, artists:["田原唯之","髙山瑞","船山哲郎","木村剛士"] },
+  { pref:"群馬", name:"中之条ビエンナーレ", tagline:"温泉地×分散会場の回遊設計", region:"関東", lat:36.59, lng:138.85, slug:"gunma", cat:"地域型芸術祭型", tags:[], desc:"群馬県中之条町で隔年開催されるAIR型国際現代芸術祭。アーティストは特色ある山村地域のアーティスト・イン・レジデンスで美しい里山文化に触れながら滞在制作を行い、その成果を中之条ビエンナーレで発表する。", url:"https://nakanojo-biennale.com/", nextYear:"2027", tokyoHours:2.5, artists:["浅野暢晴","アニタ・ガラツツァ","山形敦子"] },
+  { pref:"埼玉", name:"さいたま国際芸術祭", tagline:"大都市近郊の都市更新型", region:"関東", lat:35.86, lng:139.65, slug:"saitama", cat:"都市型芸術祭型", tags:[], desc:"さいたま市を舞台に3年に一度開催される芸術祭。市民と市民、市民とアーティスト、アーティストと地域が交流する機会を創出する市民参加型の芸術祭として、さいたま市内で広く開催される。", url:"https://artsaitama.jp/", nextYear:"2027", tokyoHours:0.5, artists:["目[mé]（荒神明香・南川憲二・増井宏文）","一条美由紀"] },
+  { pref:"千葉", name:"千葉国際芸術祭", tagline:"都市近郊の回遊・再編集", region:"関東", lat:35.61, lng:140.12, slug:"chiba", cat:"都市型芸術祭型", tags:[], desc:"千葉市において3年に1回開催されるトリエンナーレ方式の芸術祭として2025年に始動。一時的な観光集客ではなく、千葉市内外に暮らす人々の創造性を刺激し、中長期的に日常を豊かにすることを重視する。", url:"https://artstriennale.city.chiba.jp/", nextYear:"2028", tokyoHours:0.5, artists:["中村政人（総合ディレクター）","加藤翼","高嶺格","藤浩志"] },
   { pref:"東京", name:"東京ビエンナーレ", tagline:"都市を実験場にするプロジェクト型", region:"関東", lat:35.7, lng:139.77, slug:"tokyo", cat:"都市型芸術祭型", tags:[], desc:"2020/21に始まった都市空間を舞台に2年に一度開催される国際芸術祭。千代田区・中央区・文京区・台東区で作品を展開。美術館ではなく街角や地下道、歴史的建築物など日常の風景の中でアートが展開される。", url:"https://tokyobiennale.jp/", nextYear:"2027", tokyoHours:0, artists:["鈴木昭男","栗原良彰","黒川岳","森靖"] },
   { pref:"神奈川", name:"黄金町エリアマネジメント/バザール", tagline:"課題エリアをアートで再編集", region:"関東", lat:35.44, lng:139.63, slug:"kanagawa", cat:"エリアマネジメント型", tags:[], desc:"かつて特殊飲食店がひしめいていたエリアを2005年頃からアートを核に再生。2008年から年に1度の黄金町バザールを開始、2009年にNPO法人黄金町エリアマネジメントセンターが発足し継続的なまちづくりが進む。", url:"https://koganecho.net/", nextYear:"2026", tokyoHours:0.5, artists:["志村茉那美","照沼敦朗","トモトシ","増山士郎"] },
-  { pref:"新潟", name:"大地の芸術祭", tagline:"地域芸術祭のフラッグシップ", region:"中部", lat:37.09, lng:138.76, slug:"niigata", cat:"地域型芸術祭型", tags:[], desc:"世界最大級の国際芸術祭であり、日本中で開催されている地域芸術祭のパイオニア。アートを道しるべに里山を巡る新しい旅は、アートによる地域づくりの先進事例として国内外から注目を集める。3年に1回の芸術祭のほか期間外も季節ごとにイベントを開催。", url:"https://www.echigo-tsumari.jp/", nextYear:"2027", tokyoHours:2.5, ogImage:"https://www.echigo-tsumari.jp/assets/img/global/ogp_summer.jpg", artists:["草間彌生","イリヤ＆エミリア・カバコフ","塩田千春","田中泯","クリスチャン・ボルタンスキー","アントニー・ゴームリー"] },
-  { pref:"富山", name:"ガラスの街とやま", tagline:"産業×文化で都市ブランド形成", region:"中部", lat:36.7, lng:137.21, slug:"toyama", cat:"産業・工芸連携型", tags:[], desc:"富山の産業であるガラスの街づくりを市の施策として定め、2015年に完成したガラス美術館を軸に、造形研究所・ガラス工房など市全体でガラスを活用した街づくりを推進する。", url:"https://www.info-toyama.com/stories/summer2021/glass", nextYear:"通年", tokyoHours:2.5 },
-  { pref:"石川", name:"Go FOR KOGEI", tagline:"工芸を現代文脈に接続", region:"中部", lat:36.59, lng:136.63, slug:"ishikawa", cat:"産業・工芸連携型", tags:[], desc:"ものづくりが古くから受け継がれる北陸から新たな工芸の見方を発信するプロジェクト。地域の歴史・風土を体現する町並みや社寺を会場にした展覧会のほか、工芸をめぐるシンポジウムなども開催。2020年に開始。", url:"https://goforkogei.com/", nextYear:"通年", tokyoHours:3 },
-  { pref:"福井", name:"Zen AIR（禅×AIR）", tagline:"テーマ特化の滞在制作", region:"中部", lat:36.07, lng:136.22, slug:"fukui", cat:"AIR・制作拠点型", tags:[], desc:"禅の里として知られる福井県永平寺町を会場に、アーティストが禅文化に触れ地元住民と交流しながら制作・研究する機会を提供するテーマ特化型レジデンス。滞在成果を作品や研究として発信する。", url:"https://zen-air.org/", nextYear:"不明", tokyoHours:4 },
-  { pref:"山梨", name:"FUJI TEXTILE WEEK", tagline:"産地×デザインのブランディング", region:"中部", lat:35.47, lng:138.8, slug:"yamanashi", cat:"産業・工芸連携型", tags:[], desc:"1000年以上続く織物産地・山梨県富士吉田市の歴史を根底に、伝統産業および地域活性を目的として2021年よりスタートしたテキスタイルと芸術が融合する国内唯一の布の芸術祭。", url:"https://fujitextileweek.com/", nextYear:"2026", tokyoHours:2.5 },
-  { pref:"長野", name:"北アルプス国際芸術祭", tagline:"山岳地帯の自然とアートが共鳴", region:"中部", lat:36.5, lng:137.85, slug:"nagano", cat:"地域型芸術祭型", tags:[], desc:"自然豊かな長野県大町市を舞台に、まちの潜在的な魅力を引き出し市民が協働で個性的なまちづくりを進める一環として、2017年に第1回、2021年に第2回、2024年に第3回を開催。", url:"https://shinano-omachi.jp/", nextYear:"2029", tokyoHours:3 },
-  { pref:"岐阜", name:"美濃和紙あかりアート展", tagline:"参加型で市民の誇りをつくる", region:"中部", lat:35.54, lng:136.91, slug:"gifu", cat:"産業・工芸連携型", tags:[], desc:"美濃和紙を使った約300点のあかりアート作品が、うだつの上がる町並みを柔らかな光で包む四半世紀以上続く幻想的な展覧会。全国から作品を募集し、入賞作品を展示・審査する参加型イベント。", url:"https://www.akariart.jp/", nextYear:"2026", tokyoHours:3.5 },
-  { pref:"静岡", name:"アーツカウンシルしずおか", tagline:"支援制度で文化エコシステム形成", region:"中部", lat:34.98, lng:138.38, slug:"shizuoka", cat:"小規模プロジェクト型", tags:[], desc:"静岡県内の文化芸術活動を助成・相談・情報発信によって支える中間支援組織。単発の事業補助にとどまらず、アーティストやNPOの活動継続を長期的に伴走する仕組みを持ち、行政と民間の橋渡し役として機能する。", url:"https://artscouncil-shizuoka.jp/", nextYear:"通年", tokyoHours:1.5 },
-  { pref:"愛知", name:"国際芸術祭「あいち」", tagline:"大都市圏の国際芸術祭モデル", region:"中部", lat:35.18, lng:136.91, slug:"aichi", cat:"都市型芸術祭型", tags:[], desc:"愛知県が3年に1度開催する国際現代芸術祭。愛知芸術文化センターのほか県内都市のまちなかを会場として広域に展開。現代美術を基軸に、パフォーミングアーツ・ラーニングなどジャンルを横断してアートの多様性を発信。次回2028年は芸術監督シャビール・フセイン・ムスタファのもと開催。", url:"https://aichitriennale.jp/index.html", nextYear:"2028", tokyoHours:2, ogImage:"https://aichitriennale.jp/img/hero-2025.jpg", artists:["塩田千春","草間彌生","ヤノベケンジ","ウーゴ・ロンディノーネ","ムルヤナ"] },
-  { pref:"三重", name:"亀山トリエンナーレ", tagline:"創作が生まれる場づくり型", region:"中部", lat:34.85, lng:136.45, slug:"mie", cat:"小規模プロジェクト型", tags:[], desc:"三重県亀山市が推進するアートまちづくり事業。このまちに暮らす人々の営みの中で培われ時代・世代を超えて継承される心動かすものをアートと捉え、2014年から3年に1度の芸術祭を実施。", url:"https://www.kankomie.or.jp/special/art-kameyama/#top", nextYear:"通年", tokyoHours:3 },
-  { pref:"滋賀", name:"BIWAKOビエンナーレ", tagline:"歴史ストック×分散展示", region:"関西", lat:35.13, lng:136.1, slug:"shiga", cat:"地域型芸術祭型", tags:[], desc:"滋賀県近江八幡市の古民家・町家・蔵などの歴史的建造物を主会場に、2年に1度開催される国際芸術祭。国内外のアーティストが建物の記憶や空間性に呼応したインスタレーションを制作し、街全体がミュージアムと化す。", url:"https://energyfield.org/biwakobiennale/", nextYear:"2027", tokyoHours:3 },
-  { pref:"京都", name:"KYOTOGRAPHIE", tagline:"分野特化で都市回遊を生む", region:"関西", lat:35.01, lng:135.77, slug:"kyoto", cat:"都市型芸術祭型", tags:[], desc:"京都の社寺・町家・近代建築・公共空間を会場に、毎年春に開催される国際写真フェスティバル。2013年に始まり、写真という単一分野に特化することで強いブランドを確立。市民参加型のKG+も同時開催される。2026年は第14回、テーマ「EDGE」で8ヶ国14組が参加。", url:"https://www.kyotographie.jp/", nextYear:"2026", tokyoHours:2.5, ogImage:"", artists:["森山大道","アントン・コービン","イヴ・マルシャン＆ロマン・メフル","アーネスト・コール"] },
-  { pref:"大阪", name:"北加賀屋クリエイティブ・ビレッジ", tagline:"民間主導の空間再生×制作拠点集積", region:"関西", lat:34.62, lng:135.49, slug:"osaka", cat:"エリアマネジメント型", tags:[], desc:"大阪市住之江区・北加賀屋の造船所跡地を地場の不動産会社・千島土地が民間主導で段階的に再生したアート拠点群。行政補助に依存せず、低廉な賃料と柔軟な空間運用によって多様なクリエイターを呼び込む。", url:"https://chishima-foundation.com/cruising", nextYear:"通年", tokyoHours:3.5 },
-  { pref:"兵庫", name:"神戸・新開地（アートひろば等）", tagline:"下町エリアの文化再生", region:"関西", lat:34.69, lng:135.19, slug:"hyogo", cat:"エリアマネジメント型", tags:[], desc:"かつて西日本最大の歓楽街として賑わい衰退した神戸・新開地エリアで展開するアートを核にした再生の取り組み。遊休ビルや空き店舗をアートスペース・稽古場・小劇場として活用し、地域の担い手育成と文化拠点化を進める。", url:"https://s-ah.jp/", nextYear:"通年", tokyoHours:3.5 },
-  { pref:"奈良", name:"はならぁと", tagline:"集落・空き家を面で使う", region:"関西", lat:34.69, lng:135.83, slug:"nara", cat:"小規模プロジェクト型", tags:[], desc:"奈良県内の集落・町家・空き家・寺社などを会場にした分散型芸術祭。橿原・宇陀・吉野など県内各地を複数エリアに分けて順次開催し、観光客が普段訪れない集落や空き家へと回遊を生む。", url:"https://hanarart.jp/2025/", nextYear:"不明", tokyoHours:3.5 },
-  { pref:"和歌山", name:"JAPAN WALLS（和歌山）", tagline:"国際ミューラルで景観を更新", region:"関西", lat:34.23, lng:135.17, slug:"wakayama", cat:"小規模プロジェクト型", tags:[], desc:"国内外のストリートアーティストを招聘し、和歌山市内の建物外壁に大型ウォールアートを制作するプロジェクト。街の景観を一変させるビジュアルインパクトの高さからSNSでの拡散力が強く、新たな来街者を生み出す。", url:"https://prtimes.jp/main/html/rd/p/000000015.000067444.html", nextYear:"通年", tokyoHours:5 },
-  { pref:"鳥取", name:"鳥取県立美術館の取り組み", tagline:"人づくりを核にした美術館整備", region:"中国・四国", lat:35.5, lng:134.24, slug:"tottori", cat:"AIR・制作拠点型", tags:[], desc:"2025年に倉吉市にオープンした鳥取県立美術館を核に、整備段階から地域との対話を重ねて進められてきた文化政策。民藝運動ゆかりの地・鳥取の風土を活かしながら、県民の学び・交流・創造活動の拠点として設計。", url:"https://tottori-moa.jp/", nextYear:"通年", tokyoHours:5.5 },
-  { pref:"島根", name:"石見アーツプロジェクト", tagline:"教育・地域定着の底上げ型", region:"中国・四国", lat:34.68, lng:131.98, slug:"shimane", cat:"小規模プロジェクト型", tags:[], desc:"島根県石見地域を対象にした文化芸術振興の取り組み。石見神楽・石見銀山・石州和紙といった地域固有の文化資源を現代のアート表現と接続しながら、若い世代のアーティストや文化関係者の移住・定住を促進する。", url:"https://artsiwami.localinfo.jp/", nextYear:"通年", tokyoHours:6 },
-  { pref:"岡山", name:"岡山芸術交流", tagline:"都市中核の国際展でブランド形成", region:"中国・四国", lat:34.66, lng:133.93, slug:"okayama", cat:"地域型芸術祭型", tags:[], desc:"岡山市の城下町エリアを主会場に、3年に1度開催される国際現代芸術展。林原美術館・旧内山下小学校など歴史的な建物や公共空間を使い、世界水準のインスタレーションを展開する。徒歩で回遊できるコンパクトな会場配置が特色。", url:"https://www.okayamaartsummit.jp/", nextYear:"2028", tokyoHours:3 },
-  { pref:"広島", name:"広島国際建築祭", tagline:"建築で都市を読み解く専門特化型", region:"中国・四国", lat:34.4, lng:133.4, slug:"hiroshima", cat:"地域型芸術祭型", tags:[], desc:"2025年から開始された建築という専門分野に特化した広島発の国際フェスティバル。福山市・尾道市などを中心に、現代建築を巡るツアーや展示・シンポジウムを通じて都市の記憶・復興・再生を多角的に問い直す。", url:"https://hiroshima-architecture-exhibition.jp/", nextYear:"2028", tokyoHours:4 },
+  { pref:"新潟", name:"大地の芸術祭", tagline:"地域芸術祭のフラッグシップ", region:"中部", lat:37.09, lng:138.76, slug:"niigata", cat:"地域型芸術祭型", tags:[], desc:"世界最大級の国際芸術祭であり、日本中で開催されている地域芸術祭のパイオニア。アートを道しるべに里山を巡る新しい旅は、アートによる地域づくりの先進事例として国内外から注目を集める。3年に1回の芸術祭のほか期間外も季節ごとにイベントを開催。", url:"https://www.echigo-tsumari.jp/", nextYear:"2027", tokyoHours:2.5, localImg:"images/niigata-echigotsumari.jpg", artists:["草間彌生","イリヤ＆エミリア・カバコフ","塩田千春","田中泯","クリスチャン・ボルタンスキー","アントニー・ゴームリー"] },
+  { pref:"富山", name:"ガラスの街とやま", tagline:"産業×文化で都市ブランド形成", region:"中部", lat:36.7, lng:137.21, slug:"toyama", cat:"産業・工芸連携型", tags:[], desc:"富山の産業であるガラスの街づくりを市の施策として定め、2015年に完成したガラス美術館を軸に、造形研究所・ガラス工房など市全体でガラスを活用した街づくりを推進する。", url:"https://www.info-toyama.com/stories/summer2021/glass", nextYear:"通年", tokyoHours:2.5, artists:["デイル・チフーリ（美術館シンボル作品）","小島有香子"] },
+  { pref:"石川", name:"Go FOR KOGEI", tagline:"工芸を現代文脈に接続", region:"中部", lat:36.59, lng:136.63, slug:"ishikawa", cat:"産業・工芸連携型", tags:[], desc:"ものづくりが古くから受け継がれる北陸から新たな工芸の見方を発信するプロジェクト。地域の歴史・風土を体現する町並みや社寺を会場にした展覧会のほか、工芸をめぐるシンポジウムなども開催。2020年に開始。", url:"https://goforkogei.com/", nextYear:"通年", tokyoHours:3, artists:["秋元雄史（アーティスティックディレクター）","国内外の工芸・現代アート作家約30組"] },
+  { pref:"福井", name:"Zen AIR（禅×AIR）", tagline:"テーマ特化の滞在制作", region:"中部", lat:36.07, lng:136.22, slug:"fukui", cat:"AIR・制作拠点型", tags:[], desc:"禅の里として知られる福井県永平寺町を会場に、アーティストが禅文化に触れ地元住民と交流しながら制作・研究する機会を提供するテーマ特化型レジデンス。滞在成果を作品や研究として発信する。", url:"https://zen-air.org/", nextYear:"不明", tokyoHours:4, artists:["カミラ・スヴェンソン（ブラジル）","公募で選出される国内外のアーティスト"] },
+  { pref:"山梨", name:"FUJI TEXTILE WEEK", tagline:"産地×デザインのブランディング", region:"中部", lat:35.47, lng:138.8, slug:"yamanashi", cat:"産業・工芸連携型", tags:[], desc:"1000年以上続く織物産地・山梨県富士吉田市の歴史を根底に、伝統産業および地域活性を目的として2021年よりスタートしたテキスタイルと芸術が融合する国内唯一の布の芸術祭。", url:"https://fujitextileweek.com/", nextYear:"2026", tokyoHours:2.5, artists:["南條史生（アート展ディレクター）","大巻伸嗣","落合陽一","清川あさみ","A-POC ABLE ISSEY MIYAKE"] },
+  { pref:"長野", name:"北アルプス国際芸術祭", tagline:"山岳地帯の自然とアートが共鳴", region:"中部", lat:36.5, lng:137.85, slug:"nagano", cat:"地域型芸術祭型", tags:[], desc:"自然豊かな長野県大町市を舞台に、まちの潜在的な魅力を引き出し市民が協働で個性的なまちづくりを進める一環として、2017年に第1回、2021年に第2回、2024年に第3回を開催。", url:"https://shinano-omachi.jp/", nextYear:"2029", tokyoHours:3, artists:["北川フラム（総合ディレクター）","鈴木理策","淺井裕介","皆川明（ビジュアルディレクター）"] },
+  { pref:"岐阜", name:"美濃和紙あかりアート展", tagline:"参加型で市民の誇りをつくる", region:"中部", lat:35.54, lng:136.91, slug:"gifu", cat:"産業・工芸連携型", tags:[], desc:"美濃和紙を使った約300点のあかりアート作品が、うだつの上がる町並みを柔らかな光で包む四半世紀以上続く幻想的な展覧会。全国から作品を募集し、入賞作品を展示・審査する参加型イベント。", url:"https://www.akariart.jp/", nextYear:"2026", tokyoHours:3.5, artists:["石井幹子（照明デザイナー・特別顧問）","堀木エリ子（和紙アートディレクター）"] },
+  { pref:"静岡", name:"アーツカウンシルしずおか", tagline:"支援制度で文化エコシステム形成", region:"中部", lat:34.98, lng:138.38, slug:"shizuoka", cat:"小規模プロジェクト型", tags:[], desc:"静岡県内の文化芸術活動を助成・相談・情報発信によって支える中間支援組織。単発の事業補助にとどまらず、アーティストやNPOの活動継続を長期的に伴走する仕組みを持ち、行政と民間の橋渡し役として機能する。", url:"https://artscouncil-shizuoka.jp/", nextYear:"通年", tokyoHours:1.5, artists:["宮城聰（SPAC芸術総監督）","鈴木忠志（初代芸術総監督）"] },
+  { pref:"愛知", name:"国際芸術祭「あいち」", tagline:"大都市圏の国際芸術祭モデル", region:"中部", lat:35.18, lng:136.91, slug:"aichi", cat:"都市型芸術祭型", tags:[], desc:"愛知県が3年に1度開催する国際現代芸術祭。愛知芸術文化センターのほか県内都市のまちなかを会場として広域に展開。現代美術を基軸に、パフォーミングアーツ・ラーニングなどジャンルを横断してアートの多様性を発信。次回2028年は芸術監督シャビール・フセイン・ムスタファのもと開催。", url:"https://aichitriennale.jp/index.html", nextYear:"2028", tokyoHours:2, localImg:"images/aichi-triennale.jpg", artists:["塩田千春","草間彌生","ヤノベケンジ","ウーゴ・ロンディノーネ","ムルヤナ"] },
+  { pref:"三重", name:"亀山トリエンナーレ", tagline:"創作が生まれる場づくり型", region:"中部", lat:34.85, lng:136.45, slug:"mie", cat:"小規模プロジェクト型", tags:[], desc:"三重県亀山市が推進するアートまちづくり事業。このまちに暮らす人々の営みの中で培われ時代・世代を超えて継承される心動かすものをアートと捉え、2014年から3年に1度の芸術祭を実施。", url:"https://www.kankomie.or.jp/special/art-kameyama/#top", nextYear:"通年", tokyoHours:3, artists:["浅野暢晴","浅野言朗","ティモ・ライト（フィンランド）"] },
+  { pref:"滋賀", name:"BIWAKOビエンナーレ", tagline:"歴史ストック×分散展示", region:"関西", lat:35.13, lng:136.1, slug:"shiga", cat:"地域型芸術祭型", tags:[], desc:"滋賀県近江八幡市の古民家・町家・蔵などの歴史的建造物を主会場に、2年に1度開催される国際芸術祭。国内外のアーティストが建物の記憶や空間性に呼応したインスタレーションを制作し、街全体がミュージアムと化す。", url:"https://energyfield.org/biwakobiennale/", nextYear:"2027", tokyoHours:3, artists:["中田洋子（総合ディレクター）","ガブリエラ・モラウェッツ","青木美歌"] },
+  { pref:"京都", name:"KYOTOGRAPHIE", tagline:"分野特化で都市回遊を生む", region:"関西", lat:35.01, lng:135.77, slug:"kyoto", cat:"都市型芸術祭型", tags:[], desc:"京都の社寺・町家・近代建築・公共空間を会場に、毎年春に開催される国際写真フェスティバル。2013年に始まり、写真という単一分野に特化することで強いブランドを確立。市民参加型のKG+も同時開催される。2026年は第14回、テーマ「EDGE」で8ヶ国14組が参加。", url:"https://www.kyotographie.jp/", nextYear:"2026", tokyoHours:2.5, localImg:"images/kyoto-kyotographie.png", artists:["森山大道","アントン・コービン","イヴ・マルシャン＆ロマン・メフル","アーネスト・コール"] },
+  { pref:"大阪", name:"北加賀屋クリエイティブ・ビレッジ", tagline:"民間主導の空間再生×制作拠点集積", region:"関西", lat:34.62, lng:135.49, slug:"osaka", cat:"エリアマネジメント型", tags:[], desc:"大阪市住之江区・北加賀屋の造船所跡地を地場の不動産会社・千島土地が民間主導で段階的に再生したアート拠点群。行政補助に依存せず、低廉な賃料と柔軟な空間運用によって多様なクリエイターを呼び込む。", url:"https://chishima-foundation.com/cruising", nextYear:"通年", tokyoHours:3.5, artists:["コンタクト・ゴンゾ（塚原悠也・垣尾優）","名村造船所跡拠点のアーティスト群"] },
+  { pref:"兵庫", name:"神戸・新開地（アートひろば等）", tagline:"下町エリアの文化再生", region:"関西", lat:34.69, lng:135.19, slug:"hyogo", cat:"エリアマネジメント型", tags:[], desc:"かつて西日本最大の歓楽街として賑わい衰退した神戸・新開地エリアで展開するアートを核にした再生の取り組み。遊休ビルや空き店舗をアートスペース・稽古場・小劇場として活用し、地域の担い手育成と文化拠点化を進める。", url:"https://s-ah.jp/", nextYear:"通年", tokyoHours:3.5, artists:["林勇気（映像作家）","to R mansion","神戸・新開地ゆかりの若手アーティスト"] },
+  { pref:"奈良", name:"はならぁと", tagline:"集落・空き家を面で使う", region:"関西", lat:34.69, lng:135.83, slug:"nara", cat:"小規模プロジェクト型", tags:[], desc:"奈良県内の集落・町家・空き家・寺社などを会場にした分散型芸術祭。橿原・宇陀・吉野など県内各地を複数エリアに分けて順次開催し、観光客が普段訪れない集落や空き家へと回遊を生む。", url:"https://hanarart.jp/2025/", nextYear:"不明", tokyoHours:3.5, artists:["坂野真子","藤田千代","六車紀子","おとたまり（岩田茉莉江）"] },
+  { pref:"和歌山", name:"JAPAN WALLS（和歌山）", tagline:"国際ミューラルで景観を更新", region:"関西", lat:34.23, lng:135.17, slug:"wakayama", cat:"小規模プロジェクト型", tags:[], desc:"国内外のストリートアーティストを招聘し、和歌山市内の建物外壁に大型ウォールアートを制作するプロジェクト。街の景観を一変させるビジュアルインパクトの高さからSNSでの拡散力が強く、新たな来街者を生み出す。", url:"https://prtimes.jp/main/html/rd/p/000000015.000067444.html", nextYear:"通年", tokyoHours:5, artists:["Dragon76","YOSHI47","Jack Soren","石塚大介"] },
+  { pref:"鳥取", name:"鳥取県立美術館の取り組み", tagline:"人づくりを核にした美術館整備", region:"中国・四国", lat:35.5, lng:134.24, slug:"tottori", cat:"AIR・制作拠点型", tags:[], desc:"2025年に倉吉市にオープンした鳥取県立美術館を核に、整備段階から地域との対話を重ねて進められてきた文化政策。民藝運動ゆかりの地・鳥取の風土を活かしながら、県民の学び・交流・創造活動の拠点として設計。", url:"https://tottori-moa.jp/", nextYear:"通年", tokyoHours:5.5, artists:["森村泰昌","やなぎみわ","伊藤若冲・アンディ・ウォーホル・ゲルハルト・リヒター（開館記念展）"] },
+  { pref:"島根", name:"石見アーツプロジェクト", tagline:"教育・地域定着の底上げ型", region:"中国・四国", lat:34.68, lng:131.98, slug:"shimane", cat:"小規模プロジェクト型", tags:[], desc:"島根県石見地域を対象にした文化芸術振興の取り組み。石見神楽・石見銀山・石州和紙といった地域固有の文化資源を現代のアート表現と接続しながら、若い世代のアーティストや文化関係者の移住・定住を促進する。", url:"https://artsiwami.localinfo.jp/", nextYear:"通年", tokyoHours:6, artists:["竹内大樹（発起人・舞台俳優）","加藤泉（石見美術館ゆかりの国際的作家）"] },
+  { pref:"岡山", name:"岡山芸術交流", tagline:"都市中核の国際展でブランド形成", region:"中国・四国", lat:34.66, lng:133.93, slug:"okayama", cat:"地域型芸術祭型", tags:[], desc:"岡山市の城下町エリアを主会場に、3年に1度開催される国際現代芸術展。林原美術館・旧内山下小学校など歴史的な建物や公共空間を使い、世界水準のインスタレーションを展開する。徒歩で回遊できるコンパクトな会場配置が特色。", url:"https://www.okayamaartsummit.jp/", nextYear:"2028", tokyoHours:3, artists:["リクリット・ティラヴァーニャ（2022年アーティスティックディレクター）","片山真理","ダン・グラハム","ピエール・ユイグ"] },
+  { pref:"広島", name:"広島国際建築祭", tagline:"建築で都市を読み解く専門特化型", region:"中国・四国", lat:34.4, lng:133.4, slug:"hiroshima", cat:"地域型芸術祭型", tags:[], desc:"2025年から開始された建築という専門分野に特化した広島発の国際フェスティバル。福山市・尾道市などを中心に、現代建築を巡るツアーや展示・シンポジウムを通じて都市の記憶・復興・再生を多角的に問い直す。", url:"https://hiroshima-architecture-exhibition.jp/", nextYear:"2028", tokyoHours:4, artists:["安藤忠雄","伊東豊雄","妹島和世・西沢立衛（SANAA）","丹下健三"] },
   { pref:"山口", name:"YCAM（山口情報芸術センター）", tagline:"公共R&D拠点型メディアアート", region:"中国・四国", lat:34.19, lng:131.47, slug:"yamaguchi", cat:"ミュージアム・拠点型", tags:[], desc:"山口市が設置した公共のメディアアート施設。アート・テクノロジー・研究を統合したR&D機能を持ち、展覧会・パフォーマンス・市民ワークショップから国際的な共同制作まで幅広く展開。アーティストとエンジニアが共同制作する体制が国内唯一レベル。", url:"https://www.ycam.jp/", nextYear:"通年", tokyoHours:5, artists:["坂本龍一","高谷史郎","池田亮司"] },
   { pref:"徳島", name:"神山AIR", tagline:"AIR起点の社会実装", region:"中国・四国", lat:33.85, lng:134.22, slug:"tokushima", cat:"AIR・制作拠点型", tags:[], desc:"徳島県神山町で展開するアーティスト・イン・レジデンスプログラム。1990年代後半から始まり、滞在制作を入口にITサテライトオフィスの誘致・移住者受け入れ・空き家再生へと波及。地方創生政策に大きな影響を与えた神山モデルの原点。", url:"https://www.in-kamiyama.jp/art/", nextYear:"通年", tokyoHours:5, artists:["金子未弥","Iede Reckman","Shirley Cho"] },
-  { pref:"香川", name:"瀬戸内国際芸術祭", tagline:"広域分散×国際発信の代表格", region:"中国・四国", lat:34.33, lng:134.04, slug:"kagawa", cat:"地域型芸術祭型", tags:[], desc:"瀬戸内海の島々と港を舞台に3年に1度開催される大規模な国際芸術祭。直島・豊島・女木島・小豆島など12の島と2つの港を会場に、国内外のアーティストによる常設・期間限定作品が展開。来場者数は毎回100万人を超える。2025年に本祭を開催済みで、次回本祭は2028年。2026年は会期外プログラム「ART SETOUCHI」を実施。", url:"https://setouchi-artfest.jp/", nextYear:"2028", tokyoHours:5, ogImage:"https://setouchi-artfest.jp/img/ogp.png", artists:["草間彌生","横尾忠則","クリスチャン・ボルタンスキー","内藤礼","西沢立衛","ジュリアン・オピー"] },
-  { pref:"愛媛", name:"道後オンセアート", tagline:"成熟観光地をアートで再編集", region:"中国・四国", lat:33.84, lng:132.77, slug:"ehime", cat:"小規模プロジェクト型", tags:[], desc:"愛媛県松山市の道後温泉を舞台に開催されるアートフェスティバル。国内最古の温泉地として知られる道後の旅館・公衆浴場・商店街をギャラリーに見立て、国内外のアーティストによるインスタレーションや体験型作品を展開する。", url:"https://dogoonsenart.com/", nextYear:"通年", tokyoHours:3.5 },
-  { pref:"高知", name:"高知県芸術祭/KOCHI ART PROJECTS", tagline:"プロセス重視の思考実践", region:"中国・四国", lat:33.56, lng:133.53, slug:"kochi", cat:"小規模プロジェクト型", tags:[], desc:"高知県が毎年秋に開催する総合芸術祭（2025年で第75回）を母体に、アート×まちづくりをテーマにした助成・実践プログラムKOCHI ART PROJECTSを展開。演劇・音楽・美術・伝統文化など多彩な部門と地域まちづくりに直結するアートプロジェクトを組み合わせる。", url:"https://www.kochi-art.com/", nextYear:"2026", tokyoHours:4 },
-  { pref:"福岡", name:"Fukuoka Art Next", tagline:"文化政策としてのアート戦略", region:"九州・沖縄", lat:33.59, lng:130.4, slug:"fukuoka", cat:"小規模プロジェクト型", tags:[], desc:"福岡市が2022年度に始動した包括的な文化政策。産学官が連携し、市民がアートに触れる機会の創出とアーティストの成長・交流拠点の整備を同時に推進。Artist Cafe Fukuoka、ウォールアート掲出、アートフェアアジア福岡など多角的に展開する。", url:"https://fukuoka-art-next.jp/", nextYear:"通年", tokyoHours:3.5 },
-  { pref:"佐賀", name:"Creative Residency in Arita", tagline:"産地×AIRで有田焼を更新", region:"九州・沖縄", lat:33.19, lng:129.88, slug:"saga", cat:"産業・工芸連携型", tags:[], desc:"磁器発祥の地・有田で国内外のアーティストやデザイナーが3ヶ月間滞在し、地元の窯元・職人とのコラボレーションを通じた創作活動を行う。オランダ王国大使館との連携を基盤に2016年から始まり、有田焼ブランドの国際的更新を推進。", url:"https://cri-arita.com/ja/", nextYear:"2026", tokyoHours:4 },
-  { pref:"長崎", name:"南島原市アートビレッジ・シラキノ", tagline:"公共施設×AIRの実装", region:"九州・沖縄", lat:32.65, lng:130.31, slug:"nagasaki", cat:"ミュージアム・拠点型", tags:[], desc:"長崎県南島原市の廃校を若手芸術家の支援と地域文化の発展を目的とした芸術文化複合施設として改修。国内外のアーティストが一定期間滞在して制作を行い、地域住民との交流やワークショップを通じて地域に創造の拠点を築く。", url:"https://www.artvillage-shirakino.jp/", nextYear:"通年", tokyoHours:4.5 },
+  { pref:"香川", name:"瀬戸内国際芸術祭", tagline:"広域分散×国際発信の代表格", region:"中国・四国", lat:34.33, lng:134.04, slug:"kagawa", cat:"地域型芸術祭型", tags:[], desc:"瀬戸内海の島々と港を舞台に3年に1度開催される大規模な国際芸術祭。直島・豊島・女木島・小豆島など12の島と2つの港を会場に、国内外のアーティストによる常設・期間限定作品が展開。来場者数は毎回100万人を超える。2025年に本祭を開催済みで、次回本祭は2028年。2026年は会期外プログラム「ART SETOUCHI」を実施。", url:"https://setouchi-artfest.jp/", nextYear:"2028", tokyoHours:5, localImg:"images/kagawa-setouchi.png", artists:["草間彌生","横尾忠則","クリスチャン・ボルタンスキー","内藤礼","西沢立衛","ジュリアン・オピー"] },
+  { pref:"愛媛", name:"道後オンセアート", tagline:"成熟観光地をアートで再編集", region:"中国・四国", lat:33.84, lng:132.77, slug:"ehime", cat:"小規模プロジェクト型", tags:[], desc:"愛媛県松山市の道後温泉を舞台に開催されるアートフェスティバル。国内最古の温泉地として知られる道後の旅館・公衆浴場・商店街をギャラリーに見立て、国内外のアーティストによるインスタレーションや体験型作品を展開する。", url:"https://dogoonsenart.com/", nextYear:"通年", tokyoHours:3.5, artists:["大竹伸朗","蜷川実花","エマニュエル・ムホー","石川直樹"] },
+  { pref:"高知", name:"高知県芸術祭/KOCHI ART PROJECTS", tagline:"プロセス重視の思考実践", region:"中国・四国", lat:33.56, lng:133.53, slug:"kochi", cat:"小規模プロジェクト型", tags:[], desc:"高知県が毎年秋に開催する総合芸術祭（2025年で第75回）を母体に、アート×まちづくりをテーマにした助成・実践プログラムKOCHI ART PROJECTSを展開。演劇・音楽・美術・伝統文化など多彩な部門と地域まちづくりに直結するアートプロジェクトを組み合わせる。", url:"https://www.kochi-art.com/", nextYear:"2026", tokyoHours:4, artists:["石元泰博（高知県立美術館収蔵作家）","マルク・シャガール（同館収蔵作品）"] },
+  { pref:"福岡", name:"Fukuoka Art Next", tagline:"文化政策としてのアート戦略", region:"九州・沖縄", lat:33.59, lng:130.4, slug:"fukuoka", cat:"小規模プロジェクト型", tags:[], desc:"福岡市が2022年度に始動した包括的な文化政策。産学官が連携し、市民がアートに触れる機会の創出とアーティストの成長・交流拠点の整備を同時に推進。Artist Cafe Fukuoka、ウォールアート掲出、アートフェアアジア福岡など多角的に展開する。", url:"https://fukuoka-art-next.jp/", nextYear:"通年", tokyoHours:3.5, artists:["KYNE","村上信理","生島国宜"] },
+  { pref:"佐賀", name:"Creative Residency in Arita", tagline:"産地×AIRで有田焼を更新", region:"九州・沖縄", lat:33.19, lng:129.88, slug:"saga", cat:"産業・工芸連携型", tags:[], desc:"磁器発祥の地・有田で国内外のアーティストやデザイナーが3ヶ月間滞在し、地元の窯元・職人とのコラボレーションを通じた創作活動を行う。オランダ王国大使館との連携を基盤に2016年から始まり、有田焼ブランドの国際的更新を推進。", url:"https://cri-arita.com/ja/", nextYear:"2026", tokyoHours:4, artists:["ミレナ・アンナ・バウマ","マルー・ブリュー","ベネデッタ・ポムピリ"] },
+  { pref:"長崎", name:"南島原市アートビレッジ・シラキノ", tagline:"公共施設×AIRの実装", region:"九州・沖縄", lat:32.65, lng:130.31, slug:"nagasaki", cat:"ミュージアム・拠点型", tags:[], desc:"長崎県南島原市の廃校を若手芸術家の支援と地域文化の発展を目的とした芸術文化複合施設として改修。国内外のアーティストが一定期間滞在して制作を行い、地域住民との交流やワークショップを通じて地域に創造の拠点を築く。", url:"https://www.artvillage-shirakino.jp/", nextYear:"通年", tokyoHours:4.5, artists:["今泉奏","公募で選出される国内外の版画作家"] },
   { pref:"熊本", name:"くまもとアートポリス", tagline:"制度化されたデザイン行政", region:"九州・沖縄", lat:32.8, lng:130.71, slug:"kumamoto", cat:"小規模プロジェクト型", tags:[], desc:"熊本県が1988年から継続する公共建築・空間デザイン向上施策。著名建築家をコミッショナーに迎え、県内の公共施設・橋梁・道路・公園など幅広いインフラにデザインの質を実装し続けている。現在のコミッショナーは伊東豊雄。", url:"https://www.pref.kumamoto.jp/soshiki/115/85889.html", nextYear:"通年", tokyoHours:4, artists:["磯崎新（初代コミッショナー）","伊東豊雄（3代目コミッショナー）","篠原一男"] },
   { pref:"大分", name:"BEPPU PROJECT", tagline:"中間組織が都市を運用する", region:"九州・沖縄", lat:33.28, lng:131.49, slug:"oita", cat:"小規模プロジェクト型", tags:[], desc:"別府市を拠点とするNPOが主導するアートプロジェクト。温泉街の遊休施設を活用した国際芸術祭を起点に、AIR・人材育成・拠点運営・食と文化の発信まで多角的に展開。行政と民間の間で実装を回す中間支援型の運用体制が突出している。", url:"https://www.beppuproject.com/", nextYear:"通年", tokyoHours:4, artists:["マイケル・リン","アデル・アブデスメッド","中山晃子","リム・ソクチャンリナ"] },
-  { pref:"宮崎", name:"新富芸術祭", tagline:"小規模自治体の等身大芸術祭", region:"九州・沖縄", lat:32.07, lng:131.51, slug:"miyazaki", cat:"地域型芸術祭型", tags:[], desc:"新富町で開催される小規模自治体型の芸術祭。農村の田園風景・住民の日常・歴史的な祭祀空間をフィールドに、国内外のアーティストと地域住民が協働して作品を制作・展示。地域への負荷が小さく持続可能な設計が特徴。", url:"https://shintomi-art.jp/", nextYear:"不明", tokyoHours:5 },
-  { pref:"鹿児島", name:"霧島アートの森活用まちづくり", tagline:"強い拠点を市域へ波及", region:"九州・沖縄", lat:31.92, lng:130.86, slug:"kagoshima", cat:"ミュージアム・拠点型", tags:[], desc:"湧水町にある県立野外美術館・霧島アートの森を核にしたまちづくり。霧島連山の火山地形と豊かな自然の中に国内外の彫刻・インスタレーション作品が点在し、鑑賞・教育・自然体験が一体となった場を形成する。", url:"https://open-air-museum.org/", nextYear:"通年", tokyoHours:5 },
-  { pref:"沖縄", name:"やんばるアートフェスティバル", tagline:"自然共生・環境配慮型", region:"九州・沖縄", lat:26.72, lng:128.15, slug:"okinawa", cat:"地域型芸術祭型", tags:[], desc:"沖縄県北部・やんばる地域で開催される芸術祭。世界自然遺産に登録されたやんばるの亜熱帯の森・集落・海岸を会場に、自然との共生をテーマにした現代アートや伝統芸能・工芸を組み合わせたプログラムを展開する。", url:"https://yambaru-artfes.jp/", nextYear:"不明", tokyoHours:6 },
-  { pref:"東京", name:"恵比寿映像祭2026", tagline:"映像・写真の国際フェスティバル", region:"関東", lat:35.65, lng:139.71, slug:"", cat:"ミュージアム・拠点型", tags:[], desc:"東京都写真美術館が主催する映像表現の国際フェスティバル。「映像とは何か」を問い続けながら、写真・映像・サウンド・パフォーマンスなど多様な表現を紹介する。2026年は「あなたの音に｜日花聲音｜Polyphonic Voices Bathed in Sunlight」がテーマ。", url:"https://topmuseum.jp/contents/exhibition/index-5091.html", nextYear:"2026", tokyoHours:0 },
-  { pref:"東京", name:"東京建築祭2026", tagline:"普段入れない建築を巡る都市型祭典", region:"関東", lat:35.68, lng:139.76, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"「建築から、ひとを感じる、まちを知る。」を理念に、普段公開されていない東京都内の名建築を一般公開するイベント。2024年初開催で6.5万人を動員。専門家・建築主によるガイドツアーも実施し、建築好きから初心者まで楽しめる。2026年は渋谷エリアに拡大、参加建築70以上。", url:"https://tokyo.kenchikusai.jp/", nextYear:"2026", tokyoHours:0, ogImage:"", artists:["旧岩崎邸庭園（ジョサイア・コンドル）","三菱一号館","GINZA SIX","慶應義塾大学図書館旧館"] },
-  { pref:"東京", name:"すみだ五彩の芸術祭", tagline:"23区初の区主催総合芸術祭", region:"関東", lat:35.71, lng:139.80, slug:"", cat:"都市型芸術祭型", tags:[], desc:"墨田区が主催する、東京23区では初となる区主催の数ヶ月規模の総合芸術祭。「墨に五彩あり」という言葉を手がかりに、地域の歴史・産業・人々の記憶に光を当てる。古民家・寺・商店街など街そのものが表現の場となる。", url:"https://sumida-artfest.jp/", nextYear:"2026", tokyoHours:0, ogImage:"https://sumida-artfest.jp/wp-content/themes/sumida-artfest/_img/ogp-default.jpg", artists:["山口藍","蔵真墨","岡田裕子","山崎広太"] },
-  { pref:"東京", name:"TOKYO ATLAS（国際文化芸術祭）", tagline:"都主導の新たな国際美術展", region:"関東", lat:35.63, lng:139.78, slug:"", cat:"都市型芸術祭型", tags:[], desc:"東京都が2026年に始動する新たな文化芸術祭の一環として、臨海部（お台場・青海南ふ頭・天王洲）で開催される国際的な美術展。「お台場トリエンナーレ」の蓄積を引き継ぎ、世界的アーティストと東京都が支援してきた若手作家を紹介する。", url:"https://tokyoatlas.jp/", nextYear:"2026", tokyoHours:0, ogImage:"", artists:["草間彌生","イケムラレイコ","潘逸舟","大巻伸嗣"] },
-  { pref:"群馬", name:"前橋国際芸術祭2026「めぶく。」", tagline:"再開発と連動する初開催の国際芸術祭", region:"関東", lat:36.39, lng:139.06, slug:"", cat:"都市型芸術祭型", tags:[], desc:"前橋市の中心市街地を舞台に初開催される国際芸術祭。2016年策定のまちづくりビジョン「めぶく。」から10年の節目に開催され、建築家・藤本壮介らが手がけた再開発と連動。商店街・空きビル・公共空間を舞台にウォーカブルなアート体験を展開する。", url:"https://maebashi-biennale.com/", nextYear:"2026", tokyoHours:1.5, ogImage:"", artists:["蜷川実花","渋谷慶一郎","川俣正","石川直樹","アレクサ・クミコ・ハタナカ","マルタン・マルジェラ"] },
-  { pref:"岐阜", name:"下呂 Art Discovery 2026", tagline:"温泉地×森×廃校を巡る新芸術祭", region:"中部", lat:35.80, lng:137.24, slug:"", cat:"地域型芸術祭型", tags:[], desc:"日本三名泉のひとつ下呂温泉を有する岐阜県下呂市を舞台にした新しい芸術祭。豊かな森・古い町並み・木造校舎の廃校を会場に、人間と自然の関係を問うサイトスペシフィックなアートを展開。総合ディレクターは北川フラムが務める。14の国と地域から59組が参加。", url:"https://gero-art-discovery.jp/", nextYear:"2026", tokyoHours:3, ogImage:"https://gero-art-discovery.jp/_img/_icons_v2/1000.jpg", artists:["遠藤利克","バルトロメイ・トグオ","スタシス・エイドリゲヴィチウス","マッシモ・バルトリーニ","EAT & ART TARO"] },
+  { pref:"宮崎", name:"新富芸術祭", tagline:"小規模自治体の等身大芸術祭", region:"九州・沖縄", lat:32.07, lng:131.51, slug:"miyazaki", cat:"地域型芸術祭型", tags:[], desc:"新富町で開催される小規模自治体型の芸術祭。農村の田園風景・住民の日常・歴史的な祭祀空間をフィールドに、国内外のアーティストと地域住民が協働して作品を制作・展示。地域への負荷が小さく持続可能な設計が特徴。", url:"https://shintomi-art.jp/", nextYear:"不明", tokyoHours:5, artists:["武田双雲","緒方智奈美","安積一仁"] },
+  { pref:"鹿児島", name:"霧島アートの森活用まちづくり", tagline:"強い拠点を市域へ波及", region:"九州・沖縄", lat:31.92, lng:130.86, slug:"kagoshima", cat:"ミュージアム・拠点型", tags:[], desc:"湧水町にある県立野外美術館・霧島アートの森を核にしたまちづくり。霧島連山の火山地形と豊かな自然の中に国内外の彫刻・インスタレーション作品が点在し、鑑賞・教育・自然体験が一体となった場を形成する。", url:"https://open-air-museum.org/", nextYear:"通年", tokyoHours:5, artists:["草間彌生","ダニ・カラバン","アントニー・ゴームリー","ジョナサン・ボロフスキー"] },
+  { pref:"沖縄", name:"やんばるアートフェスティバル", tagline:"自然共生・環境配慮型", region:"九州・沖縄", lat:26.72, lng:128.15, slug:"okinawa", cat:"地域型芸術祭型", tags:[], desc:"沖縄県北部・やんばる地域で開催される芸術祭。世界自然遺産に登録されたやんばるの亜熱帯の森・集落・海岸を会場に、自然との共生をテーマにした現代アートや伝統芸能・工芸を組み合わせたプログラムを展開する。", url:"https://yambaru-artfes.jp/", nextYear:"不明", tokyoHours:6, artists:["Chim↑Pom from Smappa!Group","椿昇","淀川テクニック"] },
+  { pref:"東京", name:"恵比寿映像祭2026", tagline:"映像・写真の国際フェスティバル", region:"関東", lat:35.65, lng:139.71, slug:"", cat:"ミュージアム・拠点型", tags:[], desc:"東京都写真美術館が主催する映像表現の国際フェスティバル。「映像とは何か」を問い続けながら、写真・映像・サウンド・パフォーマンスなど多様な表現を紹介する。2026年は「あなたの音に｜日花聲音｜Polyphonic Voices Bathed in Sunlight」がテーマ。", url:"https://topmuseum.jp/contents/exhibition/index-5091.html", nextYear:"2026", tokyoHours:0, artists:["小森はるか","大木裕之","侯怡亭（台湾）"] },
+  { pref:"東京", name:"東京建築祭2026", tagline:"普段入れない建築を巡る都市型祭典", region:"関東", lat:35.68, lng:139.76, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"「建築から、ひとを感じる、まちを知る。」を理念に、普段公開されていない東京都内の名建築を一般公開するイベント。2024年初開催で6.5万人を動員。専門家・建築主によるガイドツアーも実施し、建築好きから初心者まで楽しめる。2026年は渋谷エリアに拡大、参加建築70以上。", url:"https://tokyo.kenchikusai.jp/", nextYear:"2026", tokyoHours:0, artists:["旧岩崎邸庭園（ジョサイア・コンドル）","三菱一号館","GINZA SIX","慶應義塾大学図書館旧館"] },
+  { pref:"東京", name:"すみだ五彩の芸術祭", tagline:"23区初の区主催総合芸術祭", region:"関東", lat:35.71, lng:139.80, slug:"", cat:"都市型芸術祭型", tags:[], desc:"墨田区が主催する、東京23区では初となる区主催の数ヶ月規模の総合芸術祭。「墨に五彩あり」という言葉を手がかりに、地域の歴史・産業・人々の記憶に光を当てる。古民家・寺・商店街など街そのものが表現の場となる。", url:"https://sumida-artfest.jp/", nextYear:"2026", tokyoHours:0, localImg:"images/tokyo-sumida.jpg", artists:["山口藍","蔵真墨","岡田裕子","山崎広太"] },
+  { pref:"東京", name:"TOKYO ATLAS（国際文化芸術祭）", tagline:"都主導の新たな国際美術展", region:"関東", lat:35.63, lng:139.78, slug:"", cat:"都市型芸術祭型", tags:[], desc:"東京都が2026年に始動する新たな文化芸術祭の一環として、臨海部（お台場・青海南ふ頭・天王洲）で開催される国際的な美術展。「お台場トリエンナーレ」の蓄積を引き継ぎ、世界的アーティストと東京都が支援してきた若手作家を紹介する。", url:"https://tokyoatlas.jp/", nextYear:"2026", tokyoHours:0, localImg:"images/tokyo-atlas.png", artists:["草間彌生","イケムラレイコ","潘逸舟","大巻伸嗣"] },
+  { pref:"群馬", name:"前橋国際芸術祭2026「めぶく。」", tagline:"再開発と連動する初開催の国際芸術祭", region:"関東", lat:36.39, lng:139.06, slug:"", cat:"都市型芸術祭型", tags:[], desc:"前橋市の中心市街地を舞台に初開催される国際芸術祭。2016年策定のまちづくりビジョン「めぶく。」から10年の節目に開催され、建築家・藤本壮介らが手がけた再開発と連動。商店街・空きビル・公共空間を舞台にウォーカブルなアート体験を展開する。", url:"https://maebashi-biennale.com/", nextYear:"2026", tokyoHours:1.5, artists:["蜷川実花","渋谷慶一郎","川俣正","石川直樹","アレクサ・クミコ・ハタナカ","マルタン・マルジェラ"] },
+  { pref:"岐阜", name:"下呂 Art Discovery 2026", tagline:"温泉地×森×廃校を巡る新芸術祭", region:"中部", lat:35.80, lng:137.24, slug:"", cat:"地域型芸術祭型", tags:[], desc:"日本三名泉のひとつ下呂温泉を有する岐阜県下呂市を舞台にした新しい芸術祭。豊かな森・古い町並み・木造校舎の廃校を会場に、人間と自然の関係を問うサイトスペシフィックなアートを展開。総合ディレクターは北川フラムが務める。14の国と地域から59組が参加。", url:"https://gero-art-discovery.jp/", nextYear:"2026", tokyoHours:3, localImg:"images/gifu-gero.jpg", artists:["遠藤利克","バルトロメイ・トグオ","スタシス・エイドリゲヴィチウス","マッシモ・バルトリーニ","EAT & ART TARO"] },
   { pref:"山梨", name:"富士山芸術祭2026", tagline:"富士山と山梨の文化資源を結ぶ広域回遊型芸術祭", region:"中部", lat:35.49, lng:138.76, slug:"", cat:"地域型芸術祭型", tags:[], desc:"富士山という世界遺産を中心に、山梨県内の歴史的建造物・寺院・美術館・酒蔵・偉人ゆかりの地を結ぶ広域回遊型の芸術祭。4年に1度開催され、伝統工芸と現代アートを接続し地域に眠る価値を掘り起こす。", url:"https://fujisan-artfes.jp/", nextYear:"2026", tokyoHours:2 },
-  { pref:"静岡", name:"三島満願芸術祭2026", tagline:"三島発の現代アートの祭典", region:"中部", lat:35.12, lng:138.92, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"静岡県三島市を舞台にした現代アートの芸術祭。2023年11月に初開催し、2026年で3回目を迎える。市内各所を会場に地域と現代アートを接続する取り組みとして定着しつつある。", url:"https://mishima-event.com/", nextYear:"2026", tokyoHours:1 },
-  { pref:"福島", name:"アラフドアートアゲイン", tagline:"温泉町×山々を舞台にした思想と表現の場", region:"北海道・東北", lat:37.68, lng:140.24, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"磐梯朝日国立公園に位置する福島市・土湯温泉町を囲む山々を舞台に、国内外のアーティストが思想と表現を展開するアートプロジェクト。温泉地の自然環境と現代アートが呼応する体験を提供する。", url:"https://arafudo.net/", nextYear:"2026", tokyoHours:2.5 },
+  { pref:"静岡", name:"三島満願芸術祭2026", tagline:"三島発の現代アートの祭典", region:"中部", lat:35.12, lng:138.92, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"静岡県三島市を舞台にした現代アートの芸術祭。2023年11月に初開催し、2026年で3回目を迎える。市内各所を会場に地域と現代アートを接続する取り組みとして定着しつつある。", url:"https://mishima-event.com/", nextYear:"2026", tokyoHours:1, artists:["橘葉月","牛島光太郎"] },
+  { pref:"福島", name:"アラフドアートアゲイン", tagline:"温泉町×山々を舞台にした思想と表現の場", region:"北海道・東北", lat:37.68, lng:140.24, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"磐梯朝日国立公園に位置する福島市・土湯温泉町を囲む山々を舞台に、国内外のアーティストが思想と表現を展開するアートプロジェクト。温泉地の自然環境と現代アートが呼応する体験を提供する。", url:"https://arafudo.net/", nextYear:"2026", tokyoHours:2.5, artists:["ユミソン（総合ディレクター）","SIDE CORE","飯山由貴","KIGI（植原亮輔・渡邉良重）"] },
   { pref:"兵庫", name:"神戸六甲ミーツ・アート2026 beyond", tagline:"六甲山上を舞台にした現代アートの芸術祭", region:"関西", lat:34.76, lng:135.25, slug:"", cat:"地域型芸術祭型", tags:[], desc:"神戸・六甲山上で毎年秋に開催される現代アートの芸術祭。2010年から継続しており、六甲山の豊かな自然環境の中に作品が点在する。神戸市街地からのアクセスの良さと自然体験を両立した都市近郊型の芸術祭。", url:"https://rokkomeetsart.jp/", nextYear:"2026", tokyoHours:3, artists:["川俣正","宮永愛子","髙橋匡太","椿昇"] },
-  { pref:"佐賀", name:"武雄のあかりめぐり", tagline:"チームラボと歴史的建造物が彩る光の芸術祭", region:"九州・沖縄", lat:33.19, lng:130.02, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀県武雄市の観光名所を光で彩る恒例イベント。国登録記念物・御船山楽園で行われるチームラボ「かみさまがすまう森」をはじめ、武雄温泉楼門・武雄神社・武雄市図書館など8施設があかりの会場になる。2026年で11回目。", url:"https://www.takeo-kk.net/season/summer.html", nextYear:"2026", tokyoHours:5.5 },
-  { pref:"北海道", name:"飛生芸術祭", tagline:"森と旧校舎に生まれるおとぎ話の世界", region:"北海道・東北", lat:42.55, lng:141.35, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"北海道白老町の飛生（とびう）地区、廃校となった旧飛生小学校を拠点に1986年発足した飛生アートコミュニティーが開く年に一度の芸術祭。木造校舎と周囲の森を展覧会場に、多様な表現をお披露目し交流する。オープニングイベントTOBIU CAMPも同時開催。", url:"https://tobiu.com/about/", nextYear:"2026", tokyoHours:1.5 },
-  { pref:"福島", name:"福島ビエンナーレ2026", tagline:"双葉郡の歴史と現代アートで描く復興祈念の祭典", region:"北海道・東北", lat:37.35, lng:141.00, slug:"", cat:"地域型芸術祭型", tags:[], desc:"2004年から隔年開催されてきた現代アートの企画。東日本大震災15年復興祈念として、双葉郡8町村（浪江町・双葉町・大熊町・富岡町・楢葉町・広野町・葛尾村・川内村）を舞台に「Cinematic ∞ Art」をテーマに現代アートを展開する。福島大学と地域住民の協働による地域文化伝承の場。", url:"https://wa-art.com/bien/bien2026/index.html", nextYear:"2026", tokyoHours:3 },
+  { pref:"佐賀", name:"武雄のあかりめぐり", tagline:"チームラボと歴史的建造物が彩る光の芸術祭", region:"九州・沖縄", lat:33.19, lng:130.02, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀県武雄市の観光名所を光で彩る恒例イベント。国登録記念物・御船山楽園で行われるチームラボ「かみさまがすまう森」をはじめ、武雄温泉楼門・武雄神社・武雄市図書館など8施設があかりの会場になる。2026年で11回目。", url:"https://www.takeo-kk.net/season/summer.html", nextYear:"2026", tokyoHours:5.5, artists:["チームラボ"] },
+  { pref:"北海道", name:"飛生芸術祭", tagline:"森と旧校舎に生まれるおとぎ話の世界", region:"北海道・東北", lat:42.55, lng:141.35, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"北海道白老町の飛生（とびう）地区、廃校となった旧飛生小学校を拠点に1986年発足した飛生アートコミュニティーが開く年に一度の芸術祭。木造校舎と周囲の森を展覧会場に、多様な表現をお披露目し交流する。オープニングイベントTOBIU CAMPも同時開催。", url:"https://tobiu.com/about/", nextYear:"2026", tokyoHours:1.5, artists:["奈良美智","淺井裕介","石川直樹"] },
+  { pref:"福島", name:"福島ビエンナーレ2026", tagline:"双葉郡の歴史と現代アートで描く復興祈念の祭典", region:"北海道・東北", lat:37.35, lng:141.00, slug:"", cat:"地域型芸術祭型", tags:[], desc:"2004年から隔年開催されてきた現代アートの企画。東日本大震災15年復興祈念として、双葉郡8町村（浪江町・双葉町・大熊町・富岡町・楢葉町・広野町・葛尾村・川内村）を舞台に「Cinematic ∞ Art」をテーマに現代アートを展開する。福島大学と地域住民の協働による地域文化伝承の場。", url:"https://wa-art.com/bien/bien2026/index.html", nextYear:"2026", tokyoHours:3, artists:["奈良美智","ヤノベケンジ","小松美羽"] },
   { pref:"栃木", name:"AWANO 夢咲くART FESTIVAL 2026", tagline:"里山の花と芸術と食を楽しむ地域密着型芸術祭", region:"関東", lat:36.51, lng:139.66, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"栃木県鹿沼市粟野地域を舞台に2016年から開催される芸術祭。現役の粟野中学校とレトロな旧粟野中学校を中心に、そばの花・彼岸花など四季折々の里山景観の中でアーティストの展覧会・アートステージ・マルシェを展開する。2026年で9回目。", url:"https://awanoartfestival.com/", nextYear:"2026", tokyoHours:2 },
-  { pref:"千葉", name:"房総国際芸術祭 アート×ミックス2027", tagline:"北川フラム総合ディレクターによる房総半島縦断の芸術祭", region:"関東", lat:35.42, lng:140.10, slug:"", cat:"地域型芸術祭型", tags:[], desc:"千葉県市原市・木更津市・大多喜町を舞台にした新しい国際芸術祭。総合ディレクター北川フラム、総合プロデューサー小林武史のもと、房総半島を鉄道・車・自転車で旅しながらアートと音楽・食を楽しむ「みんなの美術工場」構想を展開する。", url:"https://boso-artmix.com/about", nextYear:"2027", tokyoHours:1.5 },
-  { pref:"神奈川", name:"横浜トリエンナーレ", tagline:"3年に1度、世界とつながる現代アートの国際展", region:"関東", lat:35.45, lng:139.63, slug:"", cat:"都市型芸術祭型", tags:[], desc:"2001年開始、日本を代表する国際現代アート展。みなとみらい地区をはじめとする横浜都心臨海部を会場に3年に1度開催。第9回はコスミン・コスティナシュとインティ・ゲレロがアーティスティック・ディレクターを務める。", url:"https://www.yokohamatriennale.jp/", nextYear:"不明", tokyoHours:0.5, ogImage:"https://www.yokohamatriennale.jp/cms/wp-content/uploads/2026/06/YT-banner_jp_PC_F.jpg", artists:["サンドラ・ムジンガ","ピッパ・ガーナー","ニック・ケイヴ","アイ・ウェイウェイ","ヨアル・ナンゴ"] },
-  { pref:"神奈川", name:"逗子アートフェスティバル", tagline:"アートを通じた地域づくりを実践する海辺の芸術祭", region:"関東", lat:35.30, lng:139.58, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"2013年から神奈川県逗子市で毎年開催されているアートイベント。「アートを通じた地域づくり」の実践を目指し、逗子の街なか・海辺を舞台に地域住民とアーティストが協働するプログラムを展開する。", url:"https://www.zushi-art.com/", nextYear:"2026", tokyoHours:1 },
-  { pref:"富山", name:"ART/X/TOYAMA（アートエクストヤマ）", tagline:"富山発信・4年に1度の国際現代美術展", region:"中部", lat:36.83, lng:137.41, slug:"", cat:"地域型芸術祭型", tags:[], desc:"富山県魚津市の新川文化ホールを会場に4年ごとに開催される国際現代美術展。1993年から続き、県内外・海外（フランス・トルコ・ドイツ・韓国・中国など）の作家が参加。2026年は第10回記念展として9カ国の作家が集う。", url:"https://art.p-alpha.ne.jp/", nextYear:"2026", tokyoHours:3 },
-  { pref:"石川", name:"いしかわ舞台芸術祭2026", tagline:"「人間はおもしろい説。」がテーマの秋の舞台芸術祭", region:"中部", lat:36.59, lng:136.63, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"石川県で開催される舞台芸術祭。国内外のアーティストを迎え、演劇・ダンス・音楽・美術のジャンルを超えた舞台作品を紹介する石川県秋の大型イベント。県民に新たな観劇体験と文化交流の機会を提供する。", url:"https://ishikawabutai.jp/", nextYear:"2026", tokyoHours:3 },
-  { pref:"福井", name:"熊川宿若狭芸術祭", tagline:"歴史的宿場町で「臨場と共生」をテーマに滞在制作", region:"中部", lat:35.48, lng:135.93, slug:"", cat:"AIR・制作拠点型", tags:[], desc:"福井県若狭町の熊川宿を「世界の文化交流拠点地域」として発展させることを目指し2023年度から開催。性別・年齢・国籍・障がいの有無を問わず多様な表現者が短期滞在制作・展覧会・音楽会を行う。海外アーティストも参加する若狭町・県共催の芸術祭。", url:"https://kumagawa-art.jp/", nextYear:"不明", tokyoHours:4 },
-  { pref:"長野", name:"浅間国際フォトフェスティバル（PHOTO MIYOTA）", tagline:"浅間山麓で写真を五感で味わう国際写真祭", region:"中部", lat:36.34, lng:138.55, slug:"", cat:"ミュージアム・拠点型", tags:[], desc:"長野県御代田町の文化複合施設MMoP（旧メルシャン軽井沢美術館）を中心会場に2018年から開催される国際写真フェスティバル。浅間山麓の自然の中で国内外の写真家の作品を展示。2026年は町内各所へ展示エリアを拡大し、来場者数は過去最多の3万3千人を記録。", url:"https://asamaphotofes.jp/", nextYear:"2026", tokyoHours:2.5 },
-  { pref:"静岡", name:"原泉アートデイズ！", tagline:"アーティスト・イン・レジデンスから生まれる里山の芸術祭", region:"中部", lat:34.87, lng:138.02, slug:"", cat:"AIR・制作拠点型", tags:[], desc:"静岡県掛川市北部・原泉地区で開催されるAIRプログラムと展覧会。原泉アートプロジェクトが2018年からHARAIZUMI AIRを運営し、国内外アーティストの滞在制作支援を継続。旧茶工場や古民家を会場に地区全域で展開する文化庁認定事業。", url:"https://haraizumiart.com/artdays/", nextYear:"2026", tokyoHours:2 },
-  { pref:"愛知", name:"大野芸術祭（OHNO ART BREW）", tagline:"海辺の町並みに現代アートが点在する常滑の芸術祭", region:"中部", lat:34.85, lng:136.82, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"愛知県常滑市大野町一帯を会場に2024年から開催される芸術祭。大野海岸・駅前広場・カフェなど町なかの日常空間にアート作品が点在し、入場無料で気軽に楽しめる地域密着型のイベントとして定着しつつある。", url:"https://oab.jpn.org/", nextYear:"2026", tokyoHours:2 },
-  { pref:"滋賀", name:"長浜国際芸術祭", tagline:"商店街を舞台に国内外作家が集う国際アートプロジェクト", region:"関西", lat:35.38, lng:136.28, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"滋賀県長浜市のまちなか商店街を会場に開催される国際アートプロジェクト。長浜の歴史と文化を背景に、国内外のアーティストと地域住民が出会い交流する場を創出。ポーランドとの国際交流も特徴で、2026年で第2回を迎える。", url:"https://nagahama-art-2026-2.jimdosite.com/", nextYear:"2026", tokyoHours:3 },
-  { pref:"京都", name:"KYOTO EXPERIMENT 京都国際舞台芸術祭2026", tagline:"演劇・ダンス・音楽を横断する実験的舞台芸術祭", region:"関西", lat:35.01, lng:135.77, slug:"", cat:"都市型芸術祭型", tags:[], desc:"2010年から京都市内で開催される舞台芸術祭。国内外の先鋭的なアーティストを迎え、演劇・ダンス・音楽・美術のジャンルを越境した作品を紹介。Kansai Studies・Shows・SKFの3プログラムで構成。2026年は10月3日〜25日開催。", url:"https://kyoto-ex.jp/", nextYear:"2026", tokyoHours:2.5 },
-  { pref:"大阪", name:"生きた建築ミュージアムフェスティバル大阪（イケフェス大阪）", tagline:"約200の建築を無料公開する日本最大級の建築イベント", region:"関西", lat:34.70, lng:135.50, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"大阪の魅力ある建築を毎年秋の週末に無料で一斉公開する日本最大級の建築イベント。歴史的建造物から現代建築、街場の喫茶店まで約200の「生きた建築」が扉を開く。2026年開催日は10月24日・25日。", url:"https://ikenchiku.jp/ikefes2025/", nextYear:"2026", tokyoHours:3 },
-  { pref:"和歌山", name:"紀南アートウィーク", tagline:"柑橘・漁業など紀南地域の生活文化とアートを接続", region:"関西", lat:33.73, lng:135.38, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"和歌山県紀南地域（田辺市など）を拠点に継続的に展開するアートプロジェクト。柑橘・漁業・地域の歴史や信仰といった紀南固有の生活文化をテーマにした展覧会・トークイベントを実施。地域資源を現代アートの視点で読み解く。", url:"https://kinan-art.jp/", nextYear:"不明", tokyoHours:4 },
-  { pref:"岡山", name:"森の芸術祭 晴れの国・岡山2027", tagline:"岡山県北部12市町村を舞台にした国際芸術祭", region:"中国・四国", lat:35.07, lng:133.75, slug:"", cat:"地域型芸術祭型", tags:[], desc:"岡山県北部12市町村（津山市・高梁市・新見市・真庭市・美作市など）を舞台にした国際芸術祭。2024年の常設作品（マイケル・リン、妹島和世ら）は引き続き鑑賞可能。次回2027年秋開催予定。", url:"https://forestartfest-okayama.jp/", nextYear:"不明", tokyoHours:4.5 },
-  { pref:"岡山", name:"瀬戸内産業芸術祭", tagline:"塩田・造船・製鉄など瀬戸内の産業をアートで再発見", region:"中国・四国", lat:34.50, lng:133.90, slug:"", cat:"産業・工芸連携型", tags:[], desc:"塩田・造船・製鉄など日本の発展を支えてきた瀬戸内海の産業を非日常的な視点で知る分散型美術館構想。参加企業の工場をアーティスト・クリエイターがプロデュースし、産業の本質を新しい視点で体験できる独自の芸術祭。", url:"https://www.sai-art.jp/", nextYear:"2026", tokyoHours:4 },
+  { pref:"千葉", name:"房総国際芸術祭 アート×ミックス2027", tagline:"北川フラム総合ディレクターによる房総半島縦断の芸術祭", region:"関東", lat:35.42, lng:140.10, slug:"", cat:"地域型芸術祭型", tags:[], desc:"千葉県市原市・木更津市・大多喜町を舞台にした新しい国際芸術祭。総合ディレクター北川フラム、総合プロデューサー小林武史のもと、房総半島を鉄道・車・自転車で旅しながらアートと音楽・食を楽しむ「みんなの美術工場」構想を展開する。", url:"https://boso-artmix.com/about", nextYear:"2027", tokyoHours:1.5, artists:["北川フラム（総合ディレクター）","小林武史（総合プロデューサー）","豊福亮（アートディレクター）"] },
+  { pref:"神奈川", name:"横浜トリエンナーレ", tagline:"3年に1度、世界とつながる現代アートの国際展", region:"関東", lat:35.45, lng:139.63, slug:"", cat:"都市型芸術祭型", tags:[], desc:"2001年開始、日本を代表する国際現代アート展。みなとみらい地区をはじめとする横浜都心臨海部を会場に3年に1度開催。第9回はコスミン・コスティナシュとインティ・ゲレロがアーティスティック・ディレクターを務める。", url:"https://www.yokohamatriennale.jp/", nextYear:"不明", tokyoHours:0.5, localImg:"images/kanagawa-yokohama.jpg", artists:["サンドラ・ムジンガ","ピッパ・ガーナー","ニック・ケイヴ","アイ・ウェイウェイ","ヨアル・ナンゴ"] },
+  { pref:"神奈川", name:"逗子アートフェスティバル", tagline:"アートを通じた地域づくりを実践する海辺の芸術祭", region:"関東", lat:35.30, lng:139.58, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"2013年から神奈川県逗子市で毎年開催されているアートイベント。「アートを通じた地域づくり」の実践を目指し、逗子の街なか・海辺を舞台に地域住民とアーティストが協働するプログラムを展開する。", url:"https://www.zushi-art.com/", nextYear:"2026", tokyoHours:1, artists:["森山大道","フランシス真悟"] },
+  { pref:"富山", name:"ART/X/TOYAMA（アートエクストヤマ）", tagline:"富山発信・4年に1度の国際現代美術展", region:"中部", lat:36.83, lng:137.41, slug:"", cat:"地域型芸術祭型", tags:[], desc:"富山県魚津市の新川文化ホールを会場に4年ごとに開催される国際現代美術展。1993年から続き、県内外・海外（フランス・トルコ・ドイツ・韓国・中国など）の作家が参加。2026年は第10回記念展として9カ国の作家が集う。", url:"https://art.p-alpha.ne.jp/", nextYear:"2026", tokyoHours:3, artists:["Ahmet ÖZEL（トルコ）","Anka KRASNA（スロベニア）","加賀谷武"] },
+  { pref:"石川", name:"いしかわ舞台芸術祭2026", tagline:"「人間はおもしろい説。」がテーマの秋の舞台芸術祭", region:"中部", lat:36.59, lng:136.63, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"石川県で開催される舞台芸術祭。国内外のアーティストを迎え、演劇・ダンス・音楽・美術のジャンルを超えた舞台作品を紹介する石川県秋の大型イベント。県民に新たな観劇体験と文化交流の機会を提供する。", url:"https://ishikawabutai.jp/", nextYear:"2026", tokyoHours:3, artists:["佐久間宣行（アンバサダー）","ダウ90000"] },
+  { pref:"福井", name:"熊川宿若狭芸術祭", tagline:"歴史的宿場町で「臨場と共生」をテーマに滞在制作", region:"中部", lat:35.48, lng:135.93, slug:"", cat:"AIR・制作拠点型", tags:[], desc:"福井県若狭町の熊川宿を「世界の文化交流拠点地域」として発展させることを目指し2023年度から開催。性別・年齢・国籍・障がいの有無を問わず多様な表現者が短期滞在制作・展覧会・音楽会を行う。海外アーティストも参加する若狭町・県共催の芸術祭。", url:"https://kumagawa-art.jp/", nextYear:"不明", tokyoHours:4, artists:["河口龍夫（筑波大学名誉教授）","テオ・ムザール（フランス）"] },
+  { pref:"長野", name:"浅間国際フォトフェスティバル（PHOTO MIYOTA）", tagline:"浅間山麓で写真を五感で味わう国際写真祭", region:"中部", lat:36.34, lng:138.55, slug:"", cat:"ミュージアム・拠点型", tags:[], desc:"長野県御代田町の文化複合施設MMoP（旧メルシャン軽井沢美術館）を中心会場に2018年から開催される国際写真フェスティバル。浅間山麓の自然の中で国内外の写真家の作品を展示。2026年は町内各所へ展示エリアを拡大し、来場者数は過去最多の3万3千人を記録。", url:"https://asamaphotofes.jp/", nextYear:"2026", tokyoHours:2.5, artists:["ヘンリエッテ・サブロー・エベセン（デンマーク）","スティーブン・ギル","小原一真"] },
+  { pref:"静岡", name:"原泉アートデイズ！", tagline:"アーティスト・イン・レジデンスから生まれる里山の芸術祭", region:"中部", lat:34.87, lng:138.02, slug:"", cat:"AIR・制作拠点型", tags:[], desc:"静岡県掛川市北部・原泉地区で開催されるAIRプログラムと展覧会。原泉アートプロジェクトが2018年からHARAIZUMI AIRを運営し、国内外アーティストの滞在制作支援を継続。旧茶工場や古民家を会場に地区全域で展開する文化庁認定事業。", url:"https://haraizumiart.com/artdays/", nextYear:"2026", tokyoHours:2, artists:["野々上聡人（岡本太郎現代芸術賞大賞受賞）","松島誠"] },
+  { pref:"愛知", name:"大野芸術祭（OHNO ART BREW）", tagline:"海辺の町並みに現代アートが点在する常滑の芸術祭", region:"中部", lat:34.85, lng:136.82, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"愛知県常滑市大野町一帯を会場に2024年から開催される芸術祭。大野海岸・駅前広場・カフェなど町なかの日常空間にアート作品が点在し、入場無料で気軽に楽しめる地域密着型のイベントとして定着しつつある。", url:"https://oab.jpn.org/", nextYear:"2026", tokyoHours:2, artists:["エリオット・ヘイグ＋澤田奈々（デュオ）"] },
+  { pref:"滋賀", name:"長浜国際芸術祭", tagline:"商店街を舞台に国内外作家が集う国際アートプロジェクト", region:"関西", lat:35.38, lng:136.28, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"滋賀県長浜市のまちなか商店街を会場に開催される国際アートプロジェクト。長浜の歴史と文化を背景に、国内外のアーティストと地域住民が出会い交流する場を創出。ポーランドとの国際交流も特徴で、2026年で第2回を迎える。", url:"https://nagahama-art-2026-2.jimdosite.com/", nextYear:"2026", tokyoHours:3, artists:["カシア・クヤブスカ・マーフィー（ポーランド）","大崎緑"] },
+  { pref:"京都", name:"KYOTO EXPERIMENT 京都国際舞台芸術祭2026", tagline:"演劇・ダンス・音楽を横断する実験的舞台芸術祭", region:"関西", lat:35.01, lng:135.77, slug:"", cat:"都市型芸術祭型", tags:[], desc:"2010年から京都市内で開催される舞台芸術祭。国内外の先鋭的なアーティストを迎え、演劇・ダンス・音楽・美術のジャンルを越境した作品を紹介。Kansai Studies・Shows・SKFの3プログラムで構成。2026年は10月3日〜25日開催。", url:"https://kyoto-ex.jp/", nextYear:"2026", tokyoHours:2.5, artists:["ティアゴ・ロドリゲス（アビニョン演劇祭ディレクター）","アリス・リポル","梅田哲也"] },
+  { pref:"大阪", name:"生きた建築ミュージアムフェスティバル大阪（イケフェス大阪）", tagline:"約200の建築を無料公開する日本最大級の建築イベント", region:"関西", lat:34.70, lng:135.50, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"大阪の魅力ある建築を毎年秋の週末に無料で一斉公開する日本最大級の建築イベント。歴史的建造物から現代建築、街場の喫茶店まで約200の「生きた建築」が扉を開く。2026年開催日は10月24日・25日。", url:"https://ikenchiku.jp/ikefes2025/", nextYear:"2026", tokyoHours:3, artists:["丹下健三","ポール・アンドリュー（フランス）"] },
+  { pref:"和歌山", name:"紀南アートウィーク", tagline:"柑橘・漁業など紀南地域の生活文化とアートを接続", region:"関西", lat:33.73, lng:135.38, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"和歌山県紀南地域（田辺市など）を拠点に継続的に展開するアートプロジェクト。柑橘・漁業・地域の歴史や信仰といった紀南固有の生活文化をテーマにした展覧会・トークイベントを実施。地域資源を現代アートの視点で読み解く。", url:"https://kinan-art.jp/", nextYear:"不明", tokyoHours:4, artists:["アピチャッポン・ウィーラセタクン","一柳慧","ヘアート・ムル（オランダ）"] },
+  { pref:"岡山", name:"森の芸術祭 晴れの国・岡山2027", tagline:"岡山県北部12市町村を舞台にした国際芸術祭", region:"中国・四国", lat:35.07, lng:133.75, slug:"", cat:"地域型芸術祭型", tags:[], desc:"岡山県北部12市町村（津山市・高梁市・新見市・真庭市・美作市など）を舞台にした国際芸術祭。2024年の常設作品（マイケル・リン、妹島和世ら）は引き続き鑑賞可能。次回2027年秋開催予定。", url:"https://forestartfest-okayama.jp/", nextYear:"不明", tokyoHours:4.5, artists:["マイケル・リン","妹島和世","坂本龍一＋高谷史郎","蜷川実花 with EiM"] },
+  { pref:"岡山", name:"瀬戸内産業芸術祭", tagline:"塩田・造船・製鉄など瀬戸内の産業をアートで再発見", region:"中国・四国", lat:34.50, lng:133.90, slug:"", cat:"産業・工芸連携型", tags:[], desc:"塩田・造船・製鉄など日本の発展を支えてきた瀬戸内海の産業を非日常的な視点で知る分散型美術館構想。参加企業の工場をアーティスト・クリエイターがプロデュースし、産業の本質を新しい視点で体験できる独自の芸術祭。", url:"https://www.sai-art.jp/", nextYear:"2026", tokyoHours:4, artists:["山本基（塩のインスタレーション）","妹島和世"] },
   { pref:"広島", name:"MAFIN（Miyajima Art Festival in the Narrative）", tagline:"世界遺産・宮島の大聖院で歴史と現代アートが対話する", region:"中国・四国", lat:34.27, lng:132.32, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"広島県廿日市市・宮島弥山大本山大聖院を会場に毎年開催される現代アート展。「聖なる島」宮島で平和をテーマにアートを通して考察する。宮島の自然景観からインスピレーションを得た作品が、歴史ある寺院の空間と対話する。", url:"https://mafin.jp/", nextYear:"不明", tokyoHours:5, artists:["康夏奈","久保寛子","Chim↑Pom from Smappa!Group"] },
   { pref:"福岡", name:"ART FAIR ASIA FUKUOKA（AFAF）", tagline:"日本とアジアをつなぐアートフェア", region:"九州・沖縄", lat:33.60, lng:130.40, slug:"", cat:"都市型芸術祭型", tags:[], desc:"福岡国際センターで開催される、日本とアジアの架け橋となるアートフェア。2026年で11回目を迎え、国内外の一流ギャラリーが集結。Fukuoka Art Nextとも連携し、福岡のアートエコシステムの一翼を担う。2026年は10月2日〜4日開催。", url:"https://artfair.asia/", nextYear:"2026", tokyoHours:3.5, artists:["田中千智","牧野永美子","野村仁衣那"] },
-  { pref:"佐賀", name:"SAGA ARTIST FAIR 2027", tagline:"公募制の新進アーティストを紹介するアートフェア", region:"九州・沖縄", lat:33.25, lng:130.30, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀市を拠点に開催される公募制のアートフェア。新進アーティストの発掘・紹介を目的とし、開催のたびに公募でアーティストを募集する。2027年開催は2027年2月中旬を予定、応募開始は2026年8月中旬から。", url:"https://www.sagaartistfair.com/2027", nextYear:"不明", tokyoHours:4 },
+  { pref:"佐賀", name:"SAGA ARTIST FAIR 2027", tagline:"公募制の新進アーティストを紹介するアートフェア", region:"九州・沖縄", lat:33.25, lng:130.30, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀市を拠点に開催される公募制のアートフェア。新進アーティストの発掘・紹介を目的とし、開催のたびに公募でアーティストを募集する。2027年開催は2027年2月中旬を予定、応募開始は2026年8月中旬から。", url:"https://www.sagaartistfair.com/2027", nextYear:"不明", tokyoHours:4, artists:["森正彦（自転車廃材の立体造形）","towa-towa"] },
   { pref:"鹿児島", name:"種子島宇宙芸術祭", tagline:"宇宙センターを舞台に「宇宙芸術」を提唱する唯一無二の芸術祭", region:"九州・沖縄", lat:30.62, lng:130.97, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"鹿児島県南種子町・種子島宇宙センターを中心に開催される、宇宙をテーマにした唯一無二の芸術祭。天文学者カール・セーガンの思想を原点に「宇宙芸術」という新しい概念を提唱。夏はサマーキャンプ、冬はライトフェスティバルを開催。", url:"https://satfes.jp/2025/", nextYear:"不明", tokyoHours:5.5, artists:["千田泰広","椿昇","開発好明","篠田守男"] }
 ];
 
@@ -1217,22 +1265,22 @@ function getFiltered() {
 
     // Year filter — match if nextYear contains the selected year string
     if (activeYear !== "all") {
-      if (activeYear === "通年") {
+      if (activeYear === "now") {
+        // Quick filter: currently happening or open year-round
+        if (c.nextYear !== "2026" && c.nextYear !== "通年") return false;
+      } else if (activeYear === "通年") {
         if (c.nextYear !== "通年") return false;
       } else {
         if (!c.nextYear.includes(activeYear)) return false;
       }
     }
 
-    // Access filter
+    // Trip-length filter (based on travel time from Tokyo, reframed as day-trip / overnight / longer trip)
     if (activeAccess !== "all") {
       const h = c.tokyoHours;
-      const a = Number(activeAccess);
-      if (a === 1 && h > 1) return false;
-      if (a === 2 && (h <= 1 || h > 2)) return false;
-      if (a === 3 && (h <= 2 || h > 3)) return false;
-      if (a === 4 && (h <= 3 || h > 4)) return false;
-      if (a === 99 && h <= 4) return false;
+      if (activeAccess === "daytrip" && h > 2) return false;
+      if (activeAccess === "overnight" && (h <= 2 || h > 4)) return false;
+      if (activeAccess === "longtrip" && h <= 4) return false;
     }
 
     if (searchQ) {
@@ -1279,32 +1327,34 @@ function markerIcon(c, active) {
 
 function popupHtml(c) {
   const color = CAT_COLORS[c.cat] || "#888";
-  const accessLabel = c.tokyoHours === 0 ? '都内' : `約 ${c.tokyoHours}h`;
+  const tripType = c.tokyoHours <= 2 ? '・日帰りOK' : c.tokyoHours <= 4 ? '・1泊で行ける' : '・じっくり遠征';
+  const accessLabel = c.tokyoHours === 0 ? '都内' + tripType : `約 ${c.tokyoHours}h${tripType}`;
   const yearLabel = c.nextYear || '—';
-  // Use Microlink's server-side embed proxy instead of hotlinking the raw og:image URL directly —
-  // many official/institutional sites block direct cross-site image requests (referer-based hotlink
-  // protection), which showed up as images silently failing to load. Microlink fetches the image
-  // server-side, so the visitor's browser never makes a cross-origin request to the source site.
-  // Scoped to only the curated entries (ogImage property present) to stay well within Microlink's
-  // free-tier rate limit rather than firing for all 81 markers.
-  const isCurated = Object.prototype.hasOwnProperty.call(c, 'ogImage');
-  const thumbSrc = (isCurated && c.url) ? `https://api.microlink.io/?url=${encodeURIComponent(c.url)}&meta=false&embed=image.url` : '';
+  // Self-hosted images: direct hotlinking (403) and the Microlink proxy (blocked by browser
+  // CORB) both failed structurally. Images are now downloaded once and committed to this repo's
+  // /images/ folder, so the visitor's browser only ever requests a same-origin static file —
+  // no cross-origin request happens at all, so neither failure mode can occur.
+  const thumbSrc = c.localImg || '';
   const hasImg = thumbSrc.length > 0;
   const hasArtists = c.artists && c.artists.length > 0;
+  const nowBadge = c.nextYear === "2026" ? "今年開催"
+                  : c.nextYear === "通年" ? "通年で楽しめる"
+                  : "";
   return `<div class="popup-inner">
     ${hasImg ? `<div class="popup-thumb"><img src="${thumbSrc}" alt="${c.name}" onerror="this.parentElement.style.display='none'" /></div>` : ''}
-    <div class="popup-head">
-      <div class="popup-cat-sq" style="background:${color}"></div>
-      <div class="popup-region"><span class="accent-mark">${c.cat}</span> · ${c.pref}</div>
-    </div>
+    <div class="popup-pref-row">${c.pref}${nowBadge ? `<span class="popup-now-badge">${nowBadge}</span>` : ''}</div>
     <div class="popup-name">${c.name}</div>
     <div class="popup-tagline">${c.tagline}</div>
+    ${hasArtists ? `<div class="popup-artists"><div class="popup-artists-k">見られるアーティスト</div><div class="popup-artists-v">${c.artists.join(' / ')}</div></div>` : ''}
     <div class="popup-meta">
-      <div class="popup-meta-item"><span class="popup-meta-k">Next Edition</span><span class="popup-meta-v">${yearLabel}</span></div>
-      <div class="popup-meta-item"><span class="popup-meta-k">From Tokyo</span><span class="popup-meta-v">${accessLabel}</span></div>
+      <div class="popup-meta-item"><span class="popup-meta-k">次の開催</span><span class="popup-meta-v">${yearLabel}</span></div>
+      <div class="popup-meta-item"><span class="popup-meta-k">東京から</span><span class="popup-meta-v">${accessLabel}</span></div>
     </div>
     <div class="popup-desc">${c.desc}</div>
-    ${hasArtists ? `<div class="popup-artists"><div class="popup-artists-k">見られるアーティスト</div><div class="popup-artists-v">${c.artists.join(' / ')}</div></div>` : ''}
+    <div class="popup-head">
+      <div class="popup-cat-sq" style="background:${color}"></div>
+      <div class="popup-region"><span class="accent-mark">${catLabel(c.cat)}</span></div>
+    </div>
     <div class="popup-btn-row">
       ${c.slug ? `<a class="popup-link" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank">詳細を見る →</a>` : ''}
       ${c.url ? `<a class="popup-link-url" href="${c.url}" target="_blank">公式サイト<span style="font-size:0.75em;letter-spacing:0.04em;margin-left:2px;">など</span></a>` : ''}
@@ -1379,8 +1429,8 @@ function renderList(filtered) {
   const list = document.getElementById('festival-list');
   // header counters
   const showEl = document.getElementById('hd-showing'); if (showEl) showEl.textContent = String(filtered.length).padStart(3,'0');
-  const totalEl = document.getElementById('hd-total');  if (totalEl) totalEl.textContent = String(CASES.length).padStart(3,'0');
-  const mapShow = document.getElementById('map-showing'); if (mapShow) mapShow.textContent = String(filtered.length).padStart(3,'0') + ' / ' + String(CASES.length).padStart(3,'0');
+  const totalEl = document.getElementById('hd-total');  if (totalEl) totalEl.textContent = String(CASES.length);
+  const mapShow = document.getElementById('map-showing'); if (mapShow) mapShow.textContent = filtered.length + ' / ' + CASES.length + ' 件';
 
   if (!filtered.length) {
     list.innerHTML = '<div class="empty-state">該当する取り組みがありません<span class="es-en">No results</span></div>';
@@ -1397,10 +1447,11 @@ function renderList(filtered) {
     groups[region].forEach(({ c, i }, j) => {
       const color = CAT_COLORS[c.cat] || "#888";
       const idx = String(i + 1).padStart(3, '0');
+      const isNow = c.nextYear === "2026" || c.nextYear === "通年";
       html2 += `<div class="festival-item" data-idx="${i}" onclick="focusCase(${i})">
         <div class="item-num">${idx}</div>
         <div>
-          <div class="item-pref">${c.pref}</div>
+          <div class="item-pref">${c.pref}${isNow ? '<span class="item-now-dot" title="2026年に行ける"></span>' : ''}</div>
           <div class="item-name"><span class="item-cat-strip" style="background:${color}"></span>${c.name}</div>
           <div class="item-tagline">${c.tagline}</div>
         </div>
