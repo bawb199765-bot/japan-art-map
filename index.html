@@ -1337,7 +1337,376 @@
       color: var(--muted);
       margin-left: 4px;
     }
-  </style>
+  
+    /* ───────────────────────────────────────────────────────
+       MOBILE V3 — discovery-first layout
+       Final override layer; keep desktop unchanged.
+       ─────────────────────────────────────────────────────── */
+    .mobile-discovery,
+    .mobile-quickbar { display: none; }
+
+    @media (max-width: 768px) {
+      /* Header: keep the proposition, remove database/admin metadata */
+      header {
+        height: 58px !important;
+        min-height: 58px;
+        flex-wrap: nowrap !important;
+        align-items: center;
+      }
+      .hd-back,
+      .hd-meta,
+      .hd-mark { display: none !important; }
+      .hd-brand {
+        width: 100%;
+        height: 100%;
+        padding: 0 14px !important;
+        border-right: 0 !important;
+        gap: 0 !important;
+      }
+      .hd-brand h1 {
+        font-size: 14px !important;
+        line-height: 1.15;
+        letter-spacing: .03em;
+      }
+      .hd-sub {
+        font-size: 8.5px !important;
+        letter-spacing: .12em;
+        margin-top: 4px;
+      }
+
+      /* Structure: map → recommendations → quick filters → list */
+      .layout {
+        flex-direction: column;
+        height: calc(var(--vh100, 100svh) - 58px);
+      }
+      .map-wrapper {
+        order: -1;
+        height: 43svh !important;
+        min-height: 285px !important;
+        max-height: 420px;
+        flex: none !important;
+      }
+      .sidebar {
+        order: 1;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        display: block !important;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        border-top: 1px solid var(--line);
+        background: var(--bg);
+      }
+
+      /* The list stays in place behind the bottom sheet */
+      body.popup-open .sidebar {
+        display: block !important;
+      }
+      body.popup-open .map-wrapper {
+        height: 43svh !important;
+        min-height: 285px !important;
+        max-height: 420px;
+        flex: none !important;
+      }
+
+      /* Remove map decoration that becomes noise on a small screen */
+      .legend { display: none !important; }
+      .map-wrapper::before,
+      .map-wrapper::after { display: none !important; }
+      .map-meta {
+        top: 8px !important;
+        right: 8px !important;
+        padding: 5px 8px !important;
+      }
+      .leaflet-control-zoom { margin: 8px !important; }
+
+      /* Recommendation strip */
+      .mobile-discovery {
+        display: block;
+        padding: 13px 0 11px;
+        border-bottom: 1px solid var(--line);
+        background: var(--bg);
+      }
+      .mobile-discovery-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 14px 8px;
+      }
+      .mobile-discovery-kicker {
+        font-size: 7.5px;
+        font-weight: 600;
+        letter-spacing: .18em;
+        color: var(--accent);
+        margin-bottom: 4px;
+      }
+      .mobile-discovery-title {
+        font-family: var(--serif);
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .mobile-discovery-count {
+        flex: 0 0 auto;
+        font-size: 7px;
+        letter-spacing: .14em;
+        color: var(--dim);
+        padding-bottom: 2px;
+      }
+      .mobile-discovery-cards {
+        display: flex;
+        gap: 9px;
+        overflow-x: auto;
+        padding: 0 14px 3px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .mobile-discovery-cards::-webkit-scrollbar { display: none; }
+      .mobile-pick-card {
+        flex: 0 0 min(72vw, 252px);
+        scroll-snap-align: start;
+        border: 1px solid var(--line2);
+        background: var(--bg2);
+        cursor: pointer;
+        text-align: left;
+        color: inherit;
+        padding: 0;
+      }
+      .mobile-pick-img {
+        height: 82px;
+        background: #fff;
+        overflow: hidden;
+        border-bottom: 1px solid var(--line);
+      }
+      .mobile-pick-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .mobile-pick-body { padding: 7px 9px 8px; }
+      .mobile-pick-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+      .mobile-pick-pref {
+        font-size: 8px;
+        letter-spacing: .12em;
+        color: var(--accent);
+      }
+      .mobile-pick-card .status-badge {
+        font-size: 7.5px;
+        padding: 2px 5px;
+      }
+      .mobile-pick-name {
+        font-size: 13px;
+        line-height: 1.3;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 2px;
+      }
+      .mobile-pick-tagline {
+        font-size: 9.5px;
+        line-height: 1.35;
+        color: var(--muted);
+      }
+
+      /* Quick actions stay visible; full filters are opt-in */
+      .mobile-quickbar {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        display: flex;
+        gap: 5px;
+        padding: 8px 10px;
+        overflow-x: auto;
+        background: rgba(20,17,13,.96);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--line);
+        scrollbar-width: none;
+      }
+      .mobile-quickbar::-webkit-scrollbar { display: none; }
+      .mobile-quick-chip {
+        flex: 0 0 auto;
+        min-height: 32px;
+        padding: 6px 10px;
+        border: 1px solid var(--line2);
+        background: transparent;
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 10px;
+        white-space: nowrap;
+      }
+      .mobile-quick-chip.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--bg);
+      }
+      .mobile-filter-toggle {
+        margin-left: auto;
+        color: var(--accent);
+        border-color: rgba(217,102,80,.55);
+        padding-left: 11px;
+        padding-right: 11px;
+      }
+      .mobile-filter-toggle span {
+        display: inline-block;
+        margin-left: 4px;
+        transition: transform .18s ease;
+      }
+      .sidebar.filters-open .mobile-filter-toggle span {
+        transform: rotate(45deg);
+      }
+
+      /* By default, hide the dense desktop filter stack */
+      .sidebar:not(.filters-open) > .filter-block,
+      .sidebar:not(.filters-open) > .search-block {
+        display: none !important;
+      }
+
+      /* Expanded filters: compact and horizontally scrollable */
+      .sidebar.filters-open > .filter-block,
+      .sidebar.filters-open > .search-block {
+        display: block !important;
+      }
+      .filter-block {
+        padding: 10px 10px !important;
+      }
+      .fl-label {
+        margin-bottom: 7px !important;
+        padding-bottom: 5px !important;
+      }
+      .fl-label-jp { font-size: 10.5px !important; }
+      .fl-label-en { font-size: 7px !important; }
+
+      .chips,
+      #month-filters,
+      #travel-tag-filters {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        gap: 4px !important;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .chips::-webkit-scrollbar,
+      #month-filters::-webkit-scrollbar,
+      #travel-tag-filters::-webkit-scrollbar { display: none; }
+      .chip {
+        flex: 0 0 auto !important;
+        font-size: 10px !important;
+        padding: 5px 8px !important;
+      }
+      .search-block {
+        padding: 9px 10px 10px !important;
+      }
+      .search-block::before { left: 19px !important; }
+      .search-block input {
+        padding: 9px 10px 9px 28px !important;
+        font-size: 12px !important;
+      }
+
+      /* List: remove database-like numbering/arrow and make it editorial */
+      .festival-list {
+        flex: none !important;
+        overflow-y: visible !important;
+        height: auto !important;
+        max-height: none !important;
+      }
+      .list-region-header {
+        top: 48px;
+        padding: 10px 14px 8px !important;
+      }
+      .festival-item {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+        padding: 12px 14px !important;
+      }
+      .festival-item.active {
+        padding-left: 16px !important;
+      }
+      .item-num,
+      .item-arrow { display: none !important; }
+      .item-pref {
+        font-size: 8.5px;
+        margin-bottom: 4px;
+      }
+      .item-name {
+        font-size: 14.5px;
+        line-height: 1.35;
+        margin-bottom: 4px;
+      }
+      .item-tagline {
+        font-size: 11px;
+        line-height: 1.5;
+      }
+
+      /* Bottom sheet: readable detail, without destroying list context */
+      #mobile-sheet {
+        max-height: 72svh !important;
+        border-top: 1px solid var(--accent) !important;
+        border-radius: 14px 14px 0 0;
+        box-shadow: 0 -14px 40px rgba(0,0,0,.78);
+        padding-top: 8px;
+      }
+      #mobile-sheet::before {
+        content: '';
+        display: block;
+        width: 34px;
+        height: 3px;
+        border-radius: 999px;
+        background: var(--line2);
+        margin: 0 auto 2px;
+      }
+      #mobile-sheet .popup-inner {
+        padding: 10px 16px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      #mobile-sheet .popup-thumb {
+        height: 142px !important;
+        margin-bottom: 11px !important;
+      }
+      #mobile-sheet .sheet-close {
+        top: 10px !important;
+        right: 10px !important;
+        width: 30px !important;
+        height: 30px !important;
+        line-height: 28px !important;
+        border-radius: 50%;
+        background: rgba(20,17,13,.92);
+      }
+      #mobile-sheet .popup-name {
+        font-size: 17px !important;
+        padding-right: 30px;
+      }
+      #mobile-sheet .popup-tagline { font-size: 11.5px !important; }
+      #mobile-sheet .event-date-primary { font-size: 13px; }
+      #mobile-sheet .popup-desc {
+        font-size: 11.5px !important;
+        line-height: 1.68 !important;
+      }
+      #mobile-sheet .popup-btn-row {
+        position: sticky;
+        bottom: calc(-18px - env(safe-area-inset-bottom, 0px));
+        z-index: 3;
+        margin: 0 -16px calc(-18px - env(safe-area-inset-bottom, 0px));
+        padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+        background: linear-gradient(to bottom, rgba(20,17,13,.1), #14110d 28%);
+      }
+      #mobile-sheet .popup-link,
+      #mobile-sheet .popup-link-url {
+        min-height: 38px;
+      }
+    }
+
+</style>
 </head>
 <body>
 
@@ -1368,6 +1737,28 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
+
+    <!-- MOBILE ONLY: discovery entrance -->
+    <section class="mobile-discovery" id="mobile-discovery" aria-label="おすすめの芸術祭">
+      <div class="mobile-discovery-head">
+        <div>
+          <div class="mobile-discovery-kicker">ART TRIP PICKS</div>
+          <h2 class="mobile-discovery-title" id="mobile-discovery-title">今年行ける、おすすめの芸術祭</h2>
+        </div>
+        <div class="mobile-discovery-count">03 PICKS</div>
+      </div>
+      <div class="mobile-discovery-cards" id="mobile-discovery-cards"></div>
+    </section>
+
+    <!-- MOBILE ONLY: quick filters -->
+    <div class="mobile-quickbar" id="mobile-quickbar">
+      <button class="mobile-quick-chip" id="mobile-now-btn" type="button">● 開催中</button>
+      <button class="mobile-quick-chip" id="mobile-month-current" type="button"></button>
+      <button class="mobile-quick-chip" id="mobile-month-next" type="button"></button>
+      <button class="mobile-quick-chip mobile-filter-toggle" id="mobile-filter-toggle" type="button" aria-expanded="false">
+        詳細条件で絞り込み <span>＋</span>
+      </button>
+    </div>
 
     <div class="filter-block">
       <div class="fl-label">
@@ -1708,7 +2099,7 @@ function renderMonthFilters() {
   wrap.innerHTML = [
     `<button class="chip ${activeMonth === 'all' ? 'active' : ''}" data-month="all">ALL</button>`,
     ...months.map(m =>
-      `<button class="chip ${String(m) === activeMonth ? 'active' : ''}" data-month="${m}" style="font-family: Helvetica">${m}月</button>`
+      `<button class="chip ${String(m) === activeMonth ? 'active' : ''}" data-month="${m}" style="font-family: Helvetica">${today.getFullYear()}年${m}月</button>`
     )
   ].join('');
 
@@ -1949,6 +2340,123 @@ function clearDesktopDetail(candidates = CASES) {
   renderDiscoveryPanel(candidates);
 }
 
+
+function renderMobileDiscovery(candidates = CASES) {
+  const wrap = document.getElementById('mobile-discovery-cards');
+  const title = document.getElementById('mobile-discovery-title');
+  if (!wrap || !title) return;
+
+  const currentYear = todayLocal().getFullYear();
+  title.textContent = activeMonth !== 'all'
+    ? `${activeMonth}月に行ける、おすすめの芸術祭`
+    : '今年行ける、おすすめの芸術祭';
+
+  const picks = getDiscoveryPicks(candidates);
+  if (!picks.length) {
+    wrap.innerHTML = `<div style="padding:10px 14px;color:var(--muted);font-size:11px;">この条件でおすすめできる芸術祭はありません。</div>`;
+    return;
+  }
+
+  wrap.innerHTML = picks.map(c => {
+    const st = getEventStatus(c);
+    const img = c.localImg
+      ? `<div class="mobile-pick-img"><img src="${c.localImg}" alt="${c.name}" onerror="this.parentElement.style.display='none'"></div>`
+      : '';
+    const safeName = c.name.replace(/'/g, "\\'");
+    return `<button type="button" class="mobile-pick-card" onclick="focusNamedCase('${safeName}')">
+      ${img}
+      <div class="mobile-pick-body">
+        <div class="mobile-pick-meta">
+          <span class="mobile-pick-pref">${c.pref}</span>
+          <span class="status-badge ${st.key}">${st.label}</span>
+        </div>
+        <div class="mobile-pick-name">${c.name}</div>
+        <div class="mobile-pick-tagline">${c.tagline}</div>
+      </div>
+    </button>`;
+  }).join('');
+}
+
+function syncMobileQuickbar() {
+  const today = todayLocal();
+  const current = today.getMonth() + 1;
+  const next = current < 12 ? current + 1 : null;
+
+  const nowBtn = document.getElementById('mobile-now-btn');
+  const currentBtn = document.getElementById('mobile-month-current');
+  const nextBtn = document.getElementById('mobile-month-next');
+
+  if (currentBtn) {
+    currentBtn.textContent = `${today.getFullYear()}年${current}月`;
+    currentBtn.dataset.month = String(current);
+    currentBtn.classList.toggle('active', activeMonth === String(current));
+  }
+  if (nextBtn) {
+    if (next) {
+      nextBtn.style.display = '';
+      nextBtn.textContent = `${today.getFullYear()}年${next}月`;
+      nextBtn.dataset.month = String(next);
+      nextBtn.classList.toggle('active', activeMonth === String(next));
+    } else {
+      nextBtn.style.display = 'none';
+    }
+  }
+  if (nowBtn) nowBtn.classList.toggle('active', activeStatus === 'ongoing');
+}
+
+function syncStatusChipUI() {
+  document.querySelectorAll('#status-filters .chip').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.status === activeStatus);
+  });
+}
+
+function applyMobileQuickStatus(status) {
+  activeStatus = status;
+  activeMonth = 'all';
+  selectedCaseName = null;
+  syncStatusChipUI();
+  renderMonthFilters();
+  rebuild();
+}
+
+function applyMobileQuickMonth(month) {
+  activeStatus = 'all';
+  activeMonth = String(month);
+  selectedCaseName = null;
+  syncStatusChipUI();
+  renderMonthFilters();
+  rebuild();
+}
+
+function setupMobileControls() {
+  const sidebar = document.querySelector('.sidebar');
+  const toggle = document.getElementById('mobile-filter-toggle');
+  const nowBtn = document.getElementById('mobile-now-btn');
+  const currentBtn = document.getElementById('mobile-month-current');
+  const nextBtn = document.getElementById('mobile-month-next');
+
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => {
+      const open = sidebar.classList.toggle('filters-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  if (nowBtn) nowBtn.addEventListener('click', () => {
+    applyMobileQuickStatus(activeStatus === 'ongoing' ? 'all' : 'ongoing');
+  });
+  if (currentBtn) currentBtn.addEventListener('click', () => {
+    const m = currentBtn.dataset.month;
+    applyMobileQuickMonth(activeMonth === m ? 'all' : m);
+  });
+  if (nextBtn) nextBtn.addEventListener('click', () => {
+    const m = nextBtn.dataset.month;
+    if (m) applyMobileQuickMonth(activeMonth === m ? 'all' : m);
+  });
+
+  syncMobileQuickbar();
+}
+
 function openDesktopDetail(c) {
   if (!detailPanelContent || window.innerWidth <= 768) return;
   selectedCaseName = c.name;
@@ -1982,6 +2490,8 @@ function rebuild() {
     markers.push({ marker, case: c, idx: i });
   });
   renderList(filtered);
+  renderMobileDiscovery(filtered);
+  syncMobileQuickbar();
 
   // Keep the desktop detail panel stable across filter/search rebuilds when possible.
   if (window.innerWidth > 768 && selectedCaseName) {
@@ -2136,6 +2646,7 @@ document.getElementById('search-input').addEventListener('input', e => {
 
 updateDynamicFilterLabels();
 renderMonthFilters();
+setupMobileControls();
 rebuild();
 
 // 会期ステータスは訪問者の端末のローカル日付で判定。
@@ -2150,6 +2661,7 @@ function scheduleDateRolloverRefresh() {
     if (parseInt(activeMonth, 10) < todayLocal().getMonth() + 1) activeMonth = 'all';
     updateDynamicFilterLabels();
     renderMonthFilters();
+    syncMobileQuickbar();
     rebuild();
     scheduleDateRolloverRefresh();
   }, delay);
