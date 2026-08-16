@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PK81WLMXKD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PK81WLMXKD');
+  </script>
   <title>JAPAN ART MAP｜日本の芸術祭を旅する</title>
 
   <meta name="description" content="全国81の芸術祭・アートプロジェクトから、開催中・これから行けるイベントや旅のスタイルを地図で探せるアート旅マップ。" />
@@ -2329,10 +2338,10 @@
       </p>
 
       <div class="site-info-links">
-        <a href="https://linktr.ee/artslogix" target="_blank" rel="noopener noreferrer">Linktree ↗</a>
-        <a href="https://www.instagram.com/artslogix/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
-        <a href="https://www.threads.com/@artslogix" target="_blank" rel="noopener noreferrer">Threads ↗</a>
-        <a href="https://x.com/ArtsLogix" target="_blank" rel="noopener noreferrer">X ↗</a>
+        <a href="https://linktr.ee/artslogix" target="_blank" rel="noopener noreferrer" data-social="linktree">Linktree ↗</a>
+        <a href="https://www.instagram.com/artslogix/" target="_blank" rel="noopener noreferrer" data-social="instagram">Instagram ↗</a>
+        <a href="https://www.threads.com/@artslogix" target="_blank" rel="noopener noreferrer" data-social="threads">Threads ↗</a>
+        <a href="https://x.com/ArtsLogix" target="_blank" rel="noopener noreferrer" data-social="x">X ↗</a>
       </div>
     </div>
 
@@ -2354,6 +2363,12 @@
 <div id="mobile-sheet" class="mobile-sheet"></div>
 
 <script>
+function trackEvent(eventName, params = {}) {
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', eventName, params);
+  }
+}
+
 // ── Fix mobile Chrome's inconsistent vh/svh handling by measuring the real
 //    visible height with JS and exposing it as a CSS custom property. ──
 function setRealViewportHeight() {
@@ -2741,8 +2756,8 @@ function popupHtml(c) {
       <div class="popup-region"><span class="accent-mark">${catLabel(c.cat)}</span></div>
     </div>
     <div class="popup-btn-row">
-      ${c.slug ? `<a class="popup-link" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank" rel="noopener">詳しく見る →</a>` : ''}
-      ${c.url ? `<a class="popup-link-url" href="${c.url}" target="_blank" rel="noopener">公式サイト</a>` : ''}
+      ${c.slug ? `<a class="popup-link" data-track-link="internal_detail" data-festival="${c.name}" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank" rel="noopener">詳しく見る →</a>` : ''}
+      ${c.url ? `<a class="popup-link-url" data-track-link="official" data-festival="${c.name}" href="${c.url}" target="_blank" rel="noopener">公式サイト</a>` : ''}
     </div>
   </div>`;
 }
@@ -2837,7 +2852,7 @@ function renderDiscoveryPanel(candidates = CASES) {
   const cards = picks.map(c => {
     const st = getEventStatus(c);
     const img = c.localImg ? `<div class="discover-img"><img src="${c.localImg}" alt="${c.name}" onerror="this.parentElement.style.display='none'"></div>` : '';
-    return `<div class="discover-card" onclick="focusNamedCase('${c.name.replace(/'/g,"\\'")}')">
+    return `<div class="discover-card" onclick="focusRecommendedCase('${c.name.replace(/'/g,"\\'")}', 'desktop_center')">
       ${img}
       <div class="discover-meta"><span class="discover-pref">${c.pref}</span><span class="status-badge ${st.key}">${st.label}</span></div>
       <div class="discover-name">${c.name}</div>
@@ -2893,7 +2908,7 @@ function renderMobileDiscovery(candidates = CASES) {
       ? `<div class="mobile-pick-img"><img src="${c.localImg}" alt="${c.name}" onerror="this.parentElement.style.display='none'"></div>`
       : '';
     const safeName = c.name.replace(/'/g, "\\'");
-    return `<button type="button" class="mobile-pick-card" onclick="focusNamedCase('${safeName}')">
+    return `<button type="button" class="mobile-pick-card" onclick="focusRecommendedCase('${safeName}', 'mobile_strip')">
       ${img}
       <div class="mobile-pick-body">
         <div class="mobile-pick-meta">
@@ -3009,6 +3024,11 @@ function setupMobileControls() {
 
 function openDesktopDetail(c) {
   if (!detailPanelContent || window.innerWidth <= 768) return;
+  trackEvent('festival_detail_open', {
+    festival_name: c.name,
+    prefecture: c.pref,
+    device_view: 'desktop'
+  });
   selectedCaseName = c.name;
   if (detailPanelTitle) detailPanelTitle.textContent = '選択中の芸術祭';
   if (detailPanelTitleEn) detailPanelTitleEn.textContent = 'Selected';
@@ -3019,6 +3039,14 @@ function openDesktopDetail(c) {
 window.focusNamedCase = function(name) {
   const idx = markers.findIndex(m => m.case.name === name);
   if (idx >= 0) window.focusCase(idx);
+};
+
+window.focusRecommendedCase = function(name, placement) {
+  trackEvent('recommendation_click', {
+    festival_name: name,
+    placement: placement || 'unknown'
+  });
+  window.focusNamedCase(name);
 };
 
 function rebuild() {
@@ -3066,6 +3094,7 @@ const siteInfoOpen = document.getElementById('site-info-open');
 
 function openSiteInfo() {
   if (!siteInfoModal) return;
+  trackEvent('information_open');
   siteInfoModal.classList.add('open');
   siteInfoModal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
@@ -3095,6 +3124,11 @@ document.addEventListener('keydown', e => {
 const mobileSheet = document.getElementById('mobile-sheet');
 
 function openMobileSheet(c) {
+  trackEvent('festival_detail_open', {
+    festival_name: c.name,
+    prefecture: c.pref,
+    device_view: 'mobile'
+  });
   mobileSheet.innerHTML = popupHtml(c) + '<div class="sheet-close" onclick="closeMobileSheet()">✕</div>';
   mobileSheet.classList.add('open');
   document.body.classList.add('popup-open');
@@ -3239,6 +3273,34 @@ function scheduleDateRolloverRefresh() {
   }, delay);
 }
 scheduleDateRolloverRefresh();
+
+// GA4: delegated click tracking for links rendered dynamically.
+document.addEventListener('click', e => {
+  const official = e.target.closest('[data-track-link="official"]');
+  if (official) {
+    trackEvent('official_site_click', {
+      festival_name: official.dataset.festival || '',
+      destination_url: official.href
+    });
+    return;
+  }
+
+  const internal = e.target.closest('[data-track-link="internal_detail"]');
+  if (internal) {
+    trackEvent('internal_detail_click', {
+      festival_name: internal.dataset.festival || ''
+    });
+    return;
+  }
+
+  const social = e.target.closest('[data-social]');
+  if (social) {
+    trackEvent('social_link_click', {
+      social_network: social.dataset.social || '',
+      destination_url: social.href
+    });
+  }
+});
 </script>
 </body>
 </html>
