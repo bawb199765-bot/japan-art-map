@@ -10,7 +10,6 @@
   <meta property="og:description" content="全国81のアートの旅先から、次に行きたい芸術祭を探そう。開催中・これから・旅のスタイルから地図で探せます。" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://bawb199765-bot.github.io/japan-art-map/" />
-  <meta name="twitter:card" content="summary" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -2166,6 +2165,13 @@
     }
 
 </style>
+
+  <meta property="og:image" content="https://artslogix.github.io/japan-art-map/images/ogp-japan-art-map.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="JAPAN ART MAP｜日本の芸術祭を旅する" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://artslogix.github.io/japan-art-map/images/ogp-japan-art-map.png" />
 </head>
 <body>
 
@@ -2206,23 +2212,6 @@
       <button class="mobile-quick-chip mobile-filter-toggle" id="mobile-filter-toggle" type="button" aria-expanded="false">
         詳細条件で絞り込み <span>＋</span>
       </button>
-    </div>
-
-    <div class="filter-block">
-      <div class="fl-label">
-        <span class="fl-label-jp" style="font-family: Helvetica">取り組みカテゴリー</span>
-        <span class="fl-label-en">Category</span>
-      </div>
-      <div class="chips" id="cat-filters">
-        <button class="chip active" data-cat="all">ALL</button>
-        <button class="chip" data-cat="都市型芸術祭型">都市</button>
-        <button class="chip" data-cat="地域型芸術祭型">里山・島</button>
-        <button class="chip" data-cat="小規模プロジェクト型">小規模</button>
-        <button class="chip" data-cat="エリアマネジメント型">街歩き</button>
-        <button class="chip" data-cat="AIR・制作拠点型">制作拠点</button>
-        <button class="chip" data-cat="ミュージアム・拠点型">美術館</button>
-        <button class="chip" data-cat="産業・工芸連携型" style="font-family: Helvetica">工芸</button>
-      </div>
     </div>
 
     <div class="filter-block">
@@ -2983,7 +2972,7 @@ function setupMobileControls() {
 
       if (open) {
         // The filter blocks are inserted above the list when filters-open is added.
-        // Wait for layout to update, then jump to the first block ("取り組みカテゴリー").
+        // Wait for layout to update, then jump to the first detail filter ("いつ行く？").
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             const firstFilter = sidebar.querySelector('.filter-block');
@@ -3191,16 +3180,6 @@ window.focusCase = function(idx) {
   setActive(idx);
   scrollListTo(idx);
 };
-
-document.querySelectorAll('#cat-filters .chip').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#cat-filters .chip').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeCat = btn.dataset.cat;
-    selectedCaseName = null;
-    rebuild();
-  });
-});
 
 document.querySelectorAll('#status-filters .chip').forEach(btn => {
   btn.addEventListener('click', () => {
