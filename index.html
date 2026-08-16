@@ -378,6 +378,85 @@
     .discover-lead { font-family: var(--sans); font-size: 11px; line-height: 1.7; color: var(--muted); margin-bottom: 18px; }
     .discover-card { border-top: 1px solid var(--line2); padding: 14px 0; cursor: pointer; transition: opacity .15s, transform .15s; }
     .discover-card:hover { opacity: .9; transform: translateX(2px); }
+
+    /* Desktop initial recommendations: compact enough to show all 3 above the fold */
+    .detail-panel .discover-wrap {
+      padding: 14px 14px 20px;
+    }
+    .detail-panel .discover-howto {
+      margin-bottom: 14px;
+      padding: 10px 11px;
+    }
+    .detail-panel .detail-guide-kicker {
+      margin-bottom: 4px;
+    }
+    .detail-panel .detail-guide-title {
+      font-size: 13.5px;
+      margin-bottom: 3px;
+    }
+    .detail-panel .detail-guide-copy {
+      font-size: 9.8px;
+      line-height: 1.55;
+    }
+    .detail-panel .discover-howto-arrows {
+      margin-top: 5px;
+      font-size: 7px;
+    }
+    .detail-panel .recommend-block {
+      padding-top: 12px;
+    }
+    .detail-panel .recommend-kicker {
+      margin-bottom: 4px;
+    }
+    .detail-panel .recommend-title {
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+    .detail-panel .recommend-lead {
+      font-size: 9.8px;
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+
+    .detail-panel .discover-card {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      column-gap: 10px;
+      align-items: center;
+      min-height: 78px;
+      padding: 8px 0;
+      border-top: 1px solid var(--line2);
+    }
+    .detail-panel .discover-card .discover-img {
+      grid-row: 1 / span 3;
+      width: 86px;
+      height: 62px;
+      margin: 0;
+      border: 1px solid var(--line);
+    }
+    .detail-panel .discover-card .discover-meta {
+      margin-bottom: 2px;
+    }
+    .detail-panel .discover-card .discover-name {
+      font-size: 12.5px;
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+    .detail-panel .discover-card .discover-tagline {
+      font-size: 9px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .detail-panel .discover-foot {
+      margin-top: 8px;
+      padding-top: 8px;
+      font-size: 8.5px;
+      line-height: 1.45;
+    }
+
     .discover-img { width: 100%; height: 112px; overflow: hidden; background: var(--bg2); margin-bottom: 10px; border: 1px solid var(--line); }
     .discover-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .discover-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:5px; }
@@ -1564,6 +1643,10 @@
       .sidebar.filters-open .mobile-filter-toggle span {
         transform: rotate(45deg);
       }
+      .sidebar.filters-open .mobile-filter-toggle {
+        background: var(--bg2);
+        color: var(--text);
+      }
 
       /* By default, hide the dense desktop filter stack */
       .sidebar:not(.filters-open) > .filter-block,
@@ -1706,31 +1789,396 @@
       }
     }
 
+
+
+    /* ───────────────────────────────────────────────────────
+       V3.3 — floating transparent header + INFO
+       Final override layer
+       ─────────────────────────────────────────────────────── */
+
+    /* Old header pieces are no longer used, but keep them harmless. */
+    .site-header {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1800;
+      height: 38px !important;
+      min-height: 38px;
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px 0 14px;
+      border: 0 !important;
+      border-bottom: 1px solid rgba(20,17,13,.12) !important;
+      background: linear-gradient(
+        to bottom,
+        rgba(20,17,13,.70) 0%,
+        rgba(20,17,13,.42) 72%,
+        rgba(20,17,13,.12) 100%
+      ) !important;
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      box-shadow: none !important;
+      pointer-events: auto;
+    }
+
+    .site-header-brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .site-header-title {
+      font-family: var(--serif);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .035em;
+      color: #f0e8d8;
+      line-height: 1;
+    }
+
+    .site-header-divider {
+      width: 1px;
+      height: 12px;
+      flex: 0 0 auto;
+      background: rgba(240,232,216,.26);
+    }
+
+    .site-header-sub {
+      font-family: var(--sans);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: .035em;
+      color: rgba(240,232,216,.68);
+      line-height: 1;
+    }
+
+    .site-info-trigger {
+      height: 26px;
+      min-width: 92px;
+      padding: 0 10px;
+      border: 1px solid rgba(240,232,216,.28);
+      background: rgba(20,17,13,.26);
+      color: rgba(240,232,216,.86);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .16em;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .site-info-trigger:hover {
+      border-color: var(--accent);
+      background: rgba(20,17,13,.62);
+      color: #fff;
+    }
+
+    /* Header overlays the map/layout rather than consuming height. */
+    body {
+      position: relative;
+    }
+    .layout {
+      height: 100% !important;
+      min-height: 0;
+    }
+
+    /* Desktop: map/sidebar/detail begin behind the translucent header. */
+    @media (min-width: 769px) {
+      .sidebar,
+      .detail-panel {
+        padding-top: 38px;
+      }
+
+      /* Keep the map truly underneath the header. */
+      .map-wrapper {
+        padding-top: 0 !important;
+      }
+
+      .leaflet-control-zoom {
+        margin-top: 52px !important;
+      }
+
+      .map-meta {
+        top: 50px !important;
+      }
+    }
+
+    /* ── INFO overlay ───────────────────────────────────── */
+    .site-info-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 6000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .site-info-overlay.open { display: flex; }
+
+    .site-info-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    .site-info-card {
+      position: relative;
+      z-index: 1;
+      width: min(455px, calc(100vw - 40px));
+      max-height: min(680px, calc(100vh - 40px));
+      overflow-y: auto;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--line2);
+      padding: 25px 25px 21px;
+      box-shadow:
+        8px 8px 0 rgba(217,102,80,.12),
+        0 24px 70px rgba(0,0,0,.55);
+    }
+
+    .site-info-close {
+      position: absolute;
+      top: 11px;
+      right: 11px;
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--line2);
+      background: var(--bg2);
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .site-info-close:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .site-info-kicker {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .20em;
+      color: var(--accent);
+      margin-bottom: 7px;
+    }
+    .site-info-title {
+      margin: 0 40px 11px 0;
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--text);
+    }
+    .site-info-lead {
+      margin: 0 0 19px;
+      font-family: var(--sans);
+      font-size: 11.5px;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+    .site-info-section {
+      padding-top: 15px;
+      margin-top: 15px;
+      border-top: 1px solid var(--line);
+    }
+    .site-info-label {
+      margin-bottom: 6px;
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .18em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .site-info-name {
+      margin-bottom: 7px;
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .site-info-copy {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: 11px;
+      line-height: 1.75;
+      color: rgba(240,232,216,.84);
+    }
+    .site-info-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .site-info-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 31px;
+      padding: 6px 9px;
+      border: 1px solid var(--line2);
+      background: var(--bg2);
+      color: var(--text);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .04em;
+      transition: border-color .15s, color .15s;
+    }
+    .site-info-links a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .site-info-note {
+      padding-left: 12px;
+      border-left: 2px solid var(--accent);
+    }
+    .site-info-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 7.5px;
+      letter-spacing: .14em;
+      color: var(--dim);
+    }
+
+    /* ── MOBILE HEADER / INFO ───────────────────────────── */
+    @media (max-width: 768px) {
+      .site-header {
+        height: 34px !important;
+        min-height: 34px !important;
+        padding: 0 6px 0 10px !important;
+        background: linear-gradient(
+          to bottom,
+          rgba(20,17,13,.62) 0%,
+          rgba(20,17,13,.34) 76%,
+          rgba(20,17,13,.06) 100%
+        ) !important;
+      }
+
+      .site-header-brand {
+        gap: 7px;
+        max-width: calc(100vw - 96px);
+      }
+
+      .site-header-title {
+        font-size: 11.5px;
+        letter-spacing: .02em;
+      }
+
+      .site-header-divider {
+        height: 10px;
+      }
+
+      .site-header-sub {
+        font-size: 8px;
+        letter-spacing: .015em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .site-info-trigger {
+        height: 24px;
+        min-width: 84px;
+        padding: 0 8px;
+        font-size: 7.5px;
+        background: rgba(20,17,13,.35);
+      }
+
+      /* Mobile layout no longer reserves 58px for header. */
+      .layout {
+        height: var(--vh100, 100svh) !important;
+      }
+
+      .map-wrapper {
+        height: 43svh !important;
+        min-height: 285px !important;
+        max-height: 420px !important;
+      }
+
+      .map-meta {
+        top: 42px !important;
+      }
+
+      .leaflet-control-zoom {
+        margin-top: 42px !important;
+      }
+
+      .site-info-overlay {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .site-info-card {
+        width: 100%;
+        max-width: none;
+        max-height: 78svh;
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+        border-radius: 14px 14px 0 0;
+        padding: 22px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+        box-shadow: 0 -18px 52px rgba(0,0,0,.72);
+      }
+
+      .site-info-card::before {
+        content: '';
+        display: block;
+        width: 34px;
+        height: 3px;
+        border-radius: 999px;
+        background: var(--line2);
+        margin: -8px auto 14px;
+      }
+
+      .site-info-title {
+        font-size: 19px;
+      }
+
+      .site-info-lead,
+      .site-info-copy {
+        font-size: 11.5px;
+      }
+
+      .site-info-links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .site-info-links a {
+        justify-content: center;
+        min-height: 36px;
+      }
+
+      .site-info-meta {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+
 </style>
 </head>
 <body>
 
-<header>
-  <a class="hd-back" href="https://bawb199765-bot.github.io/Art_PlaceMaking/database/index.html">Database</a>
-  <div class="hd-brand">
-    <div class="hd-mark" style="width: 10px">
-</div>
-    <div class="hd-brand-text">
-      <h1>日本の芸術祭を旅する</h1>
-      <div class="hd-sub">今年、どの芸術祭に行く？</div>
-    </div>
+<header class="site-header">
+  <div class="site-header-brand">
+    <div class="site-header-title">日本の芸術祭を旅する</div>
+    <div class="site-header-divider"></div>
+    <div class="site-header-sub">今年、どの芸術祭に行く？</div>
   </div>
-  <div class="hd-spacer"></div>
-  <div class="hd-meta">
-    <div class="hd-meta-block">
-      <div class="hd-meta-k">掲載数</div>
-      <div class="hd-meta-v"><span class="accent" id="hd-total">81</span><span class="sub">件</span></div>
-    </div>
-    <div class="hd-meta-block">
-      <div class="hd-meta-k">最終更新</div>
-      <div class="hd-meta-v" style="font-size:15px;">2026年8月</div>
-    </div>
-  </div>
+  <button class="site-info-trigger" id="site-info-open" type="button"
+          aria-haspopup="dialog" aria-controls="site-info-modal">
+    INFORMATION
+  </button>
 </header>
 
 <div class="layout">
@@ -1867,6 +2315,51 @@
     </div>
   </div>
 
+</div>
+
+<div class="site-info-overlay" id="site-info-modal" aria-hidden="true">
+  <div class="site-info-backdrop" data-info-close></div>
+
+  <section class="site-info-card" role="dialog" aria-modal="true" aria-labelledby="site-info-title">
+    <button class="site-info-close" type="button" aria-label="閉じる" data-info-close>✕</button>
+
+    <div class="site-info-kicker">ABOUT / CONTACT</div>
+    <h2 class="site-info-title" id="site-info-title">このサイトについて</h2>
+
+    <p class="site-info-lead">
+      JAPAN ART MAP は、全国の芸術祭やアートプロジェクトを、
+      次の旅のきっかけとして見つけるための個人運営のマップです。
+    </p>
+
+    <div class="site-info-section">
+      <div class="site-info-label">運営・編集</div>
+      <div class="site-info-name">ArtsLogix</div>
+      <p class="site-info-copy">
+        掲載内容の修正、画像利用に関するご連絡、その他のお問い合わせは、
+        下記のリンクからご連絡ください。
+      </p>
+
+      <div class="site-info-links">
+        <a href="https://linktr.ee/artslogix" target="_blank" rel="noopener noreferrer">Linktree ↗</a>
+        <a href="https://www.instagram.com/artslogix/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+        <a href="https://www.threads.com/@artslogix" target="_blank" rel="noopener noreferrer">Threads ↗</a>
+        <a href="https://tr.ee/Fbtk93hDU9" target="_blank" rel="noopener noreferrer">X ↗</a>
+      </div>
+    </div>
+
+    <div class="site-info-section site-info-note">
+      <div class="site-info-label">掲載情報について</div>
+      <p class="site-info-copy">
+        掲載情報はAIによる調査を活用して作成しています。正確性には配慮していますが、
+        最新情報は必ず各公式サイトでご確認ください。
+      </p>
+    </div>
+
+    <div class="site-info-meta">
+      <span>81 CASES</span>
+      <span>LAST UPDATED · 2026.08</span>
+    </div>
+  </section>
 </div>
 
 <div id="mobile-sheet" class="mobile-sheet"></div>
@@ -2273,29 +2766,66 @@ const detailPanelTitleEn = document.getElementById('detail-panel-title-en');
 
 function getDiscoveryPicks(candidates = CASES) {
   const today = todayLocal();
-  const withImages = candidates.filter(c => c.localImg);
 
-  const ongoing = withImages
-    .filter(c => getEventStatus(c).key === 'ongoing')
-    .sort((a,b) => {
-      const ae = a.endDate ? toLocalDay(a.endDate) : new Date(2999,0,1);
-      const be = b.endDate ? toLocalDay(b.endDate) : new Date(2999,0,1);
-      return ae - be;
-    });
+  // Editorial priority for the first impression.
+  // If these cases are still inside the current filter result, show them first.
+  const FEATURED_NAMES = [
+    "すみだ五彩の芸術祭",
+    "下呂 Art Discovery 2026",
+    "前橋国際芸術祭2026「めぶく。」"
+  ];
 
-  const upcoming = withImages
-    .filter(c => {
+  const byName = new Map(candidates.map(c => [c.name, c]));
+  const featured = FEATURED_NAMES
+    .map(name => byName.get(name))
+    .filter(Boolean);
+
+  const featuredSet = new Set(featured.map(c => c.name));
+
+  // Remaining candidates are ranked as fallback.
+  // Prefer entries that have a configured image, and push Nagahama lower
+  // because its image may not be available in the deployed site.
+  const remaining = candidates
+    .filter(c => !featuredSet.has(c.name))
+    .map(c => {
       const st = getEventStatus(c);
-      const s = c.startDate ? toLocalDay(c.startDate) : null;
-      return st.key === 'upcoming' && s && s.getFullYear() === today.getFullYear();
+      const hasImage = !!c.localImg;
+      const isNagahama = c.name === "長浜国際芸術祭";
+
+      let statusRank = 9;
+      if (st.key === "ongoing") statusRank = 0;
+      else if (st.key === "upcoming") statusRank = 1;
+      else if (st.key === "yearround") statusRank = 2;
+
+      let startSort = new Date(2999, 0, 1);
+      if (c.startDate) startSort = toLocalDay(c.startDate);
+
+      return {
+        c,
+        st,
+        statusRank,
+        imagePenalty: hasImage ? 0 : 5,
+        nagahamaPenalty: isNagahama ? 20 : 0,
+        startSort
+      };
     })
-    .sort((a,b) => toLocalDay(a.startDate) - toLocalDay(b.startDate));
+    .filter(x => {
+      // Only recommend things that can reasonably be visited now / later this year / year-round.
+      if (x.st.key === "ongoing" || x.st.key === "yearround") return true;
+      if (x.st.key === "upcoming" && x.c.startDate) {
+        return toLocalDay(x.c.startDate).getFullYear() === today.getFullYear();
+      }
+      return false;
+    })
+    .sort((a, b) => {
+      const aScore = a.statusRank + a.imagePenalty + a.nagahamaPenalty;
+      const bScore = b.statusRank + b.imagePenalty + b.nagahamaPenalty;
+      if (aScore !== bScore) return aScore - bScore;
+      return a.startSort - b.startSort;
+    })
+    .map(x => x.c);
 
-  const yearround = withImages
-    .filter(c => getEventStatus(c).key === 'yearround')
-    .sort((a,b) => a.name.localeCompare(b.name, 'ja'));
-
-  return [...ongoing, ...upcoming, ...yearround].slice(0, 3);
+  return [...featured, ...remaining].slice(0, 3);
 }
 
 function renderDiscoveryPanel(candidates = CASES) {
@@ -2303,7 +2833,18 @@ function renderDiscoveryPanel(candidates = CASES) {
   selectedCaseName = null;
   if (detailPanelTitle) detailPanelTitle.textContent = '芸術祭の詳細';
   if (detailPanelTitleEn) detailPanelTitleEn.textContent = 'Festival Detail';
-  const picks = getDiscoveryPicks(candidates);
+  const isDefaultDiscovery =
+    activeCat === 'all' &&
+    activeStatus === 'all' &&
+    activeMonth === 'all' &&
+    activeTravelTag === 'all' &&
+    activeAccess === 'all' &&
+    !searchQ;
+
+  const picks = isDefaultDiscovery
+    ? getDiscoveryPicks(CASES)
+    : getDiscoveryPicks(candidates);
+
   const cards = picks.map(c => {
     const st = getEventStatus(c);
     const img = c.localImg ? `<div class="discover-img"><img src="${c.localImg}" alt="${c.name}" onerror="this.parentElement.style.display='none'"></div>` : '';
@@ -2439,6 +2980,26 @@ function setupMobileControls() {
     toggle.addEventListener('click', () => {
       const open = sidebar.classList.toggle('filters-open');
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+      if (open) {
+        // The filter blocks are inserted above the list when filters-open is added.
+        // Wait for layout to update, then jump to the first block ("取り組みカテゴリー").
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const firstFilter = sidebar.querySelector('.filter-block');
+            if (!firstFilter) return;
+
+            const sidebarRect = sidebar.getBoundingClientRect();
+            const filterRect = firstFilter.getBoundingClientRect();
+            const targetTop = sidebar.scrollTop + (filterRect.top - sidebarRect.top);
+
+            sidebar.scrollTo({
+              top: Math.max(0, targetTop - 1),
+              behavior: 'smooth'
+            });
+          });
+        });
+      }
     });
   }
 
@@ -2510,6 +3071,38 @@ function rebuild() {
 }
 
 // ── Standalone mobile bottom sheet (lives directly under <body>, unaffected by Leaflet's transformed panes) ──
+
+const siteInfoModal = document.getElementById('site-info-modal');
+const siteInfoOpen = document.getElementById('site-info-open');
+
+function openSiteInfo() {
+  if (!siteInfoModal) return;
+  siteInfoModal.classList.add('open');
+  siteInfoModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSiteInfo() {
+  if (!siteInfoModal) return;
+  siteInfoModal.classList.remove('open');
+  siteInfoModal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+if (siteInfoOpen) {
+  siteInfoOpen.addEventListener('click', openSiteInfo);
+}
+
+document.querySelectorAll('[data-info-close]').forEach(el => {
+  el.addEventListener('click', closeSiteInfo);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && siteInfoModal && siteInfoModal.classList.contains('open')) {
+    closeSiteInfo();
+  }
+});
+
 const mobileSheet = document.getElementById('mobile-sheet');
 
 function openMobileSheet(c) {
