@@ -12,13 +12,13 @@
     gtag('js', new Date());
     gtag('config', 'G-PK81WLMXKD');
   </script>
-  <title>JAPAN ART MAP｜日本の芸術祭を旅する</title>
+  <title>JAPAN ART MAP｜2026年 全国の芸術祭・アートイベントを地図から探す</title>
 
-  <meta name="description" content="全国81の芸術祭・アートプロジェクトから、開催中・これから行けるイベントや旅のスタイルを地図で探せるアート旅マップ。" />
-  <meta property="og:title" content="JAPAN ART MAP｜日本の芸術祭を旅する" />
-  <meta property="og:description" content="全国81のアートの旅先から、次に行きたい芸術祭を探そう。開催中・これから・旅のスタイルから地図で探せます。" />
+  <meta name="description" content="2026年に全国で開催される芸術祭・アートイベントを、開催時期・地域・旅のテーマから探せるマップ。開催中の芸術祭や、9月・10月に行けるアート旅を一覧で紹介します。" />
+  <meta property="og:title" content="JAPAN ART MAP｜2026年 全国の芸術祭・アートイベントを地図から探す" />
+  <meta property="og:description" content="2026年に全国で開催される芸術祭・アートイベントを、開催時期・地域・旅のテーマから探せるマップ。開催中の芸術祭や、9月・10月に行けるアート旅を一覧で紹介します。" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://bawb199765-bot.github.io/japan-art-map/" />
+  <meta property="og:url" content="https://artslogix.github.io/japan-art-map/" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -2173,6 +2173,108 @@
       }
     }
 
+
+
+    /* ── V3.7 MAP LEGEND: timing-first ──────────────────── */
+    .timing-legend .legend-body {
+      gap: 12px;
+    }
+    .timing-legend .legend-item {
+      gap: 5px;
+    }
+    .timing-legend .legend-sq {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.22);
+    }
+    .timing-legend .legend-label {
+      font-family: var(--sans);
+      font-size: 9.5px;
+      letter-spacing: 0;
+    }
+
+    @media (max-width: 768px) {
+      /* Timing is essential navigation, so keep the legend visible on mobile. */
+      .legend.timing-legend {
+        display: flex !important;
+        padding: 5px 8px !important;
+        gap: 0 !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        scrollbar-width: none;
+        background: rgba(20,17,13,.88);
+      }
+      .legend.timing-legend::-webkit-scrollbar { display: none; }
+      .timing-legend .legend-head { display: none !important; }
+      .timing-legend .legend-body {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        width: max-content !important;
+        min-width: max-content;
+        gap: 10px !important;
+        justify-content: flex-start !important;
+      }
+      .timing-legend .legend-item {
+        flex: 0 0 auto !important;
+        gap: 4px !important;
+      }
+      .timing-legend .legend-sq {
+        width: 6px !important;
+        height: 6px !important;
+      }
+      .timing-legend .legend-label {
+        font-size: 8.5px !important;
+        white-space: nowrap !important;
+      }
+
+      /* Neutralize the old nth-child mobile category-label substitutions. */
+      .timing-legend .legend-item .legend-label {
+        font-size: 8.5px !important;
+      }
+      .timing-legend .legend-item .legend-label::before {
+        content: none !important;
+        display: none !important;
+      }
+    }
+
+
+
+    /* ── V3.7.3: warm palette with stronger visual separation ── */
+    .timing-legend .legend-body { gap: 14px; }
+    .timing-legend .legend-sq {
+      width: 9px;
+      height: 9px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.36);
+    }
+
+
+
+    /* ── V3.8 SEO intro ─────────────────────────────────── */
+    .seo-intro {
+      margin: 10px 0 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.035);
+      border-radius: 10px;
+      color: rgba(255,255,255,.72);
+      font-family: var(--sans);
+      font-size: 10.5px;
+      line-height: 1.7;
+    }
+    .seo-intro strong {
+      color: rgba(255,255,255,.94);
+      font-weight: 600;
+    }
+    @media (max-width: 768px) {
+      .seo-intro {
+        margin: 8px 0 10px;
+        padding: 9px 10px;
+        font-size: 10px;
+        line-height: 1.65;
+      }
+    }
+
 </style>
 
   <meta property="og:image" content="https://artslogix.github.io/japan-art-map/images/ogp-japan-art-map.png" />
@@ -2181,6 +2283,31 @@
   <meta property="og:image:alt" content="JAPAN ART MAP｜日本の芸術祭を旅する" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://artslogix.github.io/japan-art-map/images/ogp-japan-art-map.png" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <link rel="canonical" href="https://artslogix.github.io/japan-art-map/" />
+  <meta name="author" content="ArtsLogix" />
+  <meta name="theme-color" content="#1b1713" />
+  <meta property="og:site_name" content="JAPAN ART MAP" />
+  <meta name="twitter:title" content="JAPAN ART MAP｜2026年 全国の芸術祭・アートイベントを地図から探す" />
+  <meta name="twitter:description" content="2026年に全国で開催される芸術祭・アートイベントを、開催時期・地域・旅のテーマから探せるマップ。開催中の芸術祭や、9月・10月に行けるアート旅を一覧で紹介します。" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "JAPAN ART MAP",
+    "alternateName": "日本の芸術祭を旅する",
+    "url": "https://artslogix.github.io/japan-art-map/",
+    "description": "2026年に全国で開催される芸術祭・アートイベントを、開催時期・地域・旅のテーマから探せるマップ。開催中の芸術祭や、9月・10月に行けるアート旅を一覧で紹介します。",
+    "inLanguage": "ja",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ArtsLogix",
+      "url": "https://linktr.ee/artslogix"
+    }
+  }
+  </script>
+
 </head>
 <body>
 
@@ -2290,7 +2417,13 @@
       <span class="detail-panel-head-jp" id="detail-panel-title">旅先を探す</span>
       <span class="detail-panel-head-en" id="detail-panel-title-en">Discover</span>
     </div>
-    <div class="detail-panel-content" id="detail-panel-content"></div>
+    <div class="detail-panel-content" id="detail-panel-content">
+
+        <section class="seo-intro" aria-label="JAPAN ART MAPについて">
+          <strong>2026年の全国の芸術祭・アートイベントを地図から探す。</strong>
+          開催中の芸術祭、8月・9月・10月に始まるアートイベント、地域や旅のテーマから、次のアート旅を見つけるためのマップです。
+        </section>
+</div>
   </section>
 
   <!-- MAP -->
@@ -2299,17 +2432,9 @@
     <div class="map-meta">
       <div class="map-meta-row"><span class="k">表示中</span><span class="v accent" id="map-showing"></span></div>
     </div>
-    <div class="legend">
-      <div class="legend-head">Cat. ／ カテゴリー</div>
-      <div class="legend-body">
-        <div class="legend-item"><div class="legend-sq" style="background:#d96650"></div><span class="legend-label">都市<span class="en">Urban</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#e8c96e"></div><span class="legend-label">里山・島<span class="en">Regional</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#b8b06e"></div><span class="legend-label">小規模<span class="en">Micro</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#7fb3a8"></div><span class="legend-label">街歩き<span class="en">Area Walk</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#b48cc6"></div><span class="legend-label">制作拠点<span class="en">Residency</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#d49a6e"></div><span class="legend-label">美術館<span class="en">Museum</span></span></div>
-        <div class="legend-item"><div class="legend-sq" style="background:#c87a9a"></div><span class="legend-label">工芸<span class="en">Craft</span></span></div>
-      </div>
+    <div class="legend timing-legend" id="timing-legend">
+      <div class="legend-head">WHEN ／ 開催時期</div>
+      <div class="legend-body" id="timing-legend-body"></div>
     </div>
   </div>
 
@@ -2391,6 +2516,84 @@ const CAT_COLORS = {
   "ミュージアム・拠点型": "#d49a6e",
   "産業・工芸連携型":     "#c87a9a",
 };
+
+
+// Map pin colors are based on "when can I go?" rather than research categories.
+const TIMING_COLORS = {
+  ongoing:   "#e94b35", // 開催中 — strong vermilion
+  month0:    "#f58a2a", // 今月開始 — orange
+  month1:    "#f2c94c", // 翌月開始 — yellow
+  month2:    "#e66591", // 翌々月開始 — vivid pink
+  later:     "#9b63d5", // それ以降（今年） — violet
+  future:    "#4f8fea", // 来年以降 — only cool accent
+  yearround: "#c8923f", // 通年 — warm ochre
+  unknown:   "#dfcfba", // 未発表 / 終了 — soft sand
+  ended:     "#dfcfba"  // 未発表 / 終了 — soft sand
+};
+
+function getTimingGroup(c) {
+  const today = todayLocal();
+  const currentYear = today.getFullYear();
+  const currentMonthIndex = today.getMonth();
+  const status = getEventStatus(c);
+
+  if (status.key === 'ongoing') return 'ongoing';
+  if (status.key === 'yearround' || status.key === 'program') return 'yearround';
+  if (status.key === 'ended') return 'ended';
+
+  if (c.startDate) {
+    const s = toLocalDay(c.startDate);
+    if (s) {
+      if (s.getFullYear() > currentYear) return 'future';
+      if (s.getFullYear() === currentYear) {
+        const diff = s.getMonth() - currentMonthIndex;
+        if (diff <= 0) return 'month0';
+        if (diff === 1) return 'month1';
+        if (diff === 2) return 'month2';
+        return 'later';
+      }
+    }
+  }
+
+  const y = parseInt(c.nextYear, 10);
+  if (Number.isFinite(y) && y > currentYear) return 'future';
+  return 'unknown';
+}
+
+function timingColor(c) {
+  return TIMING_COLORS[getTimingGroup(c)] || TIMING_COLORS.unknown;
+}
+
+function renderTimingLegend() {
+  const body = document.getElementById('timing-legend-body');
+  if (!body) return;
+
+  const today = todayLocal();
+  const year = today.getFullYear();
+  const m0 = today.getMonth() + 1;
+  const m1 = m0 < 12 ? m0 + 1 : null;
+  const m2 = m0 < 11 ? m0 + 2 : null;
+
+  const items = [
+    ['ongoing', '開催中'],
+    ['month0', `${year}年${m0}月開始`],
+  ];
+  if (m1) items.push(['month1', `${year}年${m1}月開始`]);
+  if (m2) items.push(['month2', `${year}年${m2}月開始`]);
+  items.push(
+    ['later', `${year}年${m2 ? m2 + 1 : m0 + 1}月以降`],
+    ['future', `${year + 1}年〜`],
+    ['yearround', '通年'],
+    ['unknown', '未発表・終了']
+  );
+
+  body.innerHTML = items.map(([key, label]) => `
+    <div class="legend-item">
+      <div class="legend-sq" style="background:${TIMING_COLORS[key]}"></div>
+      <span class="legend-label">${label}</span>
+    </div>
+  `).join('');
+}
 
 // 来場者向けの表示ラベル（内部データ c.cat はそのまま。UI表示のみ変換）
 const CAT_LABELS = {
@@ -2712,15 +2915,28 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.
 let markers = [];
 
 function markerIcon(c, active) {
-  const color = CAT_COLORS[c.cat] || "#888";
-  const s = active ? 26 : 18;
-  const inner = active ? 10 : 6;
-  const ring = active ? `box-shadow:0 0 0 1px #fff, 0 0 0 4px ${color}66, 0 4px 14px rgba(0,0,0,0.4);` : `box-shadow:0 0 0 1px rgba(255,255,255,0.85), 0 2px 8px rgba(0,0,0,0.35);`;
+  const group = getTimingGroup(c);
+  const color = timingColor(c);
+  const s = active ? 27 : 20;
+  const inner = active ? 10 : 7;
+
+  const isInactive = group === 'unknown' || group === 'ended';
+  const isYearround = group === 'yearround';
+
+  const opacity = isInactive ? 0.62 : 1;
+  const border = isYearround
+    ? '2px solid #fff1cf'
+    : '1.5px solid rgba(255,255,255,.97)';
+
+  const ring = active
+    ? `box-shadow:0 0 0 2px #fff, 0 0 0 5px ${color}66, 0 4px 14px rgba(0,0,0,0.42);`
+    : `box-shadow:0 2px 9px rgba(0,0,0,0.30);`;
+
   return L.divIcon({
     className: '',
-    html: `<div style="position:relative;width:${s}px;height:${s}px;">
-      <div style="position:absolute;inset:0;border-radius:50%;background:${color};${ring}transition:all 0.18s ease;"></div>
-      <div style="position:absolute;top:50%;left:50%;width:${inner}px;height:${inner}px;background:#fff;border-radius:50%;transform:translate(-50%,-50%);"></div>
+    html: `<div style="position:relative;width:${s}px;height:${s}px;opacity:${opacity};">
+      <div style="position:absolute;inset:0;border-radius:50%;background:${color};border:${border};box-sizing:border-box;${ring}transition:all 0.18s ease;"></div>
+      <div style="position:absolute;top:50%;left:50%;width:${inner}px;height:${inner}px;background:rgba(255,255,255,${active ? 0.96 : 0.80});border-radius:50%;transform:translate(-50%,-50%);"></div>
       <div style="position:absolute;inset:-8px;cursor:pointer"></div>
     </div>`,
     iconSize: [s, s],
@@ -2756,7 +2972,6 @@ function popupHtml(c) {
       <div class="popup-region"><span class="accent-mark">${catLabel(c.cat)}</span></div>
     </div>
     <div class="popup-btn-row">
-      ${c.slug ? `<a class="popup-link" data-track-link="internal_detail" data-festival="${c.name}" href="https://bawb199765-bot.github.io/Art_PlaceMaking/detail-${c.slug}.html" target="_blank" rel="noopener">詳しく見る →</a>` : ''}
       ${c.url ? `<a class="popup-link-url" data-track-link="official" data-festival="${c.name}" href="${c.url}" target="_blank" rel="noopener">公式サイト</a>` : ''}
     </div>
   </div>`;
@@ -3252,6 +3467,7 @@ document.getElementById('search-input').addEventListener('input', e => {
 
 updateDynamicFilterLabels();
 renderMonthFilters();
+renderTimingLegend();
 setupMobileControls();
 rebuild();
 
@@ -3267,6 +3483,7 @@ function scheduleDateRolloverRefresh() {
     if (parseInt(activeMonth, 10) < todayLocal().getMonth() + 1) activeMonth = 'all';
     updateDynamicFilterLabels();
     renderMonthFilters();
+    renderTimingLegend();
     syncMobileQuickbar();
     rebuild();
     scheduleDateRolloverRefresh();
@@ -3281,14 +3498,6 @@ document.addEventListener('click', e => {
     trackEvent('official_site_click', {
       festival_name: official.dataset.festival || '',
       destination_url: official.href
-    });
-    return;
-  }
-
-  const internal = e.target.closest('[data-track-link="internal_detail"]');
-  if (internal) {
-    trackEvent('internal_detail_click', {
-      festival_name: internal.dataset.festival || ''
     });
     return;
   }
