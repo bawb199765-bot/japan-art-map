@@ -1,0 +1,3529 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PK81WLMXKD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PK81WLMXKD', { site_language: 'ja', content_group: 'language/ja' });
+  </script>
+  <title>JAPAN ART MAP｜2026年 全国の芸術祭・アートイベントを地図から探す</title>
+
+  <meta name="description" content="2026年に全国で開催される芸術祭・アートイベントを、開催時期・地域・旅のテーマから探せるマップ。開催中の芸術祭や、9月・10月に行けるアート旅を一覧で紹介します。" />
+  <meta property="og:title" content="JAPAN ART MAP｜2026年 全国の芸術祭・アートイベントを地図から探す" />
+  <meta property="og:description" content="2026年に全国で開催される芸術祭・アートイベントを、開催時期・地域・旅のテーマから探せるマップ。開催中の芸術祭や、9月・10月に行けるアート旅を一覧で紹介します。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://artslogix.github.io/japan-art-map/" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      /* paper / sumi / vermilion editorial palette */
+      --bg:       #14110d;
+      --bg2:      #1a1612;
+      --bg3:      #221d17;
+      --line:     #2a241c;
+      --line2:    #3b3328;
+      --text:     #f0e8d8;
+      --muted:    #8a8174;
+      --dim:      #5a5247;
+      --accent:   #d96650;   /* 朱 vermilion */
+      --accent-2: #e8c96e;   /* gold edge */
+
+      /* category hues — single saturated set */
+      --c-urban:    #d96650;
+      --c-region:   #e8c96e;
+      --c-micro:    #b8b06e;
+      --c-area:     #7fb3a8;
+      --c-air:      #b48cc6;
+      --c-museum:   #d49a6e;
+      --c-craft:    #c87a9a;
+
+      --serif: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      --sans:  Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      --mono:  Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; background: #14110d; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* subtle paper-grain on dark surfaces */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(rgba(255,240,210,0.012) 1px, transparent 1px);
+      background-size: 3px 3px;
+      mix-blend-mode: overlay;
+      z-index: 9999;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: stretch;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      z-index: 1000;
+      flex-shrink: 0;
+      height: 50px;
+    }
+
+    .hd-back {
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      border-right: 1px solid var(--line);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.15s, background 0.15s, padding 0.15s;
+      white-space: nowrap;
+      gap: 10px;
+    }
+    .hd-back:hover { color: var(--text); background: var(--bg2); }
+    .hd-back::before { content: '←'; font-size: 13px; transition: transform 0.15s; }
+    .hd-back:hover::before { transform: translateX(-3px); }
+
+    .hd-brand {
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      border-right: 1px solid var(--line);
+      gap: 16px;
+    }
+
+    .hd-mark {
+      width: 30px; height: 30px;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      display: grid; place-items: center;
+      letter-spacing: 0;
+      flex-shrink: 0;
+    }
+
+    .hd-brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+
+    .hd-brand-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .hd-brand h1 {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .hd-sub {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .hd-spacer { flex: 1; }
+
+    .hd-meta {
+      display: flex;
+      align-items: center;
+      border-left: 1px solid var(--line);
+    }
+
+    .hd-meta-block {
+      display: flex;
+      flex-direction: column;
+      padding: 0 22px;
+      border-right: 1px solid var(--line);
+      justify-content: center;
+      height: 100%;
+      min-width: 110px;
+    }
+    .hd-meta-block:last-child { border-right: none; }
+
+    .hd-meta-k {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .hd-meta-v {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .hd-meta-v .accent { color: var(--accent); }
+    .hd-meta-v .sub { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 4px; letter-spacing: 0.1em; }
+
+    /* ── LAYOUT ──────────────────────────────────────────── */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────────────── */
+    .sidebar {
+      width: 320px;
+      background: var(--bg);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    /* ── DESKTOP FIXED DETAIL PANEL ───────────────────────── */
+    .detail-panel {
+      width: 360px;
+      min-width: 320px;
+      background: var(--bg);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .detail-panel-head {
+      height: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg2);
+    }
+
+    .detail-panel-head-jp {
+      font-family: var(--serif);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text);
+    }
+
+    .detail-panel-head-en {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .detail-panel-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line2) transparent;
+    }
+
+    .detail-panel-content::-webkit-scrollbar { width: 4px; }
+    .detail-panel-content::-webkit-scrollbar-thumb { background: var(--line2); }
+    .detail-panel-content::-webkit-scrollbar-track { background: transparent; }
+
+    .detail-empty {
+      height: 100%;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .detail-empty-mark {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--accent);
+      position: relative;
+      margin-bottom: 18px;
+      opacity: 0.75;
+    }
+
+    .detail-empty-mark::before,
+    .detail-empty-mark::after {
+      content: '';
+      position: absolute;
+      background: var(--accent);
+      opacity: 0.7;
+    }
+
+    .detail-empty-mark::before {
+      width: 14px;
+      height: 1px;
+      left: 9px;
+      top: 16px;
+    }
+
+    .detail-empty-mark::after {
+      width: 1px;
+      height: 14px;
+      left: 16px;
+      top: 9px;
+    }
+
+    .detail-empty-title {
+      font-family: var(--serif);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .detail-empty-sub {
+      font-family: var(--sans);
+      font-size: 11px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    /* Existing popup components are reused inside the fixed panel */
+    .detail-panel .popup-inner { padding: 18px 18px 22px; }
+    .detail-panel .popup-thumb {
+      height: 180px;
+      margin: -1px -1px 16px;
+      width: calc(100% + 2px);
+      border-left: none;
+      border-right: none;
+      border-top: none;
+    }
+    .detail-panel .popup-name { font-size: 20px; }
+    .detail-panel .popup-desc { line-height: 1.75; }
+    .detail-panel .popup-btn-row {
+      position: sticky;
+      bottom: 0;
+      padding-top: 8px;
+      background: linear-gradient(to bottom, rgba(20,17,13,0), var(--bg) 28%);
+    }
+
+
+    /* travel-first status + dates */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--mono); font-size: 8.5px; font-weight: 600;
+      letter-spacing: 0.10em; padding: 3px 7px; border: 1px solid var(--line2);
+      white-space: nowrap;
+    }
+    .status-badge.ongoing { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+    .status-badge.upcoming { color: var(--accent-2); border-color: rgba(232,201,110,.55); background: rgba(232,201,110,.08); }
+    .status-badge.yearround { color: #9ed1c6; border-color: rgba(127,179,168,.55); background: rgba(127,179,168,.08); }
+    .status-badge.future, .status-badge.program, .status-badge.unknown { color: var(--muted); }
+    .status-badge.ended { color: var(--dim); border-color: var(--line); }
+    .event-date-primary {
+      font-family: var(--serif); font-size: 14px; font-weight: 600; line-height: 1.45;
+      color: var(--accent-2); padding: 10px 0 11px; margin-bottom: 2px;
+      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    }
+    .event-date-note { font-family: var(--sans); font-size: 10px; color: var(--muted); margin-top: 4px; font-weight: 400; }
+    .item-status {
+      display: inline-block; margin-left: 7px; padding: 1px 5px;
+      border: 1px solid var(--line2); font-family: var(--mono); font-size: 7.5px;
+      font-weight: 600; letter-spacing: .05em; vertical-align: 1px;
+    }
+    .item-status.ongoing { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .item-status.upcoming { color: var(--accent-2); border-color: rgba(232,201,110,.5); }
+    .item-status.yearround { color: #9ed1c6; border-color: rgba(127,179,168,.5); }
+    .item-status.future, .item-status.program, .item-status.unknown { color: var(--muted); }
+    .item-status.ended { color: var(--dim); border-color: var(--line); }
+
+    /* discovery panel shown before a case is selected */
+    .discover-wrap { padding: 20px 18px 26px; }
+    .discover-kicker { font-family: var(--mono); font-size: 8px; font-weight: 600; letter-spacing: .22em; color: var(--accent); text-transform: uppercase; margin-bottom: 7px; }
+    .discover-title { font-family: var(--serif); font-size: 22px; font-weight: 600; line-height: 1.35; color: var(--text); margin-bottom: 7px; }
+    .discover-lead { font-family: var(--sans); font-size: 11px; line-height: 1.7; color: var(--muted); margin-bottom: 18px; }
+    .discover-card { border-top: 1px solid var(--line2); padding: 14px 0; cursor: pointer; transition: opacity .15s, transform .15s; }
+    .discover-card:hover { opacity: .9; transform: translateX(2px); }
+
+    /* Desktop initial recommendations: compact enough to show all 3 above the fold */
+    .detail-panel .discover-wrap {
+      padding: 14px 14px 20px;
+    }
+    .detail-panel .discover-howto {
+      margin-bottom: 14px;
+      padding: 10px 11px;
+    }
+    .detail-panel .detail-guide-kicker {
+      margin-bottom: 4px;
+    }
+    .detail-panel .detail-guide-title {
+      font-size: 13.5px;
+      margin-bottom: 3px;
+    }
+    .detail-panel .detail-guide-copy {
+      font-size: 9.8px;
+      line-height: 1.55;
+    }
+    .detail-panel .discover-howto-arrows {
+      margin-top: 5px;
+      font-size: 7px;
+    }
+    .detail-panel .recommend-block {
+      padding-top: 12px;
+    }
+    .detail-panel .recommend-kicker {
+      margin-bottom: 4px;
+    }
+    .detail-panel .recommend-title {
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+    .detail-panel .recommend-lead {
+      font-size: 9.8px;
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+
+    .detail-panel .discover-card {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      column-gap: 10px;
+      align-items: center;
+      min-height: 78px;
+      padding: 8px 0;
+      border-top: 1px solid var(--line2);
+    }
+    .detail-panel .discover-card .discover-img {
+      grid-row: 1 / span 3;
+      width: 86px;
+      height: 62px;
+      margin: 0;
+      border: 1px solid var(--line);
+    }
+    .detail-panel .discover-card .discover-meta {
+      margin-bottom: 2px;
+    }
+    .detail-panel .discover-card .discover-name {
+      font-size: 12.5px;
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+    .detail-panel .discover-card .discover-tagline {
+      font-size: 9px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .detail-panel .discover-foot {
+      margin-top: 8px;
+      padding-top: 8px;
+      font-size: 8.5px;
+      line-height: 1.45;
+    }
+
+    .discover-img { width: 100%; height: 112px; overflow: hidden; background: var(--bg2); margin-bottom: 10px; border: 1px solid var(--line); }
+    .discover-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .discover-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:5px; }
+    .discover-pref { font-family: var(--mono); font-size: 8px; color: var(--accent); letter-spacing:.14em; }
+    .discover-name { font-family: var(--serif); font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--text); margin-bottom: 4px; }
+    .discover-tagline { font-family: var(--sans); font-size: 10.5px; line-height: 1.55; color: var(--muted); }
+
+    .discover-howto {
+      margin: 0 0 22px;
+      padding: 14px 14px 13px;
+      border: 1px solid var(--line2);
+      border-left: 2px solid var(--accent);
+      background: var(--bg2);
+      font-family: var(--sans);
+      font-size: 10.5px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .detail-guide-kicker {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .20em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .detail-guide-title {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    .detail-guide-copy {
+      color: var(--muted);
+      font-size: 10.5px;
+      line-height: 1.65;
+    }
+    .recommend-block {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+    .recommend-kicker {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .20em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .recommend-title {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    .recommend-lead {
+      font-family: var(--sans);
+      font-size: 10.5px;
+      line-height: 1.65;
+      color: var(--muted);
+      margin-bottom: 9px;
+    }
+    .discover-howto-arrows {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 7px;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.10em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .travel-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 9px 0 12px;
+    }
+    .travel-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      padding: 4px 7px;
+      border: 1px solid var(--line2);
+      background: var(--bg2);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 9.5px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .travel-tag::before {
+      content: '#';
+      color: var(--accent);
+      margin-right: 2px;
+      font-family: var(--mono);
+    }
+
+    @media (max-width: 768px) {
+      #month-filters {
+        flex-wrap: nowrap !important;
+        gap: 3px;
+      }
+      #month-filters .chip {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+      }
+      #travel-tag-filters {
+        flex-wrap: wrap !important;
+        row-gap: 4px;
+      }
+      .travel-theme-block { padding-bottom: 10px; }
+      .travel-tag { font-size: 9px; }
+    }
+    .discover-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--sans); font-size: 10px; color: var(--dim); line-height: 1.6; }
+
+    @media (min-width: 769px) and (max-width: 1180px) {
+      .sidebar { width: 280px; }
+      .detail-panel { width: 320px; min-width: 300px; }
+      .detail-panel .popup-inner { padding: 16px; }
+      .detail-panel .popup-thumb { height: 155px; }
+    }
+
+    /* ── MOBILE ───────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      body { overflow: hidden; height: 100vh; height: 100svh; height: var(--vh100, 100svh); }
+      .layout { flex-direction: column; overflow: hidden; height: 100%; }
+      .map-wrapper { order: -1; height: 72vh; min-height: 380px; flex: none; position: relative; }
+      .detail-panel { display: none !important; }
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-top: 1px solid var(--line);
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+        transition: opacity 0.18s ease;
+      }
+      /* When a popup is open, hide the list area entirely so the map + popup own the screen */
+      body.popup-open .sidebar {
+        display: none;
+      }
+      body.popup-open .map-wrapper {
+        height: 100%;
+        flex: 1;
+      }
+      .festival-list { flex: none !important; overflow-y: visible !important; height: auto !important; max-height: none !important; }
+
+      /* Compact filter blocks */
+      .filter-block { padding: 9px 10px; }
+      .fl-label {
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        gap: 8px;
+      }
+      .fl-label-jp { font-size: 10.5px; letter-spacing: 0.04em; }
+      .fl-label-en { font-size: 7px; letter-spacing: 0.18em; }
+
+      /* All chips on one row, natural width with small gap */
+      .chips {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 3px;
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .chip {
+        font-size: 9.5px !important;
+        padding: 4px 6px !important;
+        letter-spacing: 0 !important;
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+      .chip[data-cat]:not([data-cat="all"]),
+      .chip[data-status]:not([data-status="all"]),
+      .chip[data-access]:not([data-access="all"]) {
+        font-size: 10px !important;
+        letter-spacing: 0 !important;
+      }
+
+      /* Mobile abbreviations — `.filter-block` prefix bumps specificity above the
+         desktop "non-ALL = serif" rule so font-size:0 actually takes effect */
+      .filter-block .chip[data-cat="都市型芸術祭型"]       { font-size: 0 !important; }
+      .filter-block .chip[data-cat="都市型芸術祭型"]::before { content: "都市"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="地域型芸術祭型"]       { font-size: 0 !important; }
+      .filter-block .chip[data-cat="地域型芸術祭型"]::before { content: "里山・島"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="小規模プロジェクト型"] { font-size: 0 !important; }
+      .filter-block .chip[data-cat="小規模プロジェクト型"]::before { content: "小規模"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="エリアマネジメント型"] { font-size: 0 !important; }
+      .filter-block .chip[data-cat="エリアマネジメント型"]::before { content: "街歩き"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="AIR・制作拠点型"]      { font-size: 0 !important; }
+      .filter-block .chip[data-cat="AIR・制作拠点型"]::before { content: "制作拠点"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="ミュージアム・拠点型"] { font-size: 0 !important; }
+      .filter-block .chip[data-cat="ミュージアム・拠点型"]::before { content: "美術館"; font-size: 10px; font-family: var(--serif); }
+      .filter-block .chip[data-cat="産業・工芸連携型"]     { font-size: 0 !important; }
+      .filter-block .chip[data-cat="産業・工芸連携型"]::before { content: "工芸"; font-size: 10px; font-family: var(--serif); }
+
+      header { height: auto; flex-wrap: wrap; }
+      .hd-brand h1 { font-size: 13px; }
+      .hd-sub { font-size: 8px; }
+      .hd-meta-block { padding: 10px 14px; min-width: 0; }
+
+      /* Map meta plate: shrink further to avoid covering coastline */
+      .map-meta { top: 8px; right: 8px; padding: 5px 8px; font-size: 8px; }
+      .map-meta-title { font-size: 8px; margin-bottom: 3px; }
+      .map-meta-row { padding: 1px 0; gap: 10px; }
+
+      /* Legend → single row, very compact, all 7 categories fit */
+      .legend {
+        padding: 4px 6px;
+        gap: 4px;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+      }
+      .legend-head {
+        display: none; /* hide on mobile to save space */
+      }
+      .legend-body {
+        flex-wrap: nowrap;
+        gap: 4px;
+        width: 100%;
+        justify-content: space-between;
+      }
+      .legend-item { flex-shrink: 1; gap: 2px; min-width: 0; }
+      .legend-sq { width: 5px; height: 5px; }
+      .legend-label { font-size: 8.5px; letter-spacing: 0; white-space: nowrap; }
+      .legend-label .en { display: none; }
+
+      /* Shorten longest legend labels on mobile to fit one row */
+      .legend-item .legend-label { font-size: 0; }
+      .legend-item:nth-child(1) .legend-label::before { content: "都市"; }
+      .legend-item:nth-child(2) .legend-label::before { content: "里山・島"; }
+      .legend-item:nth-child(3) .legend-label::before { content: "小規模"; }
+      .legend-item:nth-child(4) .legend-label::before { content: "街歩き"; }
+      .legend-item:nth-child(5) .legend-label::before { content: "制作拠点"; }
+      .legend-item:nth-child(6) .legend-label::before { content: "美術館"; }
+      .legend-item:nth-child(7) .legend-label::before { content: "工芸"; }
+      .legend-item .legend-label::before { font-size: 8.5px; font-family: var(--serif); }
+
+      /* Crosshair corners: pull tighter to map edges so they don't overlap UI */
+      .map-wrapper::before { top: 8px; left: 8px; width: 12px; height: 12px; }
+      .map-wrapper::after  { bottom: 28px; right: 8px; width: 12px; height: 12px; }
+
+      .leaflet-control-zoom { margin: 8px !important; }
+
+      /* ── Mobile: Leaflet's own popup is disabled (its pane is transformed, breaking position:fixed).
+         We use an independent #mobile-sheet appended to <body> instead — see JS. ── */
+      .leaflet-popup { display: none !important; }
+
+      #mobile-sheet {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 2000;
+        background: #14110d;
+        border-top: 2px solid var(--accent);
+        box-shadow: 0 -10px 34px rgba(0,0,0,0.8);
+        max-height: 58vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        transform: translateY(100%);
+        transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+        visibility: hidden;
+      }
+      #mobile-sheet.open {
+        transform: translateY(0);
+        visibility: visible;
+      }
+      #mobile-sheet .popup-inner {
+        background: #14110d;
+        padding: 16px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+        position: relative;
+      }
+      #mobile-sheet .sheet-close {
+        position: absolute;
+        top: 8px; right: 8px;
+        width: 28px; height: 28px;
+        line-height: 26px;
+        text-align: center;
+        font-family: var(--mono);
+        font-size: 18px;
+        color: var(--muted);
+        background: var(--bg2);
+        border: 1px solid var(--line2);
+        cursor: pointer;
+        z-index: 2;
+      }
+      #mobile-sheet .sheet-close:active { color: var(--accent); }
+      .popup-inner { padding: 16px 18px 14px; }
+      .popup-head { margin-bottom: 10px; padding-bottom: 8px; padding-right: 32px; }
+      .popup-region { font-size: 8.5px; letter-spacing: 0.14em; }
+      .popup-name { font-size: 15px; line-height: 1.3; margin-bottom: 4px; }
+      .popup-tagline { font-size: 11px; margin-bottom: 10px; line-height: 1.45; }
+      .popup-meta { gap: 6px 14px; padding: 8px 0; margin-bottom: 10px; }
+      .popup-meta-k { font-size: 7.5px; letter-spacing: 0.14em; }
+      .popup-meta-v { font-size: 12px; }
+      .popup-desc { font-size: 11px; line-height: 1.6; margin-bottom: 12px; }
+      .popup-btn-row { gap: 6px; }
+      .popup-link, .popup-link-url { font-size: 9.5px !important; padding: 9px 6px !important; letter-spacing: 0.1em !important; }
+
+      /* Map markers slightly bigger on touch for hit area */
+      .map-wrapper .leaflet-marker-icon { touch-action: manipulation; }
+    }
+
+    /* Filter blocks */
+    .filter-block {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .fl-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .fl-label-jp {
+      font-family: var(--serif);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.06em;
+    }
+    .fl-label-en {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+
+    .chip {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      padding: 5px 9px;
+      border: 1px solid var(--line2);
+      background: transparent;
+      color: var(--dim);
+      cursor: pointer;
+      transition: all 0.12s ease;
+      white-space: nowrap;
+      position: relative;
+    }
+    .chip[data-cat]:not([data-cat="all"]),
+    .chip[data-status]:not([data-status="all"]),
+    .chip[data-access]:not([data-access="all"]) {
+      font-family: var(--serif);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      font-weight: 500;
+    }
+    .chip:hover { border-color: var(--muted); color: var(--text); background: var(--bg2); }
+    .chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+    .chip.active::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -2px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    /* Quick-access "available now" chip — stands out even when not selected */
+    .chip-now {
+      border-color: var(--accent) !important;
+      color: var(--accent) !important;
+      font-weight: 600;
+    }
+    .chip-now::before {
+      content: '● ';
+      font-size: 8px;
+    }
+    .chip-now.active {
+      background: var(--accent) !important;
+      color: var(--bg) !important;
+    }
+
+    /* Search */
+    .search-block {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+    }
+    .search-block::before {
+      content: '⌕';
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .search-block input {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--line2);
+      padding: 10px 12px 10px 30px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .search-block input:focus { border-color: var(--accent); background: var(--bg3); }
+    .search-block input::placeholder {
+      color: var(--muted);
+      font-family: var(--mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    /* List */
+    .festival-list { flex: 1; overflow-y: auto; }
+    .festival-list::-webkit-scrollbar { width: 4px; }
+    .festival-list::-webkit-scrollbar-thumb { background: var(--line2); }
+    .festival-list::-webkit-scrollbar-track { background: transparent; }
+
+    .list-region-header {
+      padding: 14px 20px 10px;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      border-top: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .list-region-header:first-child { border-top: none; }
+
+    .list-region-header .rh-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+    .list-region-header .rh-jp {
+      font-family: var(--serif);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: none;
+      color: var(--text);
+    }
+    .list-region-header .rh-rule { flex: 1; height: 1px; background: var(--line2); }
+    .list-region-header .rh-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .festival-item {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 22px 1fr 12px;
+      gap: 10px;
+      align-items: flex-start;
+      transition: background 0.12s, padding 0.12s;
+      position: relative;
+    }
+    .festival-item:hover { background: var(--bg2); }
+    .festival-item.active { background: var(--bg3); padding-left: 22px; }
+    .festival-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--accent);
+    }
+
+    .item-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--dim);
+      letter-spacing: 0.08em;
+      padding-top: 5px;
+    }
+
+    .item-dot { display: none; } /* superseded by num + cat strip */
+
+    .item-cat-strip {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 6px;
+      vertical-align: middle;
+      transform: translateY(-1px);
+    }
+
+    .item-name {
+      font-family: var(--serif);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .item-pref {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .item-now-dot {
+      display: inline-block;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .item-tagline {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 400;
+      color: #9c9384;
+      line-height: 1.5;
+      text-wrap: pretty;
+    }
+
+    .item-arrow {
+      font-family: var(--serif);
+      font-size: 14px;
+      color: var(--dim);
+      align-self: center;
+      transition: color 0.15s, transform 0.15s;
+    }
+    .festival-item:hover .item-arrow { color: var(--accent); transform: translateX(3px); }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      font-family: var(--serif);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+    .empty-state .es-en {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* ── MAP ─────────────────────────────────────────────── */
+    .map-wrapper { position: relative; flex: 1; min-height: 0; background: var(--bg2); }
+    #map { width: 100%; height: 100%; }
+
+    /* Map overlay: corner crosshairs for editorial feel */
+    .map-wrapper::before,
+    .map-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border: 1px solid var(--accent);
+      pointer-events: none;
+      z-index: 750;
+      opacity: 0.6;
+    }
+    .map-wrapper::before {
+      top: 18px; left: 18px;
+      border-right: none; border-bottom: none;
+    }
+    .map-wrapper::after {
+      bottom: 50px; right: 18px;
+      border-left: none; border-top: none;
+    }
+
+    /* Top-right map meta plate */
+    .map-meta {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 800;
+      background: rgba(20,17,13,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--line2);
+      padding: 7px 10px;
+      min-width: 0;
+      font-family: var(--mono);
+      font-size: 8.5px;
+    }
+    .map-meta-row { display: flex; justify-content: space-between; padding: 1.5px 0; gap: 14px; }
+    .map-meta-row .k { color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .map-meta-row .v { color: var(--text); letter-spacing: 0.04em; }
+    .map-meta-row .v.accent { color: var(--accent); }
+    .map-meta-rule { height: 1px; background: var(--line2); margin: 4px 0; }
+    .map-meta-title {
+      font-family: var(--serif);
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .map-meta-title:empty { display: none; }
+
+    .leaflet-container { background: #efe9dc !important; outline: none; }
+    /* Soften the basemap to a paper-toned canvas that matches the dark UI */
+    .leaflet-tile-pane {
+      filter: grayscale(0.4) sepia(0.25) brightness(0.92) contrast(0.95) saturate(0.7);
+    }
+    .leaflet-marker-pane,
+    .leaflet-popup-pane,
+    .leaflet-overlay-pane,
+    .leaflet-shadow-pane { filter: none !important; }
+
+    .leaflet-control-zoom {
+      border: 1px solid var(--line2) !important;
+      border-radius: 0 !important;
+      margin: 18px !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+    }
+    .leaflet-control-zoom a {
+      background: var(--bg) !important;
+      color: var(--text) !important;
+      border-bottom: 1px solid var(--line2) !important;
+      border-radius: 0 !important;
+      font-family: var(--serif) !important;
+      font-weight: 500 !important;
+      font-size: 16px !important;
+      line-height: 30px !important;
+      width: 30px !important;
+      height: 30px !important;
+      transition: all 0.12s !important;
+    }
+    .leaflet-control-zoom a:hover { background: var(--accent) !important; color: var(--bg) !important; }
+    .leaflet-control-attribution {
+      background: rgba(20,17,13,0.85) !important;
+      color: var(--muted) !important;
+      font-size: 9px !important;
+      font-family: var(--mono) !important;
+      letter-spacing: 0.06em !important;
+      padding: 3px 8px !important;
+      border: 1px solid var(--line2) !important;
+      border-right: none !important;
+      border-bottom: none !important;
+    }
+    .leaflet-control-attribution a { color: var(--muted) !important; }
+    .leaflet-control-attribution a:hover { color: var(--accent) !important; }
+
+    /* Leaflet popup styling (mobile sheet reuses the same inner components) */
+    .leaflet-popup-content-wrapper {
+      background: var(--bg) !important;
+      border: 1px solid var(--line2) !important;
+      border-radius: 0 !important;
+      box-shadow: 6px 6px 0 rgba(217,102,80,0.18), 0 8px 24px rgba(0,0,0,0.6) !important;
+      padding: 0 !important;
+    }
+    .leaflet-popup-tip-container { display: none; }
+    .leaflet-popup-content { margin: 0 !important; width: 280px !important; }
+    .leaflet-popup-close-button {
+      color: var(--muted) !important;
+      font-size: 16px !important;
+      top: 12px !important;
+      right: 12px !important;
+      width: 20px !important;
+      height: 20px !important;
+      font-family: var(--mono) !important;
+      border: 1px solid var(--line2);
+      line-height: 18px !important;
+    }
+    .leaflet-popup-close-button:hover { color: var(--accent) !important; border-color: var(--accent) !important; }
+
+    .popup-inner { padding: 22px 22px 18px; }
+
+    .popup-pref-row {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .popup-now-badge {
+      font-family: var(--serif);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 2px 8px;
+    }
+
+    .popup-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      margin-bottom: 14px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      border-top: 1px solid var(--line2);
+      border-bottom: 1px solid var(--line2);
+    }
+
+    .popup-cat-sq {
+      width: 8px; height: 8px;
+      flex-shrink: 0;
+    }
+
+    .popup-region {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex: 1;
+    }
+    .popup-region .accent-mark { color: var(--accent); }
+
+    .popup-name {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .popup-tagline {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+      text-wrap: pretty;
+    }
+
+    .popup-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+    .popup-meta-item { display: flex; flex-direction: column; gap: 3px; }
+    .popup-meta-k {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .popup-meta-v {
+      font-family: var(--serif);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+
+    .popup-divider { display: none; }
+
+    .popup-thumb {
+      width: 100%;
+      height: 140px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      border: 1px solid var(--line2);
+      background: #ffffff;
+    }
+    .popup-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .popup-thumb-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg2);
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .popup-desc {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 18px;
+      text-wrap: pretty;
+      opacity: 0.85;
+    }
+
+    .popup-artists {
+      padding: 10px 12px;
+      background: var(--bg2);
+      border-left: 2px solid var(--accent);
+      margin-bottom: 18px;
+    }
+    .popup-artists-k {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .popup-artists-v {
+      font-family: var(--serif);
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .popup-btn-row { display: flex; gap: 8px; }
+
+    .popup-link, .popup-link-url,
+    .popup-link:visited, .popup-link-url:visited {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 10px 8px;
+      text-decoration: none;
+      transition: all 0.15s;
+      text-align: center;
+      color: #14110d !important;
+    }
+    .popup-link,
+    .popup-link-url { background: #f0e8d8; border: 1px solid #f0e8d8; color: #14110d !important; }
+    .popup-link:hover,
+    .popup-link-url:hover { background: #d96650; border-color: #d96650; color: #14110d !important; }
+
+    /* ── LEGEND ──────────────────────────────────────────── */
+    .legend {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 800;
+      background: rgba(20,17,13,0.92);
+      border-top: 1px solid var(--line2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .legend-head {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding-right: 18px;
+      border-right: 1px solid var(--line2);
+    }
+
+    .legend-body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-sq {
+      width: 8px; height: 8px;
+      flex-shrink: 0;
+    }
+
+    .legend-label {
+      font-family: var(--serif);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .legend-label .en {
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+  
+    /* ───────────────────────────────────────────────────────
+       MOBILE V3 — discovery-first layout
+       Final override layer; keep desktop unchanged.
+       ─────────────────────────────────────────────────────── */
+    .mobile-discovery,
+    .mobile-quickbar { display: none; }
+
+    @media (max-width: 768px) {
+      /* Header: keep the proposition, remove database/admin metadata */
+      header {
+        height: 58px !important;
+        min-height: 58px;
+        flex-wrap: nowrap !important;
+        align-items: center;
+      }
+      .hd-back,
+      .hd-meta,
+      .hd-mark { display: none !important; }
+      .hd-brand {
+        width: 100%;
+        height: 100%;
+        padding: 0 14px !important;
+        border-right: 0 !important;
+        gap: 0 !important;
+      }
+      .hd-brand h1 {
+        font-size: 14px !important;
+        line-height: 1.15;
+        letter-spacing: .03em;
+      }
+      .hd-sub {
+        font-size: 8.5px !important;
+        letter-spacing: .12em;
+        margin-top: 4px;
+      }
+
+      /* Structure: map → recommendations → quick filters → list */
+      .layout {
+        flex-direction: column;
+        height: calc(var(--vh100, 100svh) - 58px);
+      }
+      .map-wrapper {
+        order: -1;
+        height: 43svh !important;
+        min-height: 285px !important;
+        max-height: 420px;
+        flex: none !important;
+      }
+      .sidebar {
+        order: 1;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        display: block !important;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        border-top: 1px solid var(--line);
+        background: var(--bg);
+      }
+
+      /* The list stays in place behind the bottom sheet */
+      body.popup-open .sidebar {
+        display: block !important;
+      }
+      body.popup-open .map-wrapper {
+        height: 43svh !important;
+        min-height: 285px !important;
+        max-height: 420px;
+        flex: none !important;
+      }
+
+      /* Remove map decoration that becomes noise on a small screen */
+      .legend { display: none !important; }
+      .map-wrapper::before,
+      .map-wrapper::after { display: none !important; }
+      .map-meta {
+        top: 8px !important;
+        right: 8px !important;
+        padding: 5px 8px !important;
+      }
+      .leaflet-control-zoom { margin: 8px !important; }
+
+      /* Recommendation strip */
+      .mobile-discovery {
+        display: block;
+        padding: 13px 0 11px;
+        border-bottom: 1px solid var(--line);
+        background: var(--bg);
+      }
+      .mobile-discovery-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 14px 8px;
+      }
+      .mobile-discovery-kicker {
+        font-size: 7.5px;
+        font-weight: 600;
+        letter-spacing: .18em;
+        color: var(--accent);
+        margin-bottom: 4px;
+      }
+      .mobile-discovery-title {
+        font-family: var(--serif);
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .mobile-discovery-count {
+        flex: 0 0 auto;
+        font-size: 7px;
+        letter-spacing: .14em;
+        color: var(--dim);
+        padding-bottom: 2px;
+      }
+      .mobile-discovery-cards {
+        display: flex;
+        gap: 9px;
+        overflow-x: auto;
+        padding: 0 14px 3px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .mobile-discovery-cards::-webkit-scrollbar { display: none; }
+      .mobile-pick-card {
+        flex: 0 0 min(72vw, 252px);
+        scroll-snap-align: start;
+        border: 1px solid var(--line2);
+        background: var(--bg2);
+        cursor: pointer;
+        text-align: left;
+        color: inherit;
+        padding: 0;
+      }
+      .mobile-pick-img {
+        height: 82px;
+        background: #fff;
+        overflow: hidden;
+        border-bottom: 1px solid var(--line);
+      }
+      .mobile-pick-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .mobile-pick-body { padding: 7px 9px 8px; }
+      .mobile-pick-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+      .mobile-pick-pref {
+        font-size: 8px;
+        letter-spacing: .12em;
+        color: var(--accent);
+      }
+      .mobile-pick-card .status-badge {
+        font-size: 7.5px;
+        padding: 2px 5px;
+      }
+      .mobile-pick-name {
+        font-size: 13px;
+        line-height: 1.3;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 2px;
+      }
+      .mobile-pick-tagline {
+        font-size: 9.5px;
+        line-height: 1.35;
+        color: var(--muted);
+      }
+
+      /* Quick actions stay visible; full filters are opt-in */
+      .mobile-quickbar {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        display: flex;
+        gap: 5px;
+        padding: 8px 10px;
+        overflow-x: auto;
+        background: rgba(20,17,13,.96);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--line);
+        scrollbar-width: none;
+      }
+      .mobile-quickbar::-webkit-scrollbar { display: none; }
+      .mobile-quick-chip {
+        flex: 0 0 auto;
+        min-height: 32px;
+        padding: 6px 10px;
+        border: 1px solid var(--line2);
+        background: transparent;
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 10px;
+        white-space: nowrap;
+      }
+      .mobile-quick-chip.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--bg);
+      }
+      .mobile-filter-toggle {
+        margin-left: auto;
+        color: var(--accent);
+        border-color: rgba(217,102,80,.55);
+        padding-left: 11px;
+        padding-right: 11px;
+      }
+      .mobile-filter-toggle span {
+        display: inline-block;
+        margin-left: 4px;
+        transition: transform .18s ease;
+      }
+      .sidebar.filters-open .mobile-filter-toggle span {
+        transform: rotate(45deg);
+      }
+      .sidebar.filters-open .mobile-filter-toggle {
+        background: var(--bg2);
+        color: var(--text);
+      }
+
+      /* By default, hide the dense desktop filter stack */
+      .sidebar:not(.filters-open) > .filter-block,
+      .sidebar:not(.filters-open) > .search-block {
+        display: none !important;
+      }
+
+      /* Expanded filters: compact and horizontally scrollable */
+      .sidebar.filters-open > .filter-block,
+      .sidebar.filters-open > .search-block {
+        display: block !important;
+      }
+      .filter-block {
+        padding: 10px 10px !important;
+      }
+      .fl-label {
+        margin-bottom: 7px !important;
+        padding-bottom: 5px !important;
+      }
+      .fl-label-jp { font-size: 10.5px !important; }
+      .fl-label-en { font-size: 7px !important; }
+
+      .chips,
+      #month-filters,
+      #travel-tag-filters {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        gap: 4px !important;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .chips::-webkit-scrollbar,
+      #month-filters::-webkit-scrollbar,
+      #travel-tag-filters::-webkit-scrollbar { display: none; }
+      .chip {
+        flex: 0 0 auto !important;
+        font-size: 10px !important;
+        padding: 5px 8px !important;
+      }
+      .search-block {
+        padding: 9px 10px 10px !important;
+      }
+      .search-block::before { left: 19px !important; }
+      .search-block input {
+        padding: 9px 10px 9px 28px !important;
+        font-size: 12px !important;
+      }
+
+      /* List: remove database-like numbering/arrow and make it editorial */
+      .festival-list {
+        flex: none !important;
+        overflow-y: visible !important;
+        height: auto !important;
+        max-height: none !important;
+      }
+      .list-region-header {
+        top: 48px;
+        padding: 10px 14px 8px !important;
+      }
+      .festival-item {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+        padding: 12px 14px !important;
+      }
+      .festival-item.active {
+        padding-left: 16px !important;
+      }
+      .item-num,
+      .item-arrow { display: none !important; }
+      .item-pref {
+        font-size: 8.5px;
+        margin-bottom: 4px;
+      }
+      .item-name {
+        font-size: 14.5px;
+        line-height: 1.35;
+        margin-bottom: 4px;
+      }
+      .item-tagline {
+        font-size: 11px;
+        line-height: 1.5;
+      }
+
+      /* Bottom sheet: readable detail, without destroying list context */
+      #mobile-sheet {
+        max-height: 72svh !important;
+        border-top: 1px solid var(--accent) !important;
+        border-radius: 14px 14px 0 0;
+        box-shadow: 0 -14px 40px rgba(0,0,0,.78);
+        padding-top: 8px;
+      }
+      #mobile-sheet::before {
+        content: '';
+        display: block;
+        width: 34px;
+        height: 3px;
+        border-radius: 999px;
+        background: var(--line2);
+        margin: 0 auto 2px;
+      }
+      #mobile-sheet .popup-inner {
+        padding: 10px 16px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      #mobile-sheet .popup-thumb {
+        height: 142px !important;
+        margin-bottom: 11px !important;
+      }
+      #mobile-sheet .sheet-close {
+        top: 10px !important;
+        right: 10px !important;
+        width: 30px !important;
+        height: 30px !important;
+        line-height: 28px !important;
+        border-radius: 50%;
+        background: rgba(20,17,13,.92);
+      }
+      #mobile-sheet .popup-name {
+        font-size: 17px !important;
+        padding-right: 30px;
+      }
+      #mobile-sheet .popup-tagline { font-size: 11.5px !important; }
+      #mobile-sheet .event-date-primary { font-size: 13px; }
+      #mobile-sheet .popup-desc {
+        font-size: 11.5px !important;
+        line-height: 1.68 !important;
+      }
+      #mobile-sheet .popup-btn-row {
+        position: sticky;
+        bottom: calc(-18px - env(safe-area-inset-bottom, 0px));
+        z-index: 3;
+        margin: 0 -16px calc(-18px - env(safe-area-inset-bottom, 0px));
+        padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+        background: linear-gradient(to bottom, rgba(20,17,13,.1), #14110d 28%);
+      }
+      #mobile-sheet .popup-link,
+      #mobile-sheet .popup-link-url {
+        min-height: 38px;
+      }
+    }
+
+
+
+    /* ───────────────────────────────────────────────────────
+       V3.3 — floating transparent header + INFO
+       Final override layer
+       ─────────────────────────────────────────────────────── */
+
+    /* Old header pieces are no longer used, but keep them harmless. */
+    .site-header {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1800;
+      height: 38px !important;
+      min-height: 38px;
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px 0 14px;
+      border: 0 !important;
+      border-bottom: 1px solid rgba(20,17,13,.12) !important;
+      background: linear-gradient(
+        to bottom,
+        rgba(20,17,13,.70) 0%,
+        rgba(20,17,13,.42) 72%,
+        rgba(20,17,13,.12) 100%
+      ) !important;
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      box-shadow: none !important;
+      pointer-events: auto;
+    }
+
+    .site-header-brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .site-header-title {
+      font-family: var(--serif);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .035em;
+      color: #f0e8d8;
+      line-height: 1;
+    }
+
+    .site-header-divider {
+      width: 1px;
+      height: 12px;
+      flex: 0 0 auto;
+      background: rgba(240,232,216,.26);
+    }
+
+    .site-header-sub {
+      font-family: var(--sans);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: .035em;
+      color: rgba(240,232,216,.68);
+      line-height: 1;
+    }
+
+    .site-info-trigger {
+      height: 26px;
+      min-width: 92px;
+      padding: 0 10px;
+      border: 1px solid rgba(240,232,216,.28);
+      background: rgba(20,17,13,.26);
+      color: rgba(240,232,216,.86);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .16em;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .site-info-trigger:hover {
+      border-color: var(--accent);
+      background: rgba(20,17,13,.62);
+      color: #fff;
+    }
+
+    /* Header overlays the map/layout rather than consuming height. */
+    body {
+      position: relative;
+    }
+    .layout {
+      height: 100% !important;
+      min-height: 0;
+    }
+
+    /* Desktop: map/sidebar/detail begin behind the translucent header. */
+    @media (min-width: 769px) {
+      .sidebar,
+      .detail-panel {
+        padding-top: 38px;
+      }
+
+      /* Keep the map truly underneath the header. */
+      .map-wrapper {
+        padding-top: 0 !important;
+      }
+
+      .leaflet-control-zoom {
+        margin-top: 52px !important;
+      }
+
+      .map-meta {
+        top: 50px !important;
+      }
+    }
+
+    /* ── INFO overlay ───────────────────────────────────── */
+    .site-info-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 6000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .site-info-overlay.open { display: flex; }
+
+    .site-info-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    .site-info-card {
+      position: relative;
+      z-index: 1;
+      width: min(455px, calc(100vw - 40px));
+      max-height: min(680px, calc(100vh - 40px));
+      overflow-y: auto;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--line2);
+      padding: 25px 25px 21px;
+      box-shadow:
+        8px 8px 0 rgba(217,102,80,.12),
+        0 24px 70px rgba(0,0,0,.55);
+    }
+
+    .site-info-close {
+      position: absolute;
+      top: 11px;
+      right: 11px;
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--line2);
+      background: var(--bg2);
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .site-info-close:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .site-info-kicker {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .20em;
+      color: var(--accent);
+      margin-bottom: 7px;
+    }
+    .site-info-title {
+      margin: 0 40px 11px 0;
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--text);
+    }
+    .site-info-lead {
+      margin: 0 0 19px;
+      font-family: var(--sans);
+      font-size: 11.5px;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+    .site-info-section {
+      padding-top: 15px;
+      margin-top: 15px;
+      border-top: 1px solid var(--line);
+    }
+    .site-info-label {
+      margin-bottom: 6px;
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .18em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .site-info-name {
+      margin-bottom: 7px;
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .site-info-copy {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: 11px;
+      line-height: 1.75;
+      color: rgba(240,232,216,.84);
+    }
+    .site-info-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .site-info-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 31px;
+      padding: 6px 9px;
+      border: 1px solid var(--line2);
+      background: var(--bg2);
+      color: var(--text);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .04em;
+      transition: border-color .15s, color .15s;
+    }
+    .site-info-links a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .site-info-note {
+      padding-left: 12px;
+      border-left: 2px solid var(--accent);
+    }
+    .site-info-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 7.5px;
+      letter-spacing: .14em;
+      color: var(--dim);
+    }
+
+    /* ── MOBILE HEADER / INFO ───────────────────────────── */
+    @media (max-width: 768px) {
+      .site-header {
+        height: 34px !important;
+        min-height: 34px !important;
+        padding: 0 6px 0 10px !important;
+        background: linear-gradient(
+          to bottom,
+          rgba(20,17,13,.62) 0%,
+          rgba(20,17,13,.34) 76%,
+          rgba(20,17,13,.06) 100%
+        ) !important;
+      }
+
+      .site-header-brand {
+        gap: 7px;
+        max-width: calc(100vw - 96px);
+      }
+
+      .site-header-title {
+        font-size: 11.5px;
+        letter-spacing: .02em;
+      }
+
+      .site-header-divider {
+        height: 10px;
+      }
+
+      .site-header-sub {
+        font-size: 8px;
+        letter-spacing: .015em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .site-info-trigger {
+        height: 24px;
+        min-width: 84px;
+        padding: 0 8px;
+        font-size: 7.5px;
+        background: rgba(20,17,13,.35);
+      }
+
+      /* Mobile layout no longer reserves 58px for header. */
+      .layout {
+        height: var(--vh100, 100svh) !important;
+      }
+
+      .map-wrapper {
+        height: 43svh !important;
+        min-height: 285px !important;
+        max-height: 420px !important;
+      }
+
+      .map-meta {
+        top: 42px !important;
+      }
+
+      .leaflet-control-zoom {
+        margin-top: 42px !important;
+      }
+
+      .site-info-overlay {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .site-info-card {
+        width: 100%;
+        max-width: none;
+        max-height: 78svh;
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+        border-radius: 14px 14px 0 0;
+        padding: 22px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+        box-shadow: 0 -18px 52px rgba(0,0,0,.72);
+      }
+
+      .site-info-card::before {
+        content: '';
+        display: block;
+        width: 34px;
+        height: 3px;
+        border-radius: 999px;
+        background: var(--line2);
+        margin: -8px auto 14px;
+      }
+
+      .site-info-title {
+        font-size: 19px;
+      }
+
+      .site-info-lead,
+      .site-info-copy {
+        font-size: 11.5px;
+      }
+
+      .site-info-links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .site-info-links a {
+        justify-content: center;
+        min-height: 36px;
+      }
+
+      .site-info-meta {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+
+
+
+    /* ── V3.7 MAP LEGEND: timing-first ──────────────────── */
+    .timing-legend .legend-body {
+      gap: 12px;
+    }
+    .timing-legend .legend-item {
+      gap: 5px;
+    }
+    .timing-legend .legend-sq {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.22);
+    }
+    .timing-legend .legend-label {
+      font-family: var(--sans);
+      font-size: 9.5px;
+      letter-spacing: 0;
+    }
+
+    @media (max-width: 768px) {
+      /* Timing is essential navigation, so keep the legend visible on mobile. */
+      .legend.timing-legend {
+        display: flex !important;
+        padding: 5px 8px !important;
+        gap: 0 !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        scrollbar-width: none;
+        background: rgba(20,17,13,.88);
+      }
+      .legend.timing-legend::-webkit-scrollbar { display: none; }
+      .timing-legend .legend-head { display: none !important; }
+      .timing-legend .legend-body {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        width: max-content !important;
+        min-width: max-content;
+        gap: 10px !important;
+        justify-content: flex-start !important;
+      }
+      .timing-legend .legend-item {
+        flex: 0 0 auto !important;
+        gap: 4px !important;
+      }
+      .timing-legend .legend-sq {
+        width: 6px !important;
+        height: 6px !important;
+      }
+      .timing-legend .legend-label {
+        font-size: 8.5px !important;
+        white-space: nowrap !important;
+      }
+
+      /* Neutralize the old nth-child mobile category-label substitutions. */
+      .timing-legend .legend-item .legend-label {
+        font-size: 8.5px !important;
+      }
+      .timing-legend .legend-item .legend-label::before {
+        content: none !important;
+        display: none !important;
+      }
+    }
+
+
+
+    /* ── V3.7.3: warm palette with stronger visual separation ── */
+    .timing-legend .legend-body { gap: 14px; }
+    .timing-legend .legend-sq {
+      width: 9px;
+      height: 9px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.36);
+    }
+
+
+
+    /* ── V3.8 SEO intro ─────────────────────────────────── */
+    .seo-intro {
+      margin: 10px 0 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.035);
+      border-radius: 10px;
+      color: rgba(255,255,255,.72);
+      font-family: var(--sans);
+      font-size: 10.5px;
+      line-height: 1.7;
+    }
+    .seo-intro strong {
+      color: rgba(255,255,255,.94);
+      font-weight: 600;
+    }
+    @media (max-width: 768px) {
+      .seo-intro {
+        margin: 8px 0 10px;
+        padding: 9px 10px;
+        font-size: 10px;
+        line-height: 1.65;
+      }
+    }
+
+
+
+    /* ── V3.8.1 MOBILE: keep Leaflet/CARTO attribution above timing legend ── */
+    @media (max-width: 768px) {
+      .leaflet-control-attribution {
+        margin-bottom: 32px !important;
+        margin-right: 0 !important;
+        padding: 2px 5px !important;
+        font-size: 7.5px !important;
+        line-height: 1.25 !important;
+        background: rgba(20,17,13,.78) !important;
+      }
+    }
+
+</style>
+
+  <meta property="og:image" content="https://artslogix.github.io/japan-art-map/images/ogp-japan-art-map-v2.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="JAPAN ART MAP｜日本の芸術祭を旅する" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://artslogix.github.io/japan-art-map/images/ogp-japan-art-map-v2.png" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <link rel="canonical" href="https://artslogix.github.io/japan-art-map/" />
+  <meta name="author" content="ArtsLogix" />
+  <meta name="theme-color" content="#1b1713" />
+  <meta property="og:site_name" content="JAPAN ART MAP" />
+  <meta name="twitter:title" content="JAPAN ART MAP｜2026年 全国の芸術祭・アートイベントを地図から探す" />
+  <meta name="twitter:description" content="2026年に全国で開催される芸術祭・アートイベントを、開催時期・地域・旅のテーマから探せるマップ。開催中の芸術祭や、9月・10月に行けるアート旅を一覧で紹介します。" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "JAPAN ART MAP",
+    "alternateName": "日本の芸術祭を旅する",
+    "url": "https://artslogix.github.io/japan-art-map/",
+    "description": "2026年に全国で開催される芸術祭・アートイベントを、開催時期・地域・旅のテーマから探せるマップ。開催中の芸術祭や、9月・10月に行けるアート旅を一覧で紹介します。",
+    "inLanguage": "ja",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ArtsLogix",
+      "url": "https://linktr.ee/artslogix"
+    }
+  }
+  </script>
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-brand">
+    <div class="site-header-title">日本の芸術祭を旅する</div>
+    <div class="site-header-divider"></div>
+    <div class="site-header-sub">今年、どの芸術祭に行く？</div>
+  </div>
+  <button class="site-info-trigger" id="site-info-open" type="button"
+          aria-haspopup="dialog" aria-controls="site-info-modal">
+    INFORMATION
+  </button>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- MOBILE ONLY: discovery entrance -->
+    <section class="mobile-discovery" id="mobile-discovery" aria-label="おすすめの芸術祭">
+      <div class="mobile-discovery-head">
+        <div>
+          <div class="mobile-discovery-kicker">ART TRIP PICKS</div>
+          <h2 class="mobile-discovery-title" id="mobile-discovery-title">今年行ける、おすすめの芸術祭</h2>
+        </div>
+        <div class="mobile-discovery-count">03 PICKS</div>
+      </div>
+      <div class="mobile-discovery-cards" id="mobile-discovery-cards"></div>
+    </section>
+
+    <!-- MOBILE ONLY: quick filters -->
+    <div class="mobile-quickbar" id="mobile-quickbar">
+      <button class="mobile-quick-chip" id="mobile-now-btn" type="button">● 開催中</button>
+      <button class="mobile-quick-chip" id="mobile-month-current" type="button"></button>
+      <button class="mobile-quick-chip" id="mobile-month-next" type="button"></button>
+      <button class="mobile-quick-chip mobile-filter-toggle" id="mobile-filter-toggle" type="button" aria-expanded="false">
+        詳細条件で絞り込み <span>＋</span>
+      </button>
+    </div>
+
+    <div class="filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">いつ行く？</span>
+        <span class="fl-label-en">When to go</span>
+      </div>
+      <div class="chips" id="status-filters">
+        <button class="chip active" data-status="all">ALL</button>
+        <button class="chip chip-now" data-status="ongoing">開催中</button>
+        <button class="chip" id="upcoming-filter-label" data-status="upcoming" style="font-family: Helvetica">2026年これから</button>
+        <button class="chip" data-status="yearround" style="font-family: Helvetica">通年</button>
+        <button class="chip" data-status="future" style="font-family: Helvetica">2027〜</button>
+      </div>
+    </div>
+
+    <div class="filter-block month-filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">何月に行く？</span>
+        <span class="fl-label-en">Month</span>
+      </div>
+      <div class="chips" id="month-filters"></div>
+    </div>
+
+    <div class="filter-block travel-theme-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">旅のテーマ</span>
+        <span class="fl-label-en">Travel Theme</span>
+      </div>
+      <div class="chips" id="travel-tag-filters">
+        <button class="chip active" data-travel-tag="all">ALL</button>
+        <button class="chip" data-travel-tag="島・海">島・海</button>
+        <button class="chip" data-travel-tag="温泉">温泉</button>
+        <button class="chip" data-travel-tag="建築">建築</button>
+        <button class="chip" data-travel-tag="写真・映像">写真・映像</button>
+        <button class="chip" data-travel-tag="工芸">工芸</button>
+        <button class="chip" data-travel-tag="自然・里山">自然・里山</button>
+        <button class="chip" data-travel-tag="街歩き">街歩き</button>
+        <button class="chip" data-travel-tag="食">食</button>
+      </div>
+    </div>
+
+    <div class="filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">旅のスタイル</span>
+        <span class="fl-label-en">Trip Length</span>
+      </div>
+      <div class="chips" id="access-filters">
+        <button class="chip active" data-access="all">ALL</button>
+        <button class="chip" data-access="daytrip" style="font-family: Helvetica">日帰り</button>
+        <button class="chip" data-access="overnight" style="font-family: Helvetica">1泊で行ける</button>
+        <button class="chip" data-access="longtrip" style="font-family: Helvetica">じっくり遠征</button>
+      </div>
+    </div>
+
+    <div class="search-block">
+      <input type="text" id="search-input" placeholder="検索  ·  Search cases" />
+    </div>
+
+    <div class="festival-list" id="festival-list"></div>
+
+  </aside>
+
+  <!-- DESKTOP FIXED DETAIL -->
+  <section class="detail-panel" id="detail-panel" aria-live="polite">
+    <div class="detail-panel-head">
+      <span class="detail-panel-head-jp" id="detail-panel-title">旅先を探す</span>
+      <span class="detail-panel-head-en" id="detail-panel-title-en">Discover</span>
+    </div>
+    <div class="detail-panel-content" id="detail-panel-content">
+
+        <section class="seo-intro" aria-label="JAPAN ART MAPについて">
+          <strong>2026年の全国の芸術祭・アートイベントを地図から探す。</strong>
+          開催中の芸術祭、8月・9月・10月に始まるアートイベント、地域や旅のテーマから、次のアート旅を見つけるためのマップです。
+        </section>
+</div>
+  </section>
+
+  <!-- MAP -->
+  <div class="map-wrapper">
+    <div id="map"></div>
+    <div class="map-meta">
+      <div class="map-meta-row"><span class="k">表示中</span><span class="v accent" id="map-showing"></span></div>
+    </div>
+    <div class="legend timing-legend" id="timing-legend">
+      <div class="legend-head">WHEN ／ 開催時期</div>
+      <div class="legend-body" id="timing-legend-body"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="site-info-overlay" id="site-info-modal" aria-hidden="true">
+  <div class="site-info-backdrop" data-info-close></div>
+
+  <section class="site-info-card" role="dialog" aria-modal="true" aria-labelledby="site-info-title">
+    <button class="site-info-close" type="button" aria-label="閉じる" data-info-close>✕</button>
+
+    <div class="site-info-kicker">ABOUT / CONTACT</div>
+    <h2 class="site-info-title" id="site-info-title">このサイトについて</h2>
+
+    <p class="site-info-lead">
+      JAPAN ART MAP は、全国の芸術祭やアートプロジェクトを、
+      次の旅のきっかけとして見つけるための個人運営のマップです。
+    </p>
+
+    <div class="site-info-section">
+      <div class="site-info-label">運営・編集</div>
+      <div class="site-info-name">ArtsLogix</div>
+      <p class="site-info-copy">
+        掲載内容の修正、画像利用に関するご連絡、その他のお問い合わせは、
+        下記のリンクからご連絡ください。
+      </p>
+
+      <div class="site-info-links">
+        <a href="https://linktr.ee/artslogix" target="_blank" rel="noopener noreferrer" data-social="linktree">Linktree ↗</a>
+        <a href="https://www.instagram.com/artslogix/" target="_blank" rel="noopener noreferrer" data-social="instagram">Instagram ↗</a>
+        <a href="https://www.threads.com/@artslogix" target="_blank" rel="noopener noreferrer" data-social="threads">Threads ↗</a>
+        <a href="https://x.com/ArtsLogix" target="_blank" rel="noopener noreferrer" data-social="x">X ↗</a>
+      </div>
+    </div>
+
+    <div class="site-info-section site-info-note">
+      <div class="site-info-label">掲載情報について</div>
+      <p class="site-info-copy">
+        掲載情報はAIによる調査を活用して作成しています。正確性には配慮していますが、
+        最新情報は必ず各公式サイトでご確認ください。
+      </p>
+    </div>
+
+    <div class="site-info-meta">
+      <span>81 CASES</span>
+      <span>LAST UPDATED · 2026.08</span>
+    </div>
+  </section>
+</div>
+
+<div id="mobile-sheet" class="mobile-sheet"></div>
+
+<script>
+function trackEvent(eventName, params = {}) {
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', eventName, params);
+  }
+}
+
+// ── Fix mobile Chrome's inconsistent vh/svh handling by measuring the real
+//    visible height with JS and exposing it as a CSS custom property. ──
+function setRealViewportHeight() {
+  const h = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+  document.documentElement.style.setProperty('--vh100', h + 'px');
+}
+setRealViewportHeight();
+window.addEventListener('resize', setRealViewportHeight);
+window.addEventListener('orientationchange', setRealViewportHeight);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', setRealViewportHeight);
+}
+
+const CAT_COLORS = {
+  "都市型芸術祭型":       "#d96650",
+  "地域型芸術祭型":       "#e8c96e",
+  "小規模プロジェクト型": "#b8b06e",
+  "エリアマネジメント型": "#7fb3a8",
+  "AIR・制作拠点型":      "#b48cc6",
+  "ミュージアム・拠点型": "#d49a6e",
+  "産業・工芸連携型":     "#c87a9a",
+};
+
+
+// Map pin colors are based on "when can I go?" rather than research categories.
+const TIMING_COLORS = {
+  ongoing:   "#e94b35", // 開催中 — strong vermilion
+  month0:    "#f58a2a", // 今月開始 — orange
+  month1:    "#f2c94c", // 翌月開始 — yellow
+  month2:    "#e66591", // 翌々月開始 — vivid pink
+  later:     "#9b63d5", // それ以降（今年） — violet
+  future:    "#4f8fea", // 来年以降 — only cool accent
+  yearround: "#c8923f", // 通年 — warm ochre
+  unknown:   "#dfcfba", // 未発表 / 終了 — soft sand
+  ended:     "#dfcfba"  // 未発表 / 終了 — soft sand
+};
+
+function getTimingGroup(c) {
+  const today = todayLocal();
+  const currentYear = today.getFullYear();
+  const currentMonthIndex = today.getMonth();
+  const status = getEventStatus(c);
+
+  if (status.key === 'ongoing') return 'ongoing';
+  if (status.key === 'yearround' || status.key === 'program') return 'yearround';
+  if (status.key === 'ended') return 'ended';
+
+  if (c.startDate) {
+    const s = toLocalDay(c.startDate);
+    if (s) {
+      if (s.getFullYear() > currentYear) return 'future';
+      if (s.getFullYear() === currentYear) {
+        const diff = s.getMonth() - currentMonthIndex;
+        if (diff <= 0) return 'month0';
+        if (diff === 1) return 'month1';
+        if (diff === 2) return 'month2';
+        return 'later';
+      }
+    }
+  }
+
+  const y = parseInt(c.nextYear, 10);
+  if (Number.isFinite(y) && y > currentYear) return 'future';
+  return 'unknown';
+}
+
+function timingColor(c) {
+  return TIMING_COLORS[getTimingGroup(c)] || TIMING_COLORS.unknown;
+}
+
+function renderTimingLegend() {
+  const body = document.getElementById('timing-legend-body');
+  if (!body) return;
+
+  const today = todayLocal();
+  const year = today.getFullYear();
+  const m0 = today.getMonth() + 1;
+  const m1 = m0 < 12 ? m0 + 1 : null;
+  const m2 = m0 < 11 ? m0 + 2 : null;
+
+  const items = [
+    ['ongoing', '開催中'],
+    ['month0', `${year}年${m0}月開始`],
+  ];
+  if (m1) items.push(['month1', `${year}年${m1}月開始`]);
+  if (m2) items.push(['month2', `${year}年${m2}月開始`]);
+  items.push(
+    ['later', `${year}年${m2 ? m2 + 1 : m0 + 1}月以降`],
+    ['future', `${year + 1}年〜`],
+    ['yearround', '通年'],
+    ['unknown', '未発表・終了']
+  );
+
+  body.innerHTML = items.map(([key, label]) => `
+    <div class="legend-item">
+      <div class="legend-sq" style="background:${TIMING_COLORS[key]}"></div>
+      <span class="legend-label">${label}</span>
+    </div>
+  `).join('');
+}
+
+// 来場者向けの表示ラベル（内部データ c.cat はそのまま。UI表示のみ変換）
+const CAT_LABELS = {
+  "都市型芸術祭型":       "都市で楽しむ芸術祭",
+  "地域型芸術祭型":       "里山・島を巡る芸術祭",
+  "小規模プロジェクト型": "こぢんまり楽しむアート",
+  "エリアマネジメント型": "アートな街歩き",
+  "AIR・制作拠点型":      "アーティストの制作拠点",
+  "ミュージアム・拠点型": "美術館・アート施設",
+  "産業・工芸連携型":     "伝統工芸×現代アート",
+};
+function catLabel(cat) { return CAT_LABELS[cat] || cat; }
+
+const IMPACT_COLORS = {
+  "1-①": "#e8c96e", "1-②": "#e8c96e", "1-③": "#e8c96e",
+  "2-①": "#6ecac8", "2-②": "#6ecac8", "2-③": "#6ecac8",
+  "3-①": "#a06ec8", "3-②": "#a06ec8", "3-③": "#a06ec8",
+};
+
+function tagColor(tag) { return IMPACT_COLORS[tag.split(" ")[0]] || "#666"; }
+
+// 日程は2026年8月時点の公式・主催者情報を基に更新。未発表のものは推測せず未発表表示。
+const CASES = [
+  { pref:"北海道", name:"札幌国際芸術祭（SIAF）", tagline:"雪の札幌で、都市とメディアアートを巡る", region:"北海道・東北", lat:43.06, lng:141.35, slug:"hokkaido", cat:"都市型芸術祭型", tags:[], desc:"札幌市の創造都市という思想と、豊かな自然と都市機能の調和、大学やIT産業が集まるメディアアーツ都市という特徴を生かした创造的な環境づくり。", url:"https://siaf.jp/", localImg:"images/09_siaf.webp", nextYear:"2027", tokyoHours:4, artists:["坂本龍一（2017年ゲストディレクター）","大友良英","クリスチャン・マークレー","毛利悠子"] },
+  { pref:"青森", name:"AOMORI GOKAN", tagline:"青森の5つの美術館をつないで旅する", region:"北海道・東北", lat:40.82, lng:140.74, slug:"aomori", cat:"ミュージアム・拠点型", tags:[], desc:"県内の5つの美術館・アートセンターが連携し、青森のアートの魅力を国内外に発信するプロジェクト。県民及び観光客による県内の周遊を通して文化・経済・教育など幅広い分野での地域振興を目的とする。", url:"https://aomorigokan.com/", localImg:"images/10_aomori_gokan.jpg", dateText:"青森県内5館を通年で巡れる", yearRound:true, nextYear:"通年", tokyoHours:4, artists:["草間彌生","奈良美智","ロン・ミュエク","エルヴィン・ヴルム"] },
+  { pref:"岩手", name:"三陸国際芸術祭", tagline:"三陸を巡り、土地に根づく芸能に出会う", region:"北海道・東北", lat:39.7, lng:141.93, slug:"iwate", cat:"地域型芸術祭型", tags:[], desc:"三陸の伝統芸能に国内外のアーティストが共鳴することで、東日本大震災で被災した郷土芸能や文化芸術の復興を図るとともに、次世代の担い手育成や多様性のある文化の理解促進、国内外への三陸の魅力発信を目指す。", url:"https://sanfes.com/", localImg:"images/11_sanriku.webp", nextYear:"不明", tokyoHours:3, artists:["鹿踊り・虎舞・神楽などの郷土芸能団体","アジア各地の芸能・ダンスグループ"] },
+  { pref:"宮城", name:"リボーンアートフェス", tagline:"石巻で、アート・音楽・食を味わう", region:"北海道・東北", lat:38.43, lng:141.3, slug:"miyagi", cat:"地域型芸術祭型", tags:[], desc:"東日本大震災の被災地・石巻を舞台にしたアート/音楽/食の総合芸術祭。Reborn-Art＝人が生きる術をキーワードに、アーティストによる作品展示、地場食材を活かした食体験、多様な音楽ライブなどを実施。", url:"https://www.reborn-art-fes.jp/", localImg:"images/12_reborn_art.jpg", nextYear:"不明", tokyoHours:3, artists:["草間彌生","小林武史","川俣正","伊勢谷友介","加藤泉"] },
+  { pref:"秋田", name:"かみこあにプロジェクト", tagline:"秋田の小さな村で、暮らしとアートに出会う", region:"北海道・東北", lat:40.22, lng:140.44, slug:"akita", cat:"小規模プロジェクト型", tags:[], desc:"秋田県で最も高齢化が高いとされる上小阿仁村で毎年行われる、現代アート・音楽・伝統芸能の3つを軸にした展示やイベントを行うプロジェクト。地元住民が中心となって実行委員会を結成し、持続的な取り組みを続ける。", url:"https://www.kamikoani-project.com/", localImg:"images/13_kamikoani.jpg", dateText:"2026年の開催日程は未発表", nextYear:"未発表", tokyoHours:4, artists:["尾花賢一","迎英里子","永沢碧衣","秋田公立美術大学の学生作家"] },
+  { pref:"山形", name:"山形ビエンナーレ", tagline:"蔵王温泉と山形の街を、作品と歩く", region:"北海道・東北", lat:38.24, lng:140.36, slug:"yamagata", cat:"地域型芸術祭型", tags:[], desc:"東北芸術工科大学が主体となり2014年から隔年で開かれている芸術祭。街中の既存ストックを会場化して中心市街地活性化に寄与。2024年は初めて蔵王温泉で開催した。", url:"https://biennale.tuad.ac.jp/", localImg:"images/14_yamagata_biennale.png", dateText:"次回日程未発表（前回2024）", nextYear:"未発表", tokyoHours:3, artists:["稲葉俊郎（芸術監督）","大和由佳","山本桂輔"] },
+  { pref:"福島", name:"ハマカルアートプロジェクト", tagline:"福島・浜通りで、制作の現場と土地に触れる", region:"北海道・東北", lat:37.42, lng:141.03, slug:"fukushima", cat:"AIR・制作拠点型", tags:[], desc:"経済産業省の補助金を活用し、現在も一部避難指示が継続されている浜通り12市町村において、学生とともにアート活動を行う事業者や現地に滞在しながらアート活動を行う芸術家を支援する事業。", url:"https://hamacul-project.com/", localImg:"images/15_hamacul.png", dateText:"2026年度プロジェクト実施中", statusMode:"program", statusLabel:"年間プロジェクト", nextYear:"2026", tokyoHours:3.5, artists:["タル・ベーラ（映画監督）","古川日出男","大森克己","藤浩志"] },
+  { pref:"茨城", name:"アーカスプロジェクト（ARCUS）", tagline:"世界の作家が滞在する、守谷のアート拠点へ", region:"関東", lat:35.97, lng:140.07, slug:"ibaraki", cat:"AIR・制作拠点型", tags:[], desc:"茨城県を主催に1994年に始動した国内でも歴史の長いAIR。国際的に活動するアーティストが滞在制作を行うプログラムと、地域の方々が主体となれる場づくりやワークショップ等のラーニングプログラムを展開。", url:"https://www.arcus-project.com/", localImg:"images/16_arcus.jpg", nextYear:"2027", tokyoHours:1.5, artists:["アヴニー・タンドゥン・ヴィエラ","イブラヒム・クルト","佐藤浩一"] },
+  { pref:"茨城", name:"取手アートプロジェクト", tagline:"団地や農の風景にアートが溶け込む取手へ", region:"関東", lat:35.9, lng:140.04, slug:"ibaraki", cat:"小規模プロジェクト型", tags:[], desc:"1999年より市民と取手市、東京芸術大学の三者が共同で行っているアートプロジェクト。2010年以降はフェスティバル型から長期的視野の取り組みへ移行し、アートのある団地・半農半芸という2つのコアプログラムを展開。", url:"https://toride-ap.gr.jp/", localImg:"images/17_toride_ap.png", nextYear:"通年", tokyoHours:1.5, artists:["日野皓正","山下洋輔（取手ジャズフェスティバル出演）"] },
+  { pref:"栃木", name:"KEAT 小砂環境芸術祭", tagline:"栃木の里山で、自然と作品の間を歩く", region:"関東", lat:36.76, lng:140.26, slug:"tochigi", cat:"地域型芸術祭型", tags:[], desc:"日本でもっとも美しい村に認定された栃木県那珂川町小砂を舞台に、里山とアートとの関係性を提示する芸術祭。芸術表現を通じて地域の魅力を掘り起こし、環境とゆるやかに調和する新しい文化の形成を目指す。", url:"https://koisago-art.net/", localImg:"images/18_keat.svg", startDate:"2026-04-25", endDate:"2026-05-06", nextYear:"2026", tokyoHours:3, artists:["田原唯之","髙山瑞","船山哲郎","木村剛士"] },
+  { pref:"群馬", name:"中之条ビエンナーレ", tagline:"温泉街と里山を巡る、群馬のアート旅", region:"関東", lat:36.59, lng:138.85, slug:"gunma", cat:"地域型芸術祭型", tags:[], desc:"群馬県中之条町で隔年開催されるAIR型国際現代芸術祭。アーティストは特色ある山村地域のアーティスト・イン・レジデンスで美しい里山文化に触れながら滞在制作を行い、その成果を中之条ビエンナーレで発表する。", url:"https://nakanojo-biennale.com/", localImg:"images/19_nakanojo.png", nextYear:"2027", tokyoHours:2.5, artists:["浅野暢晴","アニタ・ガラツツァ","山形敦子"] },
+  { pref:"埼玉", name:"さいたま国際芸術祭", tagline:"さいたまの街を舞台に、現代アートを巡る", region:"関東", lat:35.86, lng:139.65, slug:"saitama", cat:"都市型芸術祭型", tags:[], desc:"さいたま市を舞台に3年に一度開催される芸術祭。市民と市民、市民とアーティスト、アーティストと地域が交流する機会を創出する市民参加型の芸術祭として、さいたま市内で広く開催される。", url:"https://artsaitama.jp/", localImg:"images/20_saitama_triennale.svg", nextYear:"2027", tokyoHours:0.5, artists:["目[mé]（荒神明香・南川憲二・増井宏文）","一条美由紀"] },
+  { pref:"千葉", name:"千葉国際芸術祭", tagline:"千葉の街と日常を、アートで見直す", region:"関東", lat:35.61, lng:140.12, slug:"chiba", cat:"都市型芸術祭型", tags:[], desc:"千葉市において3年に1回開催されるトリエンナーレ方式の芸術祭として2025年に始動。一時的な観光集客ではなく、千葉市内外に暮らす人々の創造性を刺激し、中長期的に日常を豊かにすることを重視する。", url:"https://artstriennale.city.chiba.jp/", localImg:"images/21_chiba_triennale.svg", nextYear:"2028", tokyoHours:0.5, artists:["中村政人（総合ディレクター）","加藤翼","高嶺格","藤浩志"] },
+  { pref:"東京", name:"東京ビエンナーレ", tagline:"東京のまちそのものを、アートの会場に", region:"関東", lat:35.7, lng:139.77, slug:"tokyo", cat:"都市型芸術祭型", tags:[], desc:"2020/21に始まった都市空間を舞台に2年に一度開催される国際芸術祭。千代田区・中央区・文京区・台東区で作品を展開。美術館ではなく街角や地下道、歴史的建築物など日常の風景の中でアートが展開される。", url:"https://tokyobiennale.jp/", localImg:"images/22_tokyo_biennale.jpg", nextYear:"2027", tokyoHours:0, artists:["鈴木昭男","栗原良彰","黒川岳","森靖"] },
+  { pref:"神奈川", name:"黄金町エリアマネジメント/バザール", tagline:"横浜・黄金町を歩き、街の変化を感じる", region:"関東", lat:35.44, lng:139.63, slug:"kanagawa", cat:"エリアマネジメント型", tags:[], desc:"かつて特殊飲食店がひしめいていたエリアを2005年頃からアートを核に再生。2008年から年に1度の黄金町バザールを開始、2009年にNPO法人黄金町エリアマネジメントセンターが発足し継続的なまちづくりが進む。", url:"https://koganecho.net/", localImg:"images/23_koganecho_bazaar.svg", startDate:"2026-09-10", endDate:"2026-10-12", nextYear:"2026", tokyoHours:0.5, artists:["志村茉那美","照沼敦朗","トモトシ","増山士郎"] },
+  { pref:"新潟", name:"大地の芸術祭", tagline:"越後妻有の里山を、アートを道しるべに巡る", region:"中部", lat:37.09, lng:138.76, slug:"niigata", cat:"地域型芸術祭型", tags:[], desc:"世界最大級の国際芸術祭であり、日本中で開催されている地域芸術祭のパイオニア。アートを道しるべに里山を巡る新しい旅は、アートによる地域づくりの先進事例として国内外から注目を集める。3年に1回の芸術祭のほか期間外も季節ごとにイベントを開催。", url:"https://www.echigo-tsumari.jp/", nextYear:"2027", tokyoHours:2.5, localImg:"images/niigata-echigotsumari.jpg", artists:["草間彌生","イリヤ＆エミリア・カバコフ","塩田千春","田中泯","クリスチャン・ボルタンスキー","アントニー・ゴームリー"] },
+  { pref:"富山", name:"ガラスの街とやま", tagline:"富山で、ガラスの街と美術館を巡る", region:"中部", lat:36.7, lng:137.21, slug:"toyama", cat:"産業・工芸連携型", tags:[], desc:"富山の産業であるガラスの街づくりを市の施策として定め、2015年に完成したガラス美術館を軸に、造形研究所・ガラス工房など市全体でガラスを活用した街づくりを推進する。", url:"https://www.info-toyama.com/stories/summer2021/glass", localImg:"images/24_toyama_glass.jpeg", nextYear:"通年", tokyoHours:2.5, artists:["デイル・チフーリ（美術館シンボル作品）","小島有香子"] },
+  { pref:"石川", name:"Go FOR KOGEI", tagline:"北陸の工芸と現代アートを訪ねる旅", region:"中部", lat:36.59, lng:136.63, slug:"ishikawa", cat:"産業・工芸連携型", tags:[], desc:"ものづくりが古くから受け継がれる北陸から新たな工芸の見方を発信するプロジェクト。地域の歴史・風土を体現する町並みや社寺を会場にした展覧会のほか、工芸をめぐるシンポジウムなども開催。2020年に開始。", url:"https://goforkogei.com/", localImg:"images/25_go_for_kogei.jpg", nextYear:"通年", tokyoHours:3, artists:["秋元雄史（アーティスティックディレクター）","国内外の工芸・現代アート作家約30組"] },
+  { pref:"福井", name:"Zen AIR（禅×AIR）", tagline:"禅の土地で、滞在制作の空気に触れる", region:"中部", lat:36.07, lng:136.22, slug:"fukui", cat:"AIR・制作拠点型", tags:[], desc:"禅の里として知られる福井県永平寺町を会場に、アーティストが禅文化に触れ地元住民と交流しながら制作・研究する機会を提供するテーマ特化型レジデンス。滞在成果を作品や研究として発信する。", url:"https://zen-air.org/", localImg:"images/26_zen_air.png", nextYear:"不明", tokyoHours:4, artists:["カミラ・スヴェンソン（ブラジル）","公募で選出される国内外のアーティスト"] },
+  { pref:"山梨", name:"FUJI TEXTILE WEEK", tagline:"富士吉田で、織物とデザインの街を歩く", region:"中部", lat:35.47, lng:138.8, slug:"yamanashi", cat:"産業・工芸連携型", tags:[], desc:"1000年以上続く織物産地・山梨県富士吉田市の歴史を根底に、伝統産業および地域活性を目的として2021年よりスタートしたテキスタイルと芸術が融合する国内唯一の布の芸術祭。", url:"https://fujitextileweek.com/", localImg:"images/27_fuji_textile_week.jpg", dateText:"次回日程未発表（2025開催済み）", nextYear:"未発表", tokyoHours:2.5, artists:["南條史生（アート展ディレクター）","大巻伸嗣","落合陽一","清川あさみ","A-POC ABLE ISSEY MIYAKE"] },
+  { pref:"長野", name:"北アルプス国際芸術祭", tagline:"北アルプスの山と街を、作品とともに巡る", region:"中部", lat:36.5, lng:137.85, slug:"nagano", cat:"地域型芸術祭型", tags:[], desc:"自然豊かな長野県大町市を舞台に、まちの潜在的な魅力を引き出し市民が協働で個性的なまちづくりを進める一環として、2017年に第1回、2021年に第2回、2024年に第3回を開催。", url:"https://shinano-omachi.jp/", localImg:"images/28_northern_alps.jpg", nextYear:"2029", tokyoHours:3, artists:["北川フラム（総合ディレクター）","鈴木理策","淺井裕介","皆川明（ビジュアルディレクター）"] },
+  { pref:"岐阜", name:"美濃和紙あかりアート展", tagline:"美濃の古い町並みを、和紙の光が照らす", region:"中部", lat:35.54, lng:136.91, slug:"gifu", cat:"産業・工芸連携型", tags:[], desc:"美濃和紙を使った約300点のあかりアート作品が、うだつの上がる町並みを柔らかな光で包む四半世紀以上続く幻想的な展覧会。全国から作品を募集し、入賞作品を展示・審査する参加型イベント。", url:"https://www.akariart.jp/", localImg:"images/29_mino_washi.jpg", startDate:"2026-10-11", endDate:"2026-11-30", nextYear:"2026", tokyoHours:3.5, artists:["石井幹子（照明デザイナー・特別顧問）","堀木エリ子（和紙アートディレクター）"] },
+  { pref:"静岡", name:"アーツカウンシルしずおか", tagline:"静岡のローカルな文化活動を見つける入口", region:"中部", lat:34.98, lng:138.38, slug:"shizuoka", cat:"小規模プロジェクト型", tags:[], desc:"静岡県内の文化芸術活動を助成・相談・情報発信によって支える中間支援組織。単発の事業補助にとどまらず、アーティストやNPOの活動継続を長期的に伴走する仕組みを持ち、行政と民間の橋渡し役として機能する。", url:"https://artscouncil-shizuoka.jp/", localImg:"images/30_arts_council_shizuoka.svg", nextYear:"通年", tokyoHours:1.5, artists:["宮城聰（SPAC芸術総監督）","鈴木忠志（初代芸術総監督）"] },
+  { pref:"愛知", name:"国際芸術祭「あいち」", tagline:"愛知の街を舞台に、世界の現代アートを巡る", region:"中部", lat:35.18, lng:136.91, slug:"aichi", cat:"都市型芸術祭型", tags:[], desc:"愛知県が3年に1度開催する国際現代芸術祭。愛知芸術文化センターのほか県内都市のまちなかを会場として広域に展開。現代美術を基軸に、パフォーミングアーツ・ラーニングなどジャンルを横断してアートの多様性を発信。次回2028年は芸術監督シャビール・フセイン・ムスタファのもと開催。", url:"https://aichitriennale.jp/index.html", nextYear:"2028", tokyoHours:2, localImg:"images/aichi-triennale.jpg", artists:["塩田千春","草間彌生","ヤノベケンジ","ウーゴ・ロンディノーネ","ムルヤナ"] },
+  { pref:"三重", name:"亀山トリエンナーレ", tagline:"亀山のまちに点在する、小さな表現を訪ねる", region:"中部", lat:34.85, lng:136.45, slug:"mie", cat:"小規模プロジェクト型", tags:[], desc:"三重県亀山市が推進するアートまちづくり事業。このまちに暮らす人々の営みの中で培われ時代・世代を超えて継承される心動かすものをアートと捉え、2014年から3年に1度の芸術祭を実施。", url:"https://www.kankomie.or.jp/special/art-kameyama/#top", localImg:"images/31_kameyama.jpg", nextYear:"通年", tokyoHours:3, artists:["浅野暢晴","浅野言朗","ティモ・ライト（フィンランド）"] },
+  { pref:"滋賀", name:"BIWAKOビエンナーレ", tagline:"近江八幡の町家を巡る、歴史と現代アートの旅", region:"関西", lat:35.13, lng:136.1, slug:"shiga", cat:"地域型芸術祭型", tags:[], desc:"滋賀県近江八幡市の古民家・町家・蔵などの歴史的建造物を主会場に、2年に1度開催される国際芸術祭。国内外のアーティストが建物の記憶や空間性に呼応したインスタレーションを制作し、街全体がミュージアムと化す。", url:"https://energyfield.org/biwakobiennale/", localImg:"images/32_biwako_biennale.svg", nextYear:"2027", tokyoHours:3, artists:["中田洋子（総合ディレクター）","ガブリエラ・モラウェッツ","青木美歌"] },
+  { pref:"京都", name:"KYOTOGRAPHIE", tagline:"春の京都を、写真と建築で歩く", region:"関西", lat:35.01, lng:135.77, slug:"kyoto", cat:"都市型芸術祭型", tags:[], desc:"京都の社寺・町家・近代建築・公共空間を会場に、毎年春に開催される国際写真フェスティバル。2013年に始まり、写真という単一分野に特化することで強いブランドを確立。市民参加型のKG+も同時開催される。2026年は第14回、テーマ「EDGE」で8ヶ国14組が参加。", url:"https://www.kyotographie.jp/", startDate:"2027-04-17", endDate:"2027-05-16", nextYear:"2027", tokyoHours:2.5, localImg:"images/kyoto-kyotographie.png", artists:["森山大道","アントン・コービン","イヴ・マルシャン＆ロマン・メフル","アーネスト・コール"] },
+  { pref:"大阪", name:"北加賀屋クリエイティブ・ビレッジ", tagline:"大阪の元造船所エリアで、創造の現場を巡る", region:"関西", lat:34.62, lng:135.49, slug:"osaka", cat:"エリアマネジメント型", tags:[], desc:"大阪市住之江区・北加賀屋の造船所跡地を地場の不動産会社・千島土地が民間主導で段階的に再生したアート拠点群。行政補助に依存せず、低廉な賃料と柔軟な空間運用によって多様なクリエイターを呼び込む。", url:"https://chishima-foundation.com/cruising", localImg:"images/33_kitakagaya.jpg", nextYear:"通年", tokyoHours:3.5, artists:["コンタクト・ゴンゾ（塚原悠也・垣尾優）","名村造船所跡拠点のアーティスト群"] },
+  { pref:"兵庫", name:"神戸・新開地（アートひろば等）", tagline:"神戸の下町で、舞台芸術と街の文化に触れる", region:"関西", lat:34.69, lng:135.19, slug:"hyogo", cat:"エリアマネジメント型", tags:[], desc:"かつて西日本最大の歓楽街として賑わい衰退した神戸・新開地エリアで展開するアートを核にした再生の取り組み。遊休ビルや空き店舗をアートスペース・稽古場・小劇場として活用し、地域の担い手育成と文化拠点化を進める。", url:"https://s-ah.jp/", localImg:"images/34_shinkaichi.jpg", nextYear:"通年", tokyoHours:3.5, artists:["林勇気（映像作家）","to R mansion","神戸・新開地ゆかりの若手アーティスト"] },
+  { pref:"奈良", name:"はならぁと", tagline:"奈良の古い町並みと空き家を、アートで巡る", region:"関西", lat:34.69, lng:135.83, slug:"nara", cat:"小規模プロジェクト型", tags:[], desc:"奈良県内の集落・町家・空き家・寺社などを会場にした分散型芸術祭。橿原・宇陀・吉野など県内各地を複数エリアに分けて順次開催し、観光客が普段訪れない集落や空き家へと回遊を生む。", url:"https://hanarart.jp/2025/", localImg:"images/35_hanarart.jpg", nextYear:"不明", tokyoHours:3.5, artists:["坂野真子","藤田千代","六車紀子","おとたまり（岩田茉莉江）"] },
+  { pref:"和歌山", name:"JAPAN WALLS（和歌山）", tagline:"和歌山の街角で、巨大な壁画に出会う", region:"関西", lat:34.23, lng:135.17, slug:"wakayama", cat:"小規模プロジェクト型", tags:[], desc:"国内外のストリートアーティストを招聘し、和歌山市内の建物外壁に大型ウォールアートを制作するプロジェクト。街の景観を一変させるビジュアルインパクトの高さからSNSでの拡散力が強く、新たな来街者を生み出す。", url:"https://prtimes.jp/main/html/rd/p/000000015.000067444.html", localImg:"images/36_japan_walls.jpg", nextYear:"通年", tokyoHours:5, artists:["Dragon76","YOSHI47","Jack Soren","石塚大介"] },
+  { pref:"鳥取", name:"鳥取県立美術館の取り組み", tagline:"鳥取の新しい美術館から、街へ出かける", region:"中国・四国", lat:35.5, lng:134.24, slug:"tottori", cat:"AIR・制作拠点型", tags:[], desc:"2025年に倉吉市にオープンした鳥取県立美術館を核に、整備段階から地域との対話を重ねて進められてきた文化政策。民藝運動ゆかりの地・鳥取の風土を活かしながら、県民の学び・交流・創造活動の拠点として設計。", url:"https://tottori-moa.jp/", localImg:"images/37_tottori_moa.jpg", nextYear:"通年", tokyoHours:5.5, artists:["森村泰昌","やなぎみわ","伊藤若冲・アンディ・ウォーホル・ゲルハルト・リヒター（開館記念展）"] },
+  { pref:"島根", name:"石見アーツプロジェクト", tagline:"石見で、地域に根づくアート活動を訪ねる", region:"中国・四国", lat:34.68, lng:131.98, slug:"shimane", cat:"小規模プロジェクト型", tags:[], desc:"島根県石見地域を対象にした文化芸術振興の取り組み。石見神楽・石見銀山・石州和紙といった地域固有の文化資源を現代のアート表現と接続しながら、若い世代のアーティストや文化関係者の移住・定住を促進する。", url:"https://artsiwami.localinfo.jp/", localImg:"images/38_iwami_arts.png", nextYear:"通年", tokyoHours:6, artists:["竹内大樹（発起人・舞台俳優）","加藤泉（石見美術館ゆかりの国際的作家）"] },
+  { pref:"岡山", name:"岡山芸術交流", tagline:"岡山の街なかで、国際現代アートを巡る", region:"中国・四国", lat:34.66, lng:133.93, slug:"okayama", cat:"地域型芸術祭型", tags:[], desc:"岡山市の城下町エリアを主会場に、3年に1度開催される国際現代芸術展。林原美術館・旧内山下小学校など歴史的な建物や公共空間を使い、世界水準のインスタレーションを展開する。徒歩で回遊できるコンパクトな会場配置が特色。", url:"https://www.okayamaartsummit.jp/", localImg:"images/39_okayama_art_summit.png", nextYear:"2028", tokyoHours:3, artists:["リクリット・ティラヴァーニャ（2022年アーティスティックディレクター）","片山真理","ダン・グラハム","ピエール・ユイグ"] },
+  { pref:"広島", name:"広島国際建築祭", tagline:"尾道・福山で、名建築と街の物語を歩く", region:"中国・四国", lat:34.4, lng:133.4, slug:"hiroshima", cat:"地域型芸術祭型", tags:[], desc:"2025年から開始された建築という専門分野に特化した広島発の国際フェスティバル。福山市・尾道市などを中心に、現代建築を巡るツアーや展示・シンポジウムを通じて都市の記憶・復興・再生を多角的に問い直す。", url:"https://hiroshima-architecture-exhibition.jp/", localImg:"images/40_hiroshima_architecture.png", nextYear:"2028", tokyoHours:4, artists:["安藤忠雄","伊東豊雄","妹島和世・西沢立衛（SANAA）","丹下健三"] },
+  { pref:"山口", name:"YCAM（山口情報芸術センター）", tagline:"山口で、メディアアートの実験に触れる", region:"中国・四国", lat:34.19, lng:131.47, slug:"yamaguchi", cat:"ミュージアム・拠点型", tags:[], desc:"山口市が設置した公共のメディアアート施設。アート・テクノロジー・研究を統合したR&D機能を持ち、展覧会・パフォーマンス・市民ワークショップから国際的な共同制作まで幅広く展開。アーティストとエンジニアが共同制作する体制が国内唯一レベル。", url:"https://www.ycam.jp/", localImg:"images/41_ycam.jpg", nextYear:"通年", tokyoHours:5, artists:["坂本龍一","高谷史郎","池田亮司"] },
+  { pref:"徳島", name:"神山AIR", tagline:"神山の山あいで、アーティストの制作現場へ", region:"中国・四国", lat:33.85, lng:134.22, slug:"tokushima", cat:"AIR・制作拠点型", tags:[], desc:"徳島県神山町で展開するアーティスト・イン・レジデンスプログラム。1990年代後半から始まり、滞在制作を入口にITサテライトオフィスの誘致・移住者受け入れ・空き家再生へと波及。地方創生政策に大きな影響を与えた神山モデルの原点。", url:"https://www.in-kamiyama.jp/art/", localImg:"images/42_kamiyama_air.jpg", nextYear:"通年", tokyoHours:5, artists:["金子未弥","Iede Reckman","Shirley Cho"] },
+  { pref:"香川", name:"瀬戸内国際芸術祭", tagline:"瀬戸内の島々を、アートを目当てに旅する", region:"中国・四国", lat:34.33, lng:134.04, slug:"kagawa", cat:"地域型芸術祭型", tags:[], desc:"瀬戸内海の島々と港を舞台に3年に1度開催される大規模な国際芸術祭。直島・豊島・女木島・小豆島など12の島と2つの港を会場に、国内外のアーティストによる常設・期間限定作品が展開。来場者数は毎回100万人を超える。2025年に本祭を開催済みで、次回本祭は2028年。2026年は会期外プログラム「ART SETOUCHI」を実施。", url:"https://setouchi-artfest.jp/", nextYear:"2028", tokyoHours:5, localImg:"images/kagawa-setouchi.png", artists:["草間彌生","横尾忠則","クリスチャン・ボルタンスキー","内藤礼","西沢立衛","ジュリアン・オピー"] },
+  { pref:"愛媛", name:"道後オンセアート", tagline:"道後温泉を、アートと一緒に歩く", region:"中国・四国", lat:33.84, lng:132.77, slug:"ehime", cat:"小規模プロジェクト型", tags:[], desc:"愛媛県松山市の道後温泉を舞台に開催されるアートフェスティバル。国内最古の温泉地として知られる道後の旅館・公衆浴場・商店街をギャラリーに見立て、国内外のアーティストによるインスタレーションや体験型作品を展開する。", url:"https://dogoonsenart.com/", localImg:"images/43_dogo_onseart.jpg", nextYear:"通年", tokyoHours:3.5, artists:["大竹伸朗","蜷川実花","エマニュエル・ムホー","石川直樹"] },
+  { pref:"高知", name:"高知県芸術祭/KOCHI ART PROJECTS", tagline:"高知の街と地域を、さまざまな表現で巡る", region:"中国・四国", lat:33.56, lng:133.53, slug:"kochi", cat:"小規模プロジェクト型", tags:[], desc:"高知県が毎年秋に開催する総合芸術祭（2025年で第75回）を母体に、アート×まちづくりをテーマにした助成・実践プログラムKOCHI ART PROJECTSを展開。演劇・音楽・美術・伝統文化など多彩な部門と地域まちづくりに直結するアートプロジェクトを組み合わせる。", url:"https://www.kochi-art.com/", localImg:"images/44_kochi_art.gif", startDate:"2026-08-30", endDate:"2026-12-06", nextYear:"2026", tokyoHours:4, artists:["石元泰博（高知県立美術館収蔵作家）","マルク・シャガール（同館収蔵作品）"] },
+  { pref:"福岡", name:"Fukuoka Art Next", tagline:"福岡の街なかで、気軽に現代アートに出会う", region:"九州・沖縄", lat:33.59, lng:130.4, slug:"fukuoka", cat:"小規模プロジェクト型", tags:[], desc:"福岡市が2022年度に始動した包括的な文化政策。産学官が連携し、市民がアートに触れる機会の創出とアーティストの成長・交流拠点の整備を同時に推進。Artist Cafe Fukuoka、ウォールアート掲出、アートフェアアジア福岡など多角的に展開する。", url:"https://fukuoka-art-next.jp/", localImg:"images/45_fukuoka_art_next.jpg", nextYear:"通年", tokyoHours:3.5, artists:["KYNE","村上信理","生島国宜"] },
+  { pref:"佐賀", name:"Creative Residency in Arita", tagline:"有田焼の産地で、海外作家の制作に触れる", region:"九州・沖縄", lat:33.19, lng:129.88, slug:"saga", cat:"産業・工芸連携型", tags:[], desc:"磁器発祥の地・有田で国内外のアーティストやデザイナーが3ヶ月間滞在し、地元の窯元・職人とのコラボレーションを通じた創作活動を行う。オランダ王国大使館との連携を基盤に2016年から始まり、有田焼ブランドの国際的更新を推進。", url:"https://cri-arita.com/ja/", dateText:"2026年6–8月（滞在制作）", statusMode:"program", statusLabel:"滞在制作", nextYear:"2026", tokyoHours:4, artists:["ミレナ・アンナ・バウマ","マルー・ブリュー","ベネデッタ・ポムピリ"] },
+  { pref:"長崎", name:"南島原市アートビレッジ・シラキノ", tagline:"南島原の廃校で、滞在制作の現場を訪ねる", region:"九州・沖縄", lat:32.65, lng:130.31, slug:"nagasaki", cat:"ミュージアム・拠点型", tags:[], desc:"長崎県南島原市の廃校を若手芸術家の支援と地域文化の発展を目的とした芸術文化複合施設として改修。国内外のアーティストが一定期間滞在して制作を行い、地域住民との交流やワークショップを通じて地域に創造の拠点を築く。", url:"https://www.artvillage-shirakino.jp/", localImg:"images/47_shirakino.jpg", nextYear:"通年", tokyoHours:4.5, artists:["今泉奏","公募で選出される国内外の版画作家"] },
+  { pref:"熊本", name:"くまもとアートポリス", tagline:"熊本で、建築を巡りながら街を読む", region:"九州・沖縄", lat:32.8, lng:130.71, slug:"kumamoto", cat:"小規模プロジェクト型", tags:[], desc:"熊本県が1988年から継続する公共建築・空間デザイン向上施策。著名建築家をコミッショナーに迎え、県内の公共施設・橋梁・道路・公園など幅広いインフラにデザインの質を実装し続けている。現在のコミッショナーは伊東豊雄。", url:"https://www.pref.kumamoto.jp/soshiki/115/85889.html", localImg:"images/48_kumamoto_artpolis.jpg", nextYear:"通年", tokyoHours:4, artists:["磯崎新（初代コミッショナー）","伊東豊雄（3代目コミッショナー）","篠原一男"] },
+  { pref:"大分", name:"BEPPU PROJECT", tagline:"別府の温泉街で、アートと街の活動に出会う", region:"九州・沖縄", lat:33.28, lng:131.49, slug:"oita", cat:"小規模プロジェクト型", tags:[], desc:"別府市を拠点とするNPOが主導するアートプロジェクト。温泉街の遊休施設を活用した国際芸術祭を起点に、AIR・人材育成・拠点運営・食と文化の発信まで多角的に展開。行政と民間の間で実装を回す中間支援型の運用体制が突出している。", url:"https://www.beppuproject.com/", localImg:"images/49_beppu_project.jpg", nextYear:"通年", tokyoHours:4, artists:["マイケル・リン","アデル・アブデスメッド","中山晃子","リム・ソクチャンリナ"] },
+  { pref:"宮崎", name:"新富芸術祭", tagline:"宮崎・新富の暮らしの中で、アートを楽しむ", region:"九州・沖縄", lat:32.07, lng:131.51, slug:"miyazaki", cat:"地域型芸術祭型", tags:[], desc:"新富町で開催される小規模自治体型の芸術祭。農村の田園風景・住民の日常・歴史的な祭祀空間をフィールドに、国内外のアーティストと地域住民が協働して作品を制作・展示。地域への負荷が小さく持続可能な設計が特徴。", url:"https://shintomi-art.jp/", localImg:"images/50_shintomi_art.svg", nextYear:"不明", tokyoHours:5, artists:["武田双雲","緒方智奈美","安積一仁"] },
+  { pref:"鹿児島", name:"霧島アートの森活用まちづくり", tagline:"霧島の自然の中で、野外アートを巡る", region:"九州・沖縄", lat:31.92, lng:130.86, slug:"kagoshima", cat:"ミュージアム・拠点型", tags:[], desc:"湧水町にある県立野外美術館・霧島アートの森を核にしたまちづくり。霧島連山の火山地形と豊かな自然の中に国内外の彫刻・インスタレーション作品が点在し、鑑賞・教育・自然体験が一体となった場を形成する。", url:"https://open-air-museum.org/", localImg:"images/51_kirishima.jpg", nextYear:"通年", tokyoHours:5, artists:["草間彌生","ダニ・カラバン","アントニー・ゴームリー","ジョナサン・ボロフスキー"] },
+  { pref:"沖縄", name:"やんばるアートフェスティバル", tagline:"やんばるの森と集落を、アートと工芸で巡る", region:"九州・沖縄", lat:26.72, lng:128.15, slug:"okinawa", cat:"地域型芸術祭型", tags:[], desc:"沖縄県北部・やんばる地域で開催される芸術祭。世界自然遺産に登録されたやんばるの亜熱帯の森・集落・海岸を会場に、自然との共生をテーマにした現代アートや伝統芸能・工芸を組み合わせたプログラムを展開する。", url:"https://yambaru-artfes.jp/", localImg:"images/52_yambaru.webp", nextYear:"不明", tokyoHours:6, artists:["Chim↑Pom from Smappa!Group","椿昇","淀川テクニック"] },
+  { pref:"東京", name:"恵比寿映像祭2026", tagline:"恵比寿で、映像と写真の「いま」に触れる", region:"関東", lat:35.65, lng:139.71, slug:"", cat:"ミュージアム・拠点型", tags:[], desc:"東京都写真美術館が主催する映像表現の国際フェスティバル。「映像とは何か」を問い続けながら、写真・映像・サウンド・パフォーマンスなど多様な表現を紹介する。2026年は「あなたの音に｜日花聲音｜Polyphonic Voices Bathed in Sunlight」がテーマ。", url:"https://topmuseum.jp/contents/exhibition/index-5091.html", localImg:"images/53_yebisu.jpg", startDate:"2027-02-05", endDate:"2027-02-21", dateNote:"2026年の本祭は終了", nextYear:"2027", tokyoHours:0, artists:["小森はるか","大木裕之","侯怡亭（台湾）"] },
+  { pref:"東京", name:"東京建築祭2026", tagline:"東京の名建築を、特別公開で巡る週末", region:"関東", lat:35.68, lng:139.76, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"「建築から、ひとを感じる、まちを知る。」を理念に、普段公開されていない東京都内の名建築を一般公開するイベント。2024年初開催で6.5万人を動員。専門家・建築主によるガイドツアーも実施し、建築好きから初心者まで楽しめる。2026年は渋谷エリアに拡大、参加建築70以上。", url:"https://tokyo.kenchikusai.jp/", localImg:"images/54_tokyo_kenchikusai.jpg", startDate:"2027-05-15", endDate:"2027-05-23", dateNote:"2026年の開催は終了", nextYear:"2027", tokyoHours:0, artists:["旧岩崎邸庭園（ジョサイア・コンドル）","三菱一号館","GINZA SIX","慶應義塾大学図書館旧館"] },
+  { pref:"東京", name:"すみだ五彩の芸術祭", tagline:"墨田の街を歩き、土地の記憶と表現に出会う", region:"関東", lat:35.71, lng:139.80, slug:"", cat:"都市型芸術祭型", tags:[], desc:"墨田区が主催する、東京23区では初となる区主催の数ヶ月規模の総合芸術祭。「墨に五彩あり」という言葉を手がかりに、地域の歴史・産業・人々の記憶に光を当てる。古民家・寺・商店街など街そのものが表現の場となる。", url:"https://sumida-artfest.jp/", startDate:"2026-09-04", endDate:"2026-12-20", nextYear:"2026", tokyoHours:0, localImg:"images/tokyo-sumida.jpg", artists:["山口藍","蔵真墨","岡田裕子","山崎広太"] },
+  { pref:"東京", name:"TOKYO ATLAS（国際文化芸術祭）", tagline:"東京の臨海部で、世界の現代アートを巡る", region:"関東", lat:35.63, lng:139.78, slug:"", cat:"都市型芸術祭型", tags:[], desc:"東京都が2026年に始動する新たな文化芸術祭の一環として、臨海部（お台場・青海南ふ頭・天王洲）で開催される国際的な美術展。「お台場トリエンナーレ」の蓄積を引き継ぎ、世界的アーティストと東京都が支援してきた若手作家を紹介する。", url:"https://tokyoatlas.jp/", startDate:"2026-10-10", endDate:"2026-12-20", nextYear:"2026", tokyoHours:0, localImg:"images/tokyo-atlas.png", artists:["草間彌生","イケムラレイコ","潘逸舟","大巻伸嗣"] },
+  { pref:"群馬", name:"前橋国際芸術祭2026「めぶく。」", tagline:"前橋の街なかを、建築とアートで歩く", region:"関東", lat:36.39, lng:139.06, slug:"", cat:"都市型芸術祭型", tags:[], desc:"前橋市の中心市街地を舞台に初開催される国際芸術祭。2016年策定のまちづくりビジョン「めぶく。」から10年の節目に開催され、建築家・藤本壮介らが手がけた再開発と連動。商店街・空きビル・公共空間を舞台にウォーカブルなアート体験を展開する。", url:"https://maebashi-biennale.com/", localImg:"images/55_maebashi_biennale.jpg", startDate:"2026-09-19", endDate:"2026-12-20", nextYear:"2026", tokyoHours:1.5, artists:["蜷川実花","渋谷慶一郎","川俣正","石川直樹","アレクサ・クミコ・ハタナカ","マルタン・マルジェラ"] },
+  { pref:"岐阜", name:"下呂 Art Discovery 2026", tagline:"下呂温泉・森・廃校を巡るアート旅", region:"中部", lat:35.80, lng:137.24, slug:"", cat:"地域型芸術祭型", tags:[], desc:"日本三名泉のひとつ下呂温泉を有する岐阜県下呂市を舞台にした新しい芸術祭。豊かな森・古い町並み・木造校舎の廃校を会場に、人間と自然の関係を問うサイトスペシフィックなアートを展開。総合ディレクターは北川フラムが務める。14の国と地域から59組が参加。", url:"https://gero-art-discovery.jp/", startDate:"2026-09-11", endDate:"2026-11-08", nextYear:"2026", tokyoHours:3, localImg:"images/gifu-gero.jpg", artists:["遠藤利克","バルトロメイ・トグオ","スタシス・エイドリゲヴィチウス","マッシモ・バルトリーニ","EAT & ART TARO"] },
+  { pref:"山梨", name:"富士山芸術祭2026", tagline:"富士山を望みながら、山梨の文化と作品を巡る", region:"中部", lat:35.49, lng:138.76, slug:"", cat:"地域型芸術祭型", tags:[], desc:"富士山という世界遺産を中心に、山梨県内の歴史的建造物・寺院・美術館・酒蔵・偉人ゆかりの地を結ぶ広域回遊型の芸術祭。4年に1度開催され、伝統工芸と現代アートを接続し地域に眠る価値を掘り起こす。", url:"https://fujisan-artfes.jp/", localImg:"images/56_fujisan_artfes.jpg", startDate:"2026-10-17", endDate:"2026-11-15", nextYear:"2026", tokyoHours:2 },
+  { pref:"静岡", name:"三島満願芸術祭2026", tagline:"三島の街角で、現代アートに出会う", region:"中部", lat:35.12, lng:138.92, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"静岡県三島市を舞台にした現代アートの芸術祭。2023年11月に初開催し、2026年で3回目を迎える。市内各所を会場に地域と現代アートを接続する取り組みとして定着しつつある。", url:"https://manganart.com/", localImg:"images/57_mishima_mangan.jpg", startDate:"2026-02-07", endDate:"2026-03-01", nextYear:"未発表", tokyoHours:1, artists:["橘葉月","牛島光太郎"] },
+  { pref:"福島", name:"アラフドアートアゲイン", tagline:"土湯温泉の山あいで、アートと思索の旅へ", region:"北海道・東北", lat:37.68, lng:140.24, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"磐梯朝日国立公園に位置する福島市・土湯温泉町を囲む山々を舞台に、国内外のアーティストが思想と表現を展開するアートプロジェクト。温泉地の自然環境と現代アートが呼応する体験を提供する。", url:"https://arafudo.net/", localImg:"images/58_arafudo.webp", startDate:"2026-04-10", endDate:"2026-06-30", nextYear:"未発表", tokyoHours:2.5, artists:["ユミソン（総合ディレクター）","SIDE CORE","飯山由貴","KIGI（植原亮輔・渡邉良重）"] },
+  { pref:"兵庫", name:"神戸六甲ミーツ・アート2026 beyond", tagline:"六甲山を歩きながら、現代アートを探す", region:"関西", lat:34.76, lng:135.25, slug:"", cat:"地域型芸術祭型", tags:[], desc:"神戸・六甲山上で毎年秋に開催される現代アートの芸術祭。2010年から継続しており、六甲山の豊かな自然環境の中に作品が点在する。神戸市街地からのアクセスの良さと自然体験を両立した都市近郊型の芸術祭。", url:"https://rokkomeetsart.jp/", localImg:"images/59_rokko_meets_art.png", startDate:"2026-08-29", endDate:"2026-11-29", nextYear:"2026", tokyoHours:3, artists:["川俣正","宮永愛子","髙橋匡太","椿昇"] },
+  { pref:"佐賀", name:"武雄のあかりめぐり", tagline:"武雄温泉の夜を、光のアートと巡る", region:"九州・沖縄", lat:33.19, lng:130.02, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀県武雄市の観光名所を光で彩る恒例イベント。国登録記念物・御船山楽園で行われるチームラボ「かみさまがすまう森」をはじめ、武雄温泉楼門・武雄神社・武雄市図書館など8施設があかりの会場になる。2026年で11回目。", url:"https://www.takeo-kk.net/season/summer.html", localImg:"images/60_takeo_akari.jpg", startDate:"2026-08-01", endDate:"2026-10-12", nextYear:"2026", tokyoHours:5.5, artists:["チームラボ"] },
+  { pref:"北海道", name:"飛生芸術祭", tagline:"北海道の森と旧校舎で、おとぎ話のような祝祭へ", region:"北海道・東北", lat:42.55, lng:141.35, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"北海道白老町の飛生（とびう）地区、廃校となった旧飛生小学校を拠点に1986年発足した飛生アートコミュニティーが開く年に一度の芸術祭。木造校舎と周囲の森を展覧会場に、多様な表現をお披露目し交流する。オープニングイベントTOBIU CAMPも同時開催。", url:"https://tobiu.com/about/", localImg:"images/61_tobiu.jpg", startDate:"2026-09-05", endDate:"2026-09-13", dateNote:"「トビウの祝祭」は9/12", nextYear:"2026", tokyoHours:1.5, artists:["奈良美智","淺井裕介","石川直樹"] },
+  { pref:"福島", name:"福島ビエンナーレ2026", tagline:"福島・双葉で、土地の記憶と現代アートに向き合う", region:"北海道・東北", lat:37.35, lng:141.00, slug:"", cat:"地域型芸術祭型", tags:[], desc:"2004年から隔年開催されてきた現代アートの企画。東日本大震災15年復興祈念として、双葉郡8町村（浪江町・双葉町・大熊町・富岡町・楢葉町・広野町・葛尾村・川内村）を舞台に「Cinematic ∞ Art」をテーマに現代アートを展開する。福島大学と地域住民の協働による地域文化伝承の場。", url:"https://wa-art.com/bien/bien2026/index.html", localImg:"images/62_fukushima_biennale.png", startDate:"2026-08-23", endDate:"2026-09-26", nextYear:"2026", tokyoHours:3, artists:["奈良美智","ヤノベケンジ","小松美羽"] },
+  { pref:"栃木", name:"AWANO 夢咲くART FESTIVAL 2026", tagline:"鹿沼の里山で、花・アート・食を楽しむ", region:"関東", lat:36.51, lng:139.66, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"栃木県鹿沼市粟野地域を舞台に2016年から開催される芸術祭。現役の粟野中学校とレトロな旧粟野中学校を中心に、そばの花・彼岸花など四季折々の里山景観の中でアーティストの展覧会・アートステージ・マルシェを展開する。2026年で9回目。", url:"https://awanoartfestival.com/", localImg:"images/63_awano.jpg", startDate:"2026-11-08", endDate:"2026-11-22", nextYear:"2026", tokyoHours:2 },
+  { pref:"千葉", name:"房総国際芸術祭 アート×ミックス2027", tagline:"房総半島を横断して、アートと食を巡る", region:"関東", lat:35.42, lng:140.10, slug:"", cat:"地域型芸術祭型", tags:[], desc:"千葉県市原市・木更津市・大多喜町を舞台にした新しい国際芸術祭。総合ディレクター北川フラム、総合プロデューサー小林武史のもと、房総半島を鉄道・車・自転車で旅しながらアートと音楽・食を楽しむ「みんなの美術工場」構想を展開する。", url:"https://boso-artmix.com/about", localImg:"images/64_boso_artmix.jpg", nextYear:"2027", tokyoHours:1.5, artists:["北川フラム（総合ディレクター）","小林武史（総合プロデューサー）","豊福亮（アートディレクター）"] },
+  { pref:"神奈川", name:"横浜トリエンナーレ", tagline:"横浜の街で、世界の現代アートと出会う", region:"関東", lat:35.45, lng:139.63, slug:"", cat:"都市型芸術祭型", tags:[], desc:"2001年開始、日本を代表する国際現代アート展。みなとみらい地区をはじめとする横浜都心臨海部を会場に3年に1度開催。第9回はコスミン・コスティナシュとインティ・ゲレロがアーティスティック・ディレクターを務める。", url:"https://www.yokohamatriennale.jp/", nextYear:"不明", tokyoHours:0.5, localImg:"images/kanagawa-yokohama.jpg", artists:["サンドラ・ムジンガ","ピッパ・ガーナー","ニック・ケイヴ","アイ・ウェイウェイ","ヨアル・ナンゴ"] },
+  { pref:"神奈川", name:"逗子アートフェスティバル", tagline:"海辺の逗子を歩き、地域のアートに出会う", region:"関東", lat:35.30, lng:139.58, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"2013年から神奈川県逗子市で毎年開催されているアートイベント。「アートを通じた地域づくり」の実践を目指し、逗子の街なか・海辺を舞台に地域住民とアーティストが協働するプログラムを展開する。", url:"https://www.zushi-art.com/", localImg:"images/65_zushi_art.jpg", startDate:"2026-10-03", endDate:"2026-10-25", nextYear:"2026", tokyoHours:1, artists:["森山大道","フランシス真悟"] },
+  { pref:"富山", name:"ART/X/TOYAMA（アートエクストヤマ）", tagline:"富山・魚津で、国内外の現代アートを巡る", region:"中部", lat:36.83, lng:137.41, slug:"", cat:"地域型芸術祭型", tags:[], desc:"富山県魚津市の新川文化ホールを会場に4年ごとに開催される国際現代美術展。1993年から続き、県内外・海外（フランス・トルコ・ドイツ・韓国・中国など）の作家が参加。2026年は第10回記念展として9カ国の作家が集う。", url:"https://art.p-alpha.ne.jp/", localImg:"images/66_art_x_toyama.svg", startDate:"2026-05-02", endDate:"2026-05-10", nextYear:"未発表", tokyoHours:3, artists:["Ahmet ÖZEL（トルコ）","Anka KRASNA（スロベニア）","加賀谷武"] },
+  { pref:"石川", name:"いしかわ舞台芸術祭2026", tagline:"金沢で、演劇・ダンス・音楽をはしごする秋", region:"中部", lat:36.59, lng:136.63, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"石川県で開催される舞台芸術祭。国内外のアーティストを迎え、演劇・ダンス・音楽・美術のジャンルを超えた舞台作品を紹介する石川県秋の大型イベント。県民に新たな観劇体験と文化交流の機会を提供する。", url:"https://ishikawabutai.jp/", localImg:"images/67_ishikawa_butai.png", startDate:"2026-09-01", endDate:"2026-12-22", dateText:"2026年9月〜12月22日", approximateDate:true, nextYear:"2026", tokyoHours:3, artists:["佐久間宣行（アンバサダー）","ダウ90000"] },
+  { pref:"福井", name:"熊川宿若狭芸術祭", tagline:"熊川宿の町家で、滞在制作と出会う", region:"中部", lat:35.48, lng:135.93, slug:"", cat:"AIR・制作拠点型", tags:[], desc:"福井県若狭町の熊川宿を「世界の文化交流拠点地域」として発展させることを目指し2023年度から開催。性別・年齢・国籍・障がいの有無を問わず多様な表現者が短期滞在制作・展覧会・音楽会を行う。海外アーティストも参加する若狭町・県共催の芸術祭。", url:"https://kumagawa-art.jp/", localImg:"images/68_kumagawa.jpg", nextYear:"不明", tokyoHours:4, artists:["河口龍夫（筑波大学名誉教授）","テオ・ムザール（フランス）"] },
+  { pref:"長野", name:"浅間国際フォトフェスティバル（PHOTO MIYOTA）", tagline:"浅間山麓で、写真を五感で味わう", region:"中部", lat:36.34, lng:138.55, slug:"", cat:"ミュージアム・拠点型", tags:[], desc:"長野県御代田町の文化複合施設MMoP（旧メルシャン軽井沢美術館）を中心会場に2018年から開催される国際写真フェスティバル。浅間山麓の自然の中で国内外の写真家の作品を展示。2026年は町内各所へ展示エリアを拡大し、浅間山麓の風景とともに写真作品を巡る構成となっている。", url:"https://asamaphotofes.jp/", localImg:"images/69_asama_photo.jpg", startDate:"2026-08-01", endDate:"2026-09-27", nextYear:"2026", tokyoHours:2.5, artists:["ヘンリエッテ・サブロー・エベセン（デンマーク）","スティーブン・ギル","小原一真"] },
+  { pref:"静岡", name:"原泉アートデイズ！", tagline:"掛川の里山で、滞在制作から生まれた作品を巡る", region:"中部", lat:34.87, lng:138.02, slug:"", cat:"AIR・制作拠点型", tags:[], desc:"静岡県掛川市北部・原泉地区で開催されるAIRプログラムと展覧会。原泉アートプロジェクトが2018年からHARAIZUMI AIRを運営し、国内外アーティストの滞在制作支援を継続。旧茶工場や古民家を会場に地区全域で展開する文化庁認定事業。", url:"https://haraizumiart.com/artdays/", localImg:"images/70_haraizumi.svg", dateText:"2026年のアートデイズ日程は未発表", nextYear:"未発表", tokyoHours:2, artists:["野々上聡人（岡本太郎現代芸術賞大賞受賞）","松島誠"] },
+  { pref:"愛知", name:"大野芸術祭（OHNO ART BREW）", tagline:"常滑の海辺の町を、アートと歩く", region:"中部", lat:34.85, lng:136.82, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"愛知県常滑市大野町一帯を会場に2024年から開催される芸術祭。大野海岸・駅前広場・カフェなど町なかの日常空間にアート作品が点在し、入場無料で気軽に楽しめる地域密着型のイベントとして定着しつつある。", url:"https://oab.jpn.org/", localImg:"images/71_ohno_art_brew.png", startDate:"2026-03-14", endDate:"2026-03-22", nextYear:"未発表", tokyoHours:2, artists:["エリオット・ヘイグ＋澤田奈々（デュオ）"] },
+  { pref:"滋賀", name:"長浜国際芸術祭", tagline:"長浜の商店街で、国内外のアートに出会う", region:"関西", lat:35.38, lng:136.28, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"滋賀県長浜市のまちなか商店街を会場に開催される国際アートプロジェクト。長浜の歴史と文化を背景に、国内外のアーティストと地域住民が出会い交流する場を創出。ポーランドとの国際交流も特徴で、2026年で第2回を迎える。", url:"https://nagahama-art-2026-2.jimdosite.com/", localImg:"images/72_nagahama.jpg", startDate:"2026-08-08", endDate:"2026-08-20", nextYear:"2026", tokyoHours:3, artists:["カシア・クヤブスカ・マーフィー（ポーランド）","大崎緑"] },
+  { pref:"京都", name:"KYOTO EXPERIMENT 京都国際舞台芸術祭2026", tagline:"秋の京都で、実験的な舞台芸術をはしごする", region:"関西", lat:35.01, lng:135.77, slug:"", cat:"都市型芸術祭型", tags:[], desc:"2010年から京都市内で開催される舞台芸術祭。国内外の先鋭的なアーティストを迎え、演劇・ダンス・音楽・美術のジャンルを越境した作品を紹介。Kansai Studies・Shows・SKFの3プログラムで構成。2026年は10月3日〜25日開催。", url:"https://kyoto-ex.jp/", localImg:"images/73_kyoto_experiment.png", startDate:"2026-10-03", endDate:"2026-10-25", nextYear:"2026", tokyoHours:2.5, artists:["ティアゴ・ロドリゲス（アビニョン演劇祭ディレクター）","アリス・リポル","梅田哲也"] },
+  { pref:"大阪", name:"生きた建築ミュージアムフェスティバル大阪（イケフェス大阪）", tagline:"大阪の名建築を、一斉公開で巡る2日間", region:"関西", lat:34.70, lng:135.50, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"大阪の魅力ある建築を毎年秋の週末に無料で一斉公開する日本最大級の建築イベント。歴史的建造物から現代建築、街場の喫茶店まで約200の「生きた建築」が扉を開く。2026年開催日は10月24日・25日。", url:"https://ikenchiku.jp/ikefes2025/", localImg:"images/74_ikefes_osaka.png", startDate:"2026-10-24", endDate:"2026-10-25", nextYear:"2026", tokyoHours:3, artists:["丹下健三","ポール・アンドリュー（フランス）"] },
+  { pref:"和歌山", name:"紀南アートウィーク", tagline:"紀南の海と山、暮らしの文化をアートで巡る", region:"関西", lat:33.73, lng:135.38, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"和歌山県紀南地域（田辺市など）を拠点に継続的に展開するアートプロジェクト。柑橘・漁業・地域の歴史や信仰といった紀南固有の生活文化をテーマにした展覧会・トークイベントを実施。地域資源を現代アートの視点で読み解く。", url:"https://kinan-art.jp/", localImg:"images/75_kinan_art_week.svg", nextYear:"不明", tokyoHours:4, artists:["アピチャッポン・ウィーラセタクン","一柳慧","ヘアート・ムル（オランダ）"] },
+  { pref:"岡山", name:"森の芸術祭 晴れの国・岡山2027", tagline:"岡山県北を旅しながら、森とアートに出会う", region:"中国・四国", lat:35.07, lng:133.75, slug:"", cat:"地域型芸術祭型", tags:[], desc:"岡山県北部12市町村（津山市・高梁市・新見市・真庭市・美作市など）を舞台にした国際芸術祭。2024年の常設作品（マイケル・リン、妹島和世ら）は引き続き鑑賞可能。次回2027年秋開催予定。", url:"https://forestartfest-okayama.jp/", localImg:"images/76_forest_art_okayama.png", dateText:"2027年秋 開催予定", nextYear:"2027", tokyoHours:4.5, artists:["マイケル・リン","妹島和世","坂本龍一＋高谷史郎","蜷川実花 with EiM"] },
+  { pref:"岡山", name:"瀬戸内産業芸術祭", tagline:"瀬戸内の産業風景を、アートで見直す1か月", region:"中国・四国", lat:34.50, lng:133.90, slug:"", cat:"産業・工芸連携型", tags:[], desc:"塩田・造船・製鉄など日本の発展を支えてきた瀬戸内海の産業を非日常的な視点で知る分散型美術館構想。参加企業の工場をアーティスト・クリエイターがプロデュースし、産業の本質を新しい視点で体験できる独自の芸術祭。", url:"https://www.sai-art.jp/", localImg:"images/77_setouchi_industry_art.jpg", startDate:"2026-10-03", endDate:"2026-10-31", nextYear:"2026", tokyoHours:4, artists:["山本基（塩のインスタレーション）","妹島和世"] },
+  { pref:"広島", name:"MAFIN（Miyajima Art Festival in the Narrative）", tagline:"宮島の寺院で、歴史と現代アートが交わる", region:"中国・四国", lat:34.27, lng:132.32, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"広島県廿日市市・宮島弥山大本山大聖院を会場に毎年開催される現代アート展。「聖なる島」宮島で平和をテーマにアートを通して考察する。宮島の自然景観からインスピレーションを得た作品が、歴史ある寺院の空間と対話する。", url:"https://mafin.jp/", localImg:"images/78_mafin.png", nextYear:"不明", tokyoHours:5, artists:["康夏奈","久保寛子","Chim↑Pom from Smappa!Group"] },
+  { pref:"福岡", name:"ART FAIR ASIA FUKUOKA（AFAF）", tagline:"福岡で、アジアの現代アートを一度に見る", region:"九州・沖縄", lat:33.60, lng:130.40, slug:"", cat:"都市型芸術祭型", tags:[], desc:"福岡国際センターで開催される、日本とアジアの架け橋となるアートフェア。2026年で11回目を迎え、国内外の一流ギャラリーが集結。Fukuoka Art Nextとも連携し、福岡のアートエコシステムの一翼を担う。2026年は10月2日〜4日開催。", url:"https://artfair.asia/", localImg:"images/79_art_fair_asia_fukuoka.png", startDate:"2026-10-02", endDate:"2026-10-04", dateNote:"10/1はVIP View", nextYear:"2026", tokyoHours:3.5, artists:["田中千智","牧野永美子","野村仁衣那"] },
+  { pref:"佐賀", name:"SAGA ARTIST FAIR 2027", tagline:"佐賀で、これからの作家を見つけるアートフェア", region:"九州・沖縄", lat:33.25, lng:130.30, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"佐賀市を拠点に開催される公募制のアートフェア。新進アーティストの発掘・紹介を目的とし、開催のたびに公募でアーティストを募集する。2027年開催は2027年2月中旬を予定、応募開始は2026年8月中旬から。", url:"https://www.sagaartistfair.com/2027", localImg:"images/80_saga_artist_fair.jpg", dateText:"2027年2月中旬 開催予定", nextYear:"2027", tokyoHours:4, artists:["森正彦（自転車廃材の立体造形）","towa-towa"] },
+  { pref:"鹿児島", name:"種子島宇宙芸術祭", tagline:"種子島で、宇宙とアートを同時に楽しむ", region:"九州・沖縄", lat:30.62, lng:130.97, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"鹿児島県南種子町・種子島宇宙センターを中心に開催される、宇宙をテーマにした唯一無二の芸術祭。天文学者カール・セーガンの思想を原点に「宇宙芸術」という新しい概念を提唱。夏はサマーキャンプ、冬はライトフェスティバルを開催。", url:"https://satfes.jp/2025/", localImg:"images/81_tanegashima_space_art.svg", nextYear:"不明", tokyoHours:5.5, artists:["千田泰広","椿昇","開発好明","篠田守男"] }
+];
+
+const IMPACT_PREFIX = { "経済": "1-", "社会": "2-", "文化": "3-" };
+const REGION_ORDER = ["北海道・東北","関東","中部","関西","中国・四国","九州・沖縄"];
+const REGION_NUM = { "北海道・東北":"01","関東":"02","中部":"03","関西":"04","中国・四国":"05","九州・沖縄":"06" };
+
+let activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeAccess = "all", searchQ = "";
+
+
+const TRAVEL_TAG_ORDER = ["島・海","温泉","建築","写真・映像","工芸","自然・里山","街歩き","食"];
+
+function getTravelTags(c) {
+  const text = `${c.name} ${c.tagline || ''} ${c.desc || ''} ${c.cat || ''}`;
+  const tags = new Set(c.travelTags || []);
+
+  // 島・海
+  if (/(島|海|瀬戸内|宮島|種子島|やんばる|臨海|港|石巻|三陸)/.test(text)) tags.add("島・海");
+
+  // 温泉
+  if (/(温泉|道後|別府|武雄|土湯|下呂|蔵王)/.test(text)) tags.add("温泉");
+
+  // 建築
+  if (/(建築|町家|古民家|歴史的建造物|公共施設|寺院|神社|社寺|造船所跡|廃校)/.test(text) ||
+      /東京建築祭|広島国際建築祭|くまもとアートポリス|YCAM/.test(c.name)) tags.add("建築");
+
+  // 写真・映像
+  if (/(写真|映像|メディアアート|メディアアーツ)/.test(text) ||
+      /KYOTOGRAPHIE|浅間国際フォト|恵比寿映像祭/.test(c.name)) tags.add("写真・映像");
+
+  // 工芸
+  if (c.cat === "産業・工芸連携型" ||
+      /(工芸|和紙|織物|テキスタイル|陶磁器|有田焼|ガラス|磁器|窯元)/.test(text)) tags.add("工芸");
+
+  // 自然・里山
+  if (/(里山|自然|森|山|農村|田園|北アルプス|富士山|六甲|亜熱帯|森林|公園)/.test(text) ||
+      c.cat === "地域型芸術祭型") tags.add("自然・里山");
+
+  // 街歩き
+  if (/(街|まち|町並み|商店街|中心市街地|都市空間|回遊|歩く|巡る)/.test(text) ||
+      c.cat === "都市型芸術祭型" || c.cat === "エリアマネジメント型") tags.add("街歩き");
+
+  // 食
+  if (/(食|地場食材|マルシェ|酒蔵|飲食|料理)/.test(text) ||
+      /Reborn|房総国際芸術祭/.test(c.name)) tags.add("食");
+
+  return TRAVEL_TAG_ORDER.filter(t => tags.has(t));
+}
+
+function travelTagsHtml(c) {
+  const tags = getTravelTags(c);
+  if (!tags.length) return '';
+  return `<div class="travel-tags">${tags.map(t => `<span class="travel-tag">${t}</span>`).join('')}</div>`;
+}
+
+function updateDynamicFilterLabels() {
+  const el = document.getElementById('upcoming-filter-label');
+  if (el) el.textContent = `${todayLocal().getFullYear()}年これから`;
+}
+
+function toLocalDay(dateString) {
+  if (!dateString) return null;
+  const [y,m,d] = dateString.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function todayLocal() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function monthRange(year, monthNumber) {
+  return {
+    start: new Date(year, monthNumber - 1, 1),
+    end: new Date(year, monthNumber, 0)
+  };
+}
+
+function eventOverlapsMonth(c, year, monthNumber) {
+  if (c.yearRound || c.nextYear === '通年') return true;
+  if (!c.startDate || !c.endDate) return false;
+
+  const eventStart = toLocalDay(c.startDate);
+  const eventEnd = toLocalDay(c.endDate);
+  if (!eventStart || !eventEnd) return false;
+
+  const range = monthRange(year, monthNumber);
+  return eventStart <= range.end && eventEnd >= range.start;
+}
+
+function renderMonthFilters() {
+  const wrap = document.getElementById('month-filters');
+  if (!wrap) return;
+
+  const today = todayLocal();
+  const currentMonth = today.getMonth() + 1;
+  const months = [];
+  for (let m = currentMonth; m <= 12; m++) months.push(m);
+
+  wrap.innerHTML = [
+    `<button class="chip ${activeMonth === 'all' ? 'active' : ''}" data-month="all">ALL</button>`,
+    ...months.map(m =>
+      `<button class="chip ${String(m) === activeMonth ? 'active' : ''}" data-month="${m}" style="font-family: Helvetica">${today.getFullYear()}年${m}月</button>`
+    )
+  ].join('');
+
+  wrap.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMonth = btn.dataset.month;
+      selectedCaseName = null;
+      rebuild();
+    });
+  });
+}
+
+
+function formatMD(dateString) {
+  const d = toLocalDay(dateString);
+  return d ? `${d.getMonth()+1}/${d.getDate()}` : '';
+}
+
+function formatDateRange(c) {
+  if (c.dateText) return c.dateText;
+  if (c.startDate && c.endDate) {
+    const s = toLocalDay(c.startDate), e = toLocalDay(c.endDate);
+    if (!s || !e) return c.nextYear || '日程未発表';
+    if (s.getFullYear() === e.getFullYear()) {
+      return `${s.getFullYear()}.${s.getMonth()+1}.${s.getDate()} — ${e.getMonth()+1}.${e.getDate()}`;
+    }
+    return `${s.getFullYear()}.${s.getMonth()+1}.${s.getDate()} — ${e.getFullYear()}.${e.getMonth()+1}.${e.getDate()}`;
+  }
+  if (c.nextYear === '通年') return '通年で楽しめる';
+  if (/^20\d{2}$/.test(c.nextYear || '')) return `${c.nextYear}年 開催予定`;
+  return '日程未発表';
+}
+
+function getEventStatus(c) {
+  const today = todayLocal();
+  if (c.yearRound || c.nextYear === '通年') return { key:'yearround', label:'通年' };
+  if (c.statusMode === 'program') return { key:'program', label:c.statusLabel || '年間プログラム' };
+  if (c.startDate && c.endDate) {
+    const s = toLocalDay(c.startDate), e = toLocalDay(c.endDate);
+    if (today < s) {
+      const eventYear = s.getFullYear();
+      const days = Math.ceil((s - today) / 86400000);
+      if (eventYear > today.getFullYear()) return { key:'future', label:`${eventYear}予定` };
+      if (c.approximateDate) return { key:'upcoming', label:`${s.getMonth()+1}月から` };
+      return { key:'upcoming', label: days <= 30 ? `あと${days}日` : `${formatMD(c.startDate)}から` };
+    }
+    if (today <= e) return { key:'ongoing', label:'開催中' };
+    return { key:'ended', label:'終了' };
+  }
+  const y = parseInt(c.nextYear, 10);
+  if (Number.isFinite(y) && y > today.getFullYear()) return { key:'future', label:`${y}予定` };
+  return { key:'unknown', label:'日程未発表' };
+}
+
+function getFiltered() {
+  const currentYear = todayLocal().getFullYear();
+  return CASES.filter(c => {
+    if (activeCat !== "all" && c.cat !== activeCat) return false;
+
+    if (activeStatus !== "all") {
+      const st = getEventStatus(c);
+      if (activeStatus === 'ongoing' && st.key !== 'ongoing') return false;
+      if (activeStatus === 'yearround' && st.key !== 'yearround') return false;
+      if (activeStatus === 'upcoming') {
+        const s = c.startDate ? toLocalDay(c.startDate) : null;
+        if (st.key !== 'upcoming' || !s || s.getFullYear() !== currentYear) return false;
+      }
+      if (activeStatus === 'future') {
+        const y = c.startDate ? toLocalDay(c.startDate).getFullYear() : parseInt(c.nextYear, 10);
+        if (!(Number.isFinite(y) && y > currentYear)) return false;
+      }
+    }
+
+    if (activeMonth !== "all") {
+      const monthNumber = parseInt(activeMonth, 10);
+      if (!eventOverlapsMonth(c, currentYear, monthNumber)) return false;
+    }
+
+    if (activeTravelTag !== "all" && !getTravelTags(c).includes(activeTravelTag)) return false;
+
+    if (activeAccess !== "all") {
+      const h = c.tokyoHours;
+      if (activeAccess === "daytrip" && h > 2) return false;
+      if (activeAccess === "overnight" && (h <= 2 || h > 4)) return false;
+      if (activeAccess === "longtrip" && h <= 4) return false;
+    }
+
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      const travelTagText = getTravelTags(c).join(' ').toLowerCase();
+      if (!c.name.toLowerCase().includes(q) && !c.pref.includes(q) && !c.tagline.includes(q) && !travelTagText.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+// MAP — Stamen Toner Lite gives a clean editorial canvas; falls back gracefully.
+const map = L.map('map', { center: [37.0, 137.5], zoom: 6, zoomControl: true });
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+  subdomains: 'abcd',
+  maxZoom: 19,
+  pane: 'shadowPane',
+  opacity: 0.85
+}).addTo(map);
+
+let markers = [];
+
+function markerIcon(c, active) {
+  const group = getTimingGroup(c);
+  const color = timingColor(c);
+  const s = active ? 27 : 20;
+  const inner = active ? 10 : 7;
+
+  const isInactive = group === 'unknown' || group === 'ended';
+  const isYearround = group === 'yearround';
+
+  const opacity = isInactive ? 0.62 : 1;
+  const border = isYearround
+    ? '2px solid #fff1cf'
+    : '1.5px solid rgba(255,255,255,.97)';
+
+  const ring = active
+    ? `box-shadow:0 0 0 2px #fff, 0 0 0 5px ${color}66, 0 4px 14px rgba(0,0,0,0.42);`
+    : `box-shadow:0 2px 9px rgba(0,0,0,0.30);`;
+
+  return L.divIcon({
+    className: '',
+    html: `<div style="position:relative;width:${s}px;height:${s}px;opacity:${opacity};">
+      <div style="position:absolute;inset:0;border-radius:50%;background:${color};border:${border};box-sizing:border-box;${ring}transition:all 0.18s ease;"></div>
+      <div style="position:absolute;top:50%;left:50%;width:${inner}px;height:${inner}px;background:rgba(255,255,255,${active ? 0.96 : 0.80});border-radius:50%;transform:translate(-50%,-50%);"></div>
+      <div style="position:absolute;inset:-8px;cursor:pointer"></div>
+    </div>`,
+    iconSize: [s, s],
+    iconAnchor: [s/2, s/2],
+    popupAnchor: [0, -(s/2+6)]
+  });
+}
+
+function popupHtml(c) {
+  const color = CAT_COLORS[c.cat] || "#888";
+  const tripType = c.tokyoHours <= 2 ? '日帰り向き' : c.tokyoHours <= 4 ? '1泊向き' : '遠征向き';
+  const accessLabel = c.tokyoHours === 0 ? `都内・${tripType}` : `約 ${c.tokyoHours}h・${tripType}`;
+  const status = getEventStatus(c);
+  const dateLabel = formatDateRange(c);
+  const thumbSrc = c.localImg || '';
+  const hasImg = thumbSrc.length > 0;
+  const hasArtists = c.artists && c.artists.length > 0;
+  return `<div class="popup-inner">
+    ${hasImg ? `<div class="popup-thumb"><img src="${thumbSrc}" alt="${c.name}" onerror="this.parentElement.style.display='none'" /></div>` : `<div class="popup-thumb popup-thumb-empty">No Image</div>`}
+    <div class="popup-pref-row">${c.pref}<span class="status-badge ${status.key}">${status.label}</span></div>
+    <div class="popup-name">${c.name}</div>
+    <div class="popup-tagline">${c.tagline}</div>
+    ${travelTagsHtml(c)}
+    <div class="event-date-primary">${dateLabel}${c.dateNote ? `<div class="event-date-note">${c.dateNote}</div>` : ''}</div>
+    <div class="popup-meta">
+      <div class="popup-meta-item"><span class="popup-meta-k">旅の目安</span><span class="popup-meta-v">${tripType}</span></div>
+      <div class="popup-meta-item"><span class="popup-meta-k">東京から</span><span class="popup-meta-v">${accessLabel}</span></div>
+    </div>
+    <div class="popup-desc">${c.desc}</div>
+    ${hasArtists ? `<div class="popup-artists"><div class="popup-artists-k">見られるアーティスト</div><div class="popup-artists-v">${c.artists.join(' / ')}</div></div>` : ''}
+    <div class="popup-head">
+      <div class="popup-cat-sq" style="background:${color}"></div>
+      <div class="popup-region"><span class="accent-mark">${catLabel(c.cat)}</span></div>
+    </div>
+    <div class="popup-btn-row">
+      ${c.url ? `<a class="popup-link-url" data-track-link="official" data-festival="${c.name}" href="${c.url}" target="_blank" rel="noopener">公式サイト</a>` : ''}
+    </div>
+  </div>`;
+}
+
+
+let selectedCaseName = null;
+const detailPanelContent = document.getElementById('detail-panel-content');
+const detailPanelTitle = document.getElementById('detail-panel-title');
+const detailPanelTitleEn = document.getElementById('detail-panel-title-en');
+
+function getDiscoveryPicks(candidates = CASES) {
+  const today = todayLocal();
+
+  // Editorial priority for the first impression.
+  // If these cases are still inside the current filter result, show them first.
+  const FEATURED_NAMES = [
+    "すみだ五彩の芸術祭",
+    "下呂 Art Discovery 2026",
+    "前橋国際芸術祭2026「めぶく。」"
+  ];
+
+  const byName = new Map(candidates.map(c => [c.name, c]));
+  const featured = FEATURED_NAMES
+    .map(name => byName.get(name))
+    .filter(Boolean);
+
+  const featuredSet = new Set(featured.map(c => c.name));
+
+  // Remaining candidates are ranked as fallback.
+  // Prefer entries that have a configured image, and push Nagahama lower
+  // because its image may not be available in the deployed site.
+  const remaining = candidates
+    .filter(c => !featuredSet.has(c.name))
+    .map(c => {
+      const st = getEventStatus(c);
+      const hasImage = !!c.localImg;
+      const isNagahama = c.name === "長浜国際芸術祭";
+
+      let statusRank = 9;
+      if (st.key === "ongoing") statusRank = 0;
+      else if (st.key === "upcoming") statusRank = 1;
+      else if (st.key === "yearround") statusRank = 2;
+
+      let startSort = new Date(2999, 0, 1);
+      if (c.startDate) startSort = toLocalDay(c.startDate);
+
+      return {
+        c,
+        st,
+        statusRank,
+        imagePenalty: hasImage ? 0 : 5,
+        nagahamaPenalty: isNagahama ? 20 : 0,
+        startSort
+      };
+    })
+    .filter(x => {
+      // Only recommend things that can reasonably be visited now / later this year / year-round.
+      if (x.st.key === "ongoing" || x.st.key === "yearround") return true;
+      if (x.st.key === "upcoming" && x.c.startDate) {
+        return toLocalDay(x.c.startDate).getFullYear() === today.getFullYear();
+      }
+      return false;
+    })
+    .sort((a, b) => {
+      const aScore = a.statusRank + a.imagePenalty + a.nagahamaPenalty;
+      const bScore = b.statusRank + b.imagePenalty + b.nagahamaPenalty;
+      if (aScore !== bScore) return aScore - bScore;
+      return a.startSort - b.startSort;
+    })
+    .map(x => x.c);
+
+  return [...featured, ...remaining].slice(0, 3);
+}
+
+function renderDiscoveryPanel(candidates = CASES) {
+  if (!detailPanelContent || window.innerWidth <= 768) return;
+  selectedCaseName = null;
+  if (detailPanelTitle) detailPanelTitle.textContent = '芸術祭の詳細';
+  if (detailPanelTitleEn) detailPanelTitleEn.textContent = 'Festival Detail';
+  const isDefaultDiscovery =
+    activeCat === 'all' &&
+    activeStatus === 'all' &&
+    activeMonth === 'all' &&
+    activeTravelTag === 'all' &&
+    activeAccess === 'all' &&
+    !searchQ;
+
+  const picks = isDefaultDiscovery
+    ? getDiscoveryPicks(CASES)
+    : getDiscoveryPicks(candidates);
+
+  const cards = picks.map(c => {
+    const st = getEventStatus(c);
+    const img = c.localImg ? `<div class="discover-img"><img src="${c.localImg}" alt="${c.name}" onerror="this.parentElement.style.display='none'"></div>` : '';
+    return `<div class="discover-card" onclick="focusRecommendedCase('${c.name.replace(/'/g,"\\'")}', 'desktop_center')">
+      ${img}
+      <div class="discover-meta"><span class="discover-pref">${c.pref}</span><span class="status-badge ${st.key}">${st.label}</span></div>
+      <div class="discover-name">${c.name}</div>
+      <div class="discover-tagline">${c.tagline}</div>
+    </div>`;
+  }).join('');
+  const currentYear = todayLocal().getFullYear();
+  detailPanelContent.innerHTML = `<div class="discover-wrap">
+    <div class="discover-howto">
+      <div class="detail-guide-kicker">DETAIL VIEW</div>
+      <div class="detail-guide-title">ここに、選んだ芸術祭の詳細が表示されます。</div>
+      <div class="detail-guide-copy">左の一覧、または右の地図から気になる芸術祭を選んでください。画像・会期・旅の目安・見どころを、この中央パネルで確認できます。</div>
+      <div class="discover-howto-arrows"><span>← 一覧から選ぶ</span><span>地図から選ぶ →</span></div>
+    </div>
+
+    <div class="recommend-block">
+      <div class="recommend-kicker">ART TRIP PICKS · ${currentYear}</div>
+      <div class="recommend-title">${activeMonth !== 'all' ? `${activeMonth}月に行ける、おすすめの芸術祭` : '今年行ける、おすすめの芸術祭'}</div>
+      <div class="recommend-lead">${activeMonth !== 'all'
+        ? `${activeMonth}月に会期が重なる芸術祭から、今から行ける3件をピックアップ。`
+        : `開催中、${currentYear}年にこれから始まるもの、通年で楽しめるものから3件をピックアップ。`}</div>
+      ${cards || '<div class="detail-empty-sub">現在、この条件でおすすめできる芸術祭がありません。</div>'}
+      <div class="discover-foot">「開催中」「${currentYear}年これから」「何月に行く？」「旅のテーマ」「旅のスタイル」を組み合わせて探せます。</div>
+    </div>
+  </div>`;
+  detailPanelContent.scrollTop = 0;
+}
+
+function clearDesktopDetail(candidates = CASES) {
+  renderDiscoveryPanel(candidates);
+}
+
+
+function renderMobileDiscovery(candidates = CASES) {
+  const wrap = document.getElementById('mobile-discovery-cards');
+  const title = document.getElementById('mobile-discovery-title');
+  if (!wrap || !title) return;
+
+  const currentYear = todayLocal().getFullYear();
+  title.textContent = activeMonth !== 'all'
+    ? `${activeMonth}月に行ける、おすすめの芸術祭`
+    : '今年行ける、おすすめの芸術祭';
+
+  const picks = getDiscoveryPicks(candidates);
+  if (!picks.length) {
+    wrap.innerHTML = `<div style="padding:10px 14px;color:var(--muted);font-size:11px;">この条件でおすすめできる芸術祭はありません。</div>`;
+    return;
+  }
+
+  wrap.innerHTML = picks.map(c => {
+    const st = getEventStatus(c);
+    const img = c.localImg
+      ? `<div class="mobile-pick-img"><img src="${c.localImg}" alt="${c.name}" onerror="this.parentElement.style.display='none'"></div>`
+      : '';
+    const safeName = c.name.replace(/'/g, "\\'");
+    return `<button type="button" class="mobile-pick-card" onclick="focusRecommendedCase('${safeName}', 'mobile_strip')">
+      ${img}
+      <div class="mobile-pick-body">
+        <div class="mobile-pick-meta">
+          <span class="mobile-pick-pref">${c.pref}</span>
+          <span class="status-badge ${st.key}">${st.label}</span>
+        </div>
+        <div class="mobile-pick-name">${c.name}</div>
+        <div class="mobile-pick-tagline">${c.tagline}</div>
+      </div>
+    </button>`;
+  }).join('');
+}
+
+function syncMobileQuickbar() {
+  const today = todayLocal();
+  const current = today.getMonth() + 1;
+  const next = current < 12 ? current + 1 : null;
+
+  const nowBtn = document.getElementById('mobile-now-btn');
+  const currentBtn = document.getElementById('mobile-month-current');
+  const nextBtn = document.getElementById('mobile-month-next');
+
+  if (currentBtn) {
+    currentBtn.textContent = `${today.getFullYear()}年${current}月`;
+    currentBtn.dataset.month = String(current);
+    currentBtn.classList.toggle('active', activeMonth === String(current));
+  }
+  if (nextBtn) {
+    if (next) {
+      nextBtn.style.display = '';
+      nextBtn.textContent = `${today.getFullYear()}年${next}月`;
+      nextBtn.dataset.month = String(next);
+      nextBtn.classList.toggle('active', activeMonth === String(next));
+    } else {
+      nextBtn.style.display = 'none';
+    }
+  }
+  if (nowBtn) nowBtn.classList.toggle('active', activeStatus === 'ongoing');
+}
+
+function syncStatusChipUI() {
+  document.querySelectorAll('#status-filters .chip').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.status === activeStatus);
+  });
+}
+
+function applyMobileQuickStatus(status) {
+  activeStatus = status;
+  activeMonth = 'all';
+  selectedCaseName = null;
+  syncStatusChipUI();
+  renderMonthFilters();
+  rebuild();
+}
+
+function applyMobileQuickMonth(month) {
+  activeStatus = 'all';
+  activeMonth = String(month);
+  selectedCaseName = null;
+  syncStatusChipUI();
+  renderMonthFilters();
+  rebuild();
+}
+
+function setupMobileControls() {
+  const sidebar = document.querySelector('.sidebar');
+  const toggle = document.getElementById('mobile-filter-toggle');
+  const nowBtn = document.getElementById('mobile-now-btn');
+  const currentBtn = document.getElementById('mobile-month-current');
+  const nextBtn = document.getElementById('mobile-month-next');
+
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => {
+      const open = sidebar.classList.toggle('filters-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+      if (open) {
+        // The filter blocks are inserted above the list when filters-open is added.
+        // Wait for layout to update, then jump to the first detail filter ("いつ行く？").
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const firstFilter = sidebar.querySelector('.filter-block');
+            if (!firstFilter) return;
+
+            const sidebarRect = sidebar.getBoundingClientRect();
+            const filterRect = firstFilter.getBoundingClientRect();
+            const targetTop = sidebar.scrollTop + (filterRect.top - sidebarRect.top);
+
+            sidebar.scrollTo({
+              top: Math.max(0, targetTop - 1),
+              behavior: 'smooth'
+            });
+          });
+        });
+      }
+    });
+  }
+
+  if (nowBtn) nowBtn.addEventListener('click', () => {
+    applyMobileQuickStatus(activeStatus === 'ongoing' ? 'all' : 'ongoing');
+  });
+  if (currentBtn) currentBtn.addEventListener('click', () => {
+    const m = currentBtn.dataset.month;
+    applyMobileQuickMonth(activeMonth === m ? 'all' : m);
+  });
+  if (nextBtn) nextBtn.addEventListener('click', () => {
+    const m = nextBtn.dataset.month;
+    if (m) applyMobileQuickMonth(activeMonth === m ? 'all' : m);
+  });
+
+  syncMobileQuickbar();
+}
+
+function openDesktopDetail(c) {
+  if (!detailPanelContent || window.innerWidth <= 768) return;
+  trackEvent('festival_detail_open', {
+    festival_name: c.name,
+    prefecture: c.pref,
+    device_view: 'desktop'
+  });
+  selectedCaseName = c.name;
+  if (detailPanelTitle) detailPanelTitle.textContent = '選択中の芸術祭';
+  if (detailPanelTitleEn) detailPanelTitleEn.textContent = 'Selected';
+  detailPanelContent.innerHTML = popupHtml(c);
+  detailPanelContent.scrollTop = 0;
+}
+
+window.focusNamedCase = function(name) {
+  const idx = markers.findIndex(m => m.case.name === name);
+  if (idx >= 0) window.focusCase(idx);
+};
+
+window.focusRecommendedCase = function(name, placement) {
+  trackEvent('recommendation_click', {
+    festival_name: name,
+    placement: placement || 'unknown'
+  });
+  window.focusNamedCase(name);
+};
+
+function rebuild() {
+  markers.forEach(m => map.removeLayer(m.marker));
+  markers = [];
+  const filtered = getFiltered();
+
+  filtered.forEach((c, i) => {
+    const marker = L.marker([c.lat, c.lng], { icon: markerIcon(c, false) }).addTo(map);
+    marker.on('click', () => {
+      setActive(i);
+      scrollListTo(i);
+      if (window.innerWidth <= 768) {
+        openMobileSheet(c);
+      } else {
+        openDesktopDetail(c);
+      }
+    });
+    markers.push({ marker, case: c, idx: i });
+  });
+  renderList(filtered);
+  renderMobileDiscovery(filtered);
+  syncMobileQuickbar();
+
+  // Keep the desktop detail panel stable across filter/search rebuilds when possible.
+  if (window.innerWidth > 768 && selectedCaseName) {
+    const selectedIdx = filtered.findIndex(c => c.name === selectedCaseName);
+    if (selectedIdx >= 0) {
+      openDesktopDetail(filtered[selectedIdx]);
+      setActive(selectedIdx);
+      scrollListTo(selectedIdx);
+    } else {
+      selectedCaseName = null;
+      clearDesktopDetail(filtered);
+    }
+  } else if (window.innerWidth > 768) {
+    renderDiscoveryPanel(filtered);
+  }
+}
+
+// ── Standalone mobile bottom sheet (lives directly under <body>, unaffected by Leaflet's transformed panes) ──
+
+const siteInfoModal = document.getElementById('site-info-modal');
+const siteInfoOpen = document.getElementById('site-info-open');
+
+function openSiteInfo() {
+  if (!siteInfoModal) return;
+  trackEvent('information_open');
+  siteInfoModal.classList.add('open');
+  siteInfoModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSiteInfo() {
+  if (!siteInfoModal) return;
+  siteInfoModal.classList.remove('open');
+  siteInfoModal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+if (siteInfoOpen) {
+  siteInfoOpen.addEventListener('click', openSiteInfo);
+}
+
+document.querySelectorAll('[data-info-close]').forEach(el => {
+  el.addEventListener('click', closeSiteInfo);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && siteInfoModal && siteInfoModal.classList.contains('open')) {
+    closeSiteInfo();
+  }
+});
+
+const mobileSheet = document.getElementById('mobile-sheet');
+
+function openMobileSheet(c) {
+  trackEvent('festival_detail_open', {
+    festival_name: c.name,
+    prefecture: c.pref,
+    device_view: 'mobile'
+  });
+  mobileSheet.innerHTML = popupHtml(c) + '<div class="sheet-close" onclick="closeMobileSheet()">✕</div>';
+  mobileSheet.classList.add('open');
+  document.body.classList.add('popup-open');
+  setTimeout(() => {
+    map.invalidateSize();
+    const sheetH = mobileSheet.offsetHeight || Math.round(window.innerHeight * 0.45);
+    const mapH = map.getSize().y;
+    const visibleH = Math.max(mapH - sheetH, 120);
+    const targetY = visibleH / 2;
+    const pt = map.latLngToContainerPoint([c.lat, c.lng]);
+    map.panBy([0, Math.round(pt.y - targetY)], { animate: true, duration: 0.25 });
+  }, 80);
+}
+
+function closeMobileSheet() {
+  mobileSheet.classList.remove('open');
+  document.body.classList.remove('popup-open');
+  setTimeout(() => map.invalidateSize(), 60);
+}
+window.closeMobileSheet = closeMobileSheet;
+
+function setActive(idx) {
+  markers.forEach((m, i) => m.marker.setIcon(markerIcon(m.case, i === idx)));
+}
+
+function scrollListTo(idx) {
+  document.querySelectorAll('.festival-item').forEach(el => el.classList.remove('active'));
+  const el = document.querySelector(`.festival-item[data-idx="${idx}"]`);
+  if (el) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function renderList(filtered) {
+  const list = document.getElementById('festival-list');
+  // header counters
+  const showEl = document.getElementById('hd-showing'); if (showEl) showEl.textContent = String(filtered.length).padStart(3,'0');
+  const totalEl = document.getElementById('hd-total');  if (totalEl) totalEl.textContent = String(CASES.length);
+  const mapShow = document.getElementById('map-showing'); if (mapShow) mapShow.textContent = filtered.length + ' / ' + CASES.length + ' 件';
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state">該当する取り組みがありません<span class="es-en">No results</span></div>';
+    return;
+  }
+  const groups = {};
+  REGION_ORDER.forEach(r => { groups[r] = []; });
+  filtered.forEach((c, i) => { if (groups[c.region]) groups[c.region].push({ c, i }); });
+  let html2 = '';
+  REGION_ORDER.forEach(region => {
+    if (!groups[region].length) return;
+    const num = REGION_NUM[region] || '—';
+    html2 += `<div class="list-region-header"><span class="rh-num">.${num}</span><span class="rh-jp">${region}</span><span class="rh-rule"></span><span class="rh-count">${String(groups[region].length).padStart(2,'0')}</span></div>`;
+    groups[region].forEach(({ c, i }, j) => {
+      const color = CAT_COLORS[c.cat] || "#888";
+      const idx = String(i + 1).padStart(3, '0');
+      const st = getEventStatus(c);
+      const showStatus = st.key !== 'ended' || activeStatus === 'all';
+      html2 += `<div class="festival-item" data-idx="${i}" onclick="focusCase(${i})">
+        <div class="item-num">${idx}</div>
+        <div>
+          <div class="item-pref">${c.pref}${showStatus ? `<span class="item-status ${st.key}">${st.label}</span>` : ''}</div>
+          <div class="item-name"><span class="item-cat-strip" style="background:${color}"></span>${c.name}</div>
+          <div class="item-tagline">${c.tagline}</div>
+        </div>
+        <div class="item-arrow">→</div>
+      </div>`;
+    });
+  });
+  list.innerHTML = html2;
+}
+
+window.focusCase = function(idx) {
+  const m = markers[idx];
+  if (!m) return;
+
+  if (window.innerWidth <= 768) {
+    map.setView([m.case.lat, m.case.lng], 10, { animate: true });
+    setTimeout(() => openMobileSheet(m.case), 350);
+  } else {
+    // Desktop: keep list + fixed detail visible and move only the map.
+    openDesktopDetail(m.case);
+    map.setView([m.case.lat, m.case.lng], 9, { animate: true });
+  }
+
+  setActive(idx);
+  scrollListTo(idx);
+};
+
+document.querySelectorAll('#status-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#status-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeStatus = btn.dataset.status;
+    selectedCaseName = null;
+    rebuild();
+  });
+});
+
+document.querySelectorAll('#travel-tag-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#travel-tag-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTravelTag = btn.dataset.travelTag;
+    rebuild();
+  });
+});
+
+document.querySelectorAll('#access-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#access-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeAccess = btn.dataset.access;
+    selectedCaseName = null;
+    rebuild();
+  });
+});
+
+document.getElementById('search-input').addEventListener('input', e => {
+  searchQ = e.target.value;
+  selectedCaseName = null;
+  rebuild();
+});
+
+updateDynamicFilterLabels();
+renderMonthFilters();
+renderTimingLegend();
+setupMobileControls();
+rebuild();
+
+// 会期ステータスは訪問者の端末のローカル日付で判定。
+// ページを開いたまま日付をまたいでも、次の深夜に自動再判定する。
+function scheduleDateRolloverRefresh() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 2);
+  const delay = Math.max(next - now, 1000);
+  setTimeout(() => {
+    // If the calendar date/month/year changed while the page stayed open,
+    // refresh both status labels and the available month chips.
+    if (parseInt(activeMonth, 10) < todayLocal().getMonth() + 1) activeMonth = 'all';
+    updateDynamicFilterLabels();
+    renderMonthFilters();
+    renderTimingLegend();
+    syncMobileQuickbar();
+    rebuild();
+    scheduleDateRolloverRefresh();
+  }, delay);
+}
+scheduleDateRolloverRefresh();
+
+// GA4: delegated click tracking for links rendered dynamically.
+document.addEventListener('click', e => {
+  const official = e.target.closest('[data-track-link="official"]');
+  if (official) {
+    trackEvent('official_site_click', {
+      festival_name: official.dataset.festival || '',
+      destination_url: official.href
+    });
+    return;
+  }
+
+  const social = e.target.closest('[data-social]');
+  if (social) {
+    trackEvent('social_link_click', {
+      social_network: social.dataset.social || '',
+      destination_url: social.href
+    });
+  }
+});
+</script>
+</body>
+</html>
