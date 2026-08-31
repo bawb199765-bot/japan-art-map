@@ -2325,6 +2325,48 @@
       gap: 8px;
       flex: 0 0 auto;
     }
+    .language-availability-badge {
+      height: 26px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      border: 1px solid rgba(217,102,80,.78);
+      background: rgba(217,102,80,.15);
+      color: #f0e8d8;
+      font-family: var(--mono);
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+    .language-availability-short { display: none; }
+
+    .site-language-availability {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: -7px 0 17px;
+      padding: 9px 10px;
+      border: 1px solid rgba(217,102,80,.38);
+      background: rgba(217,102,80,.07);
+    }
+    .site-language-availability-kicker {
+      flex: 0 0 auto;
+      font-family: var(--mono);
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: .13em;
+      color: var(--accent);
+    }
+    .site-language-availability-list {
+      min-width: 0;
+      font-family: var(--sans);
+      font-size: 10.5px;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
     .lang-switch {
       display: flex;
       align-items: center;
@@ -2357,18 +2399,26 @@
     .lang-short { display: none; }
 
     @media (max-width: 768px) {
-      .site-header-actions { gap: 6px; }
+      .site-header-actions { gap: 5px; }
+      .language-availability-badge {
+        height: 24px;
+        padding: 0 6px;
+        font-size: 7.5px;
+        letter-spacing: .08em;
+      }
+      .language-availability-full { display: none; }
+      .language-availability-short { display: inline; }
       .lang-switch { height: 24px; }
       .lang-switch a { padding: 0 6px; font-size: 8px; letter-spacing: .06em; }
       .lang-full { display: none; }
       .lang-short { display: inline; }
       /* the switcher eats horizontal room, so give the brand less */
-      .site-header-brand { max-width: calc(100vw - 210px); }
+      .site-header-brand { max-width: calc(100vw - 244px); }
     }
     @media (max-width: 560px) {
       /* drop the tagline before the language switcher wraps */
       .site-header-divider, .site-header-sub { display: none; }
-      .site-header-brand { max-width: calc(100vw - 200px); }
+      .site-header-brand { max-width: calc(100vw - 232px); }
       .site-info-trigger { min-width: 0; font-size: 0; padding: 0 7px; }
       .site-info-trigger::after {
         content: 'INFO';
@@ -2401,6 +2451,10 @@
     <div class="site-header-sub">今年，你想去哪个艺术节？</div>
   </div>
   <div class="site-header-actions">
+    <div class="language-availability-badge" aria-label="Available in 4 languages">
+      <span class="language-availability-full">4 LANGUAGES</span>
+      <span class="language-availability-short">4L</span>
+    </div>
     <nav class="lang-switch" aria-label="Language">
       <a href="https://artslogix.github.io/japan-art-map/" hreflang="ja" lang="ja"><span class="lang-full">JP</span><span class="lang-short">JP</span></a>
       <a href="https://artslogix.github.io/japan-art-map/en/" hreflang="en" lang="en"><span class="lang-full">EN</span><span class="lang-short">EN</span></a>
@@ -2541,6 +2595,10 @@
     <h2 class="site-info-title" id="site-info-title">关于本网站</h2>
 
     <p class="site-info-lead">JAPAN ART MAP是一个个人运营的地图，希望把日本各地的艺术节与艺术项目变成旅行的灵感入口。</p>
+    <div class="site-language-availability" aria-label="Available languages">
+      <span class="site-language-availability-kicker">4 LANGUAGES</span>
+      <span class="site-language-availability-list">日本語 / English / 한국어 / 中文</span>
+    </div>
 
     <div class="site-info-section">
       <div class="site-info-label">运营·编辑</div>
