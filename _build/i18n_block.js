@@ -594,6 +594,9 @@ const CASE_TRANSLATIONS = {
   },
   "三島満願芸術祭2026": {
     "name": "Mishima Mangan Art Festival 2026"
+  },
+  "Waza Waza — Iga Art Book Fair 2026": {
+    "name": "Waza Waza — Iga Art Book Fair 2026"
   }
 }
 };
@@ -936,6 +939,10 @@ const CASE_CONTENT_EN = {
   "種子島宇宙芸術祭": {
     "tagline": "Experience space and art together on Tanegashima.",
     "desc": "A one-of-a-kind art festival centered on the theme of space in Minamitane, Kagoshima, around the Tanegashima Space Center. Inspired by the ideas of astronomer Carl Sagan, it proposes “space art” as a new field, with a summer camp and a winter light festival."
+  },
+  "Waza Waza — Iga Art Book Fair 2026": {
+    "tagline": "Travel to Iga to discover art books made to be held, read, and discussed.",
+    "desc": "An international art book fair held at the historic Kyu Suko-Do in Iga, Mie. Built in 1821 as a domain school and later used as Mie Prefecture’s oldest public library, the nationally designated historic site hosts art books, zines, and independent publications as a place to browse, read, and talk directly with their makers. The 2026 edition brings together 38 participants from Japan, the United States, China, Singapore, Iran, and Tunisia, creating another reason to explore Iga through books, architecture, and the city."
   }
 };
 
@@ -1358,6 +1365,11 @@ const CASE_CONTENT_KO = {
     "name": "다네가시마 우주예술제",
     "tagline": "다네가시마에서 우주와 예술을 함께 경험하다.",
     "desc": "가고시마현 미나미타네, 다네가시마 우주센터 주변에서 ‘우주’를 주제로 열리는 독특한 예술제입니다. 천문학자 칼 세이건의 사상에서 영감을 받아 ‘우주예술’을 새로운 장르로 제안하며 여름 캠프와 겨울 빛 축제를 진행합니다."
+  },
+  "Waza Waza — Iga Art Book Fair 2026": {
+    "name": "와자와자 — 이가 아트북 페어 2026 (Waza Waza — Iga Art Book Fair 2026)",
+    "tagline": "이가의 역사적인 배움터에서 세계의 아트북을 만나다.",
+    "desc": "미에현 이가시의 국가 지정 사적 구 스코도에서 열리는 국제 아트북 페어입니다. 1821년 번교로 세워지고 이후 미에현에서 가장 오래된 공공도서관으로 사용된 역사적 건축물에서 아트북, ZINE, 독립출판물을 직접 읽고 제작자와 이야기할 수 있습니다. 2026년에는 일본·미국·중국·싱가포르·이란·튀니지 등 6개 국가·지역에서 38팀이 참가하며, 책과 건축을 통해 이가의 도시를 함께 둘러볼 계기를 만듭니다."
   }
 };
 
@@ -1780,6 +1792,11 @@ const CASE_CONTENT_ZH_CN = {
     "name": "种子岛宇宙艺术祭",
     "tagline": "在种子岛同时体验宇宙与艺术。",
     "desc": "以鹿儿岛县南种子、种子岛宇宙中心周边为舞台的独特艺术节。受天文学家Carl Sagan思想启发，以“宇宙艺术”为新领域，并举办夏季营地和冬季灯光节。"
+  },
+  "Waza Waza — Iga Art Book Fair 2026": {
+    "name": "Waza Waza — 伊贺艺术书展 2026",
+    "tagline": "在伊贺的历史学堂里，遇见来自世界各地的艺术书。",
+    "desc": "在三重县伊贺市国家指定史迹旧崇广堂举办的国际艺术书展。旧崇广堂建于1821年，原为藩校，后来曾作为三重县最古老的公共图书馆使用。活动汇集艺术书、ZINE与独立出版物，不只进行展示与销售，也鼓励读者拿起书阅读并直接与创作者交流。2026年共有来自日本、美国、中国、新加坡、伊朗和突尼斯等6个国家和地区的38组参与者，也成为从书籍与建筑出发探索伊贺城市文化的契机。"
   }
 };
 
