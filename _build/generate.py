@@ -10,17 +10,18 @@ OUTDIR = "dist"
 
 tpl = io.open("template.html", encoding="utf-8").read()
 
-LANGS = ["ja", "en", "ko", "zh-cn"]
-HTML_LANG = {"ja": "ja", "en": "en", "ko": "ko", "zh-cn": "zh-CN"}
-URLS = {"ja": BASE, "en": BASE + "en/", "ko": BASE + "ko/", "zh-cn": BASE + "zh-cn/"}
-SUBDIR = {"ja": "", "en": "en", "ko": "ko", "zh-cn": "zh-cn"}
+LANGS = ["ja", "en", "ko", "zh-cn", "zh-tw"]
+HTML_LANG = {"ja": "ja", "en": "en", "ko": "ko", "zh-cn": "zh-CN", "zh-tw": "zh-TW"}
+URLS = {"ja": BASE, "en": BASE + "en/", "ko": BASE + "ko/", "zh-cn": BASE + "zh-cn/", "zh-tw": BASE + "zh-tw/"}
+SUBDIR = {"ja": "", "en": "en", "ko": "ko", "zh-cn": "zh-cn", "zh-tw": "zh-tw"}
 
 # Label shown in the switcher: (desktop, mobile-short)
 SWITCH_LABEL = {
     "ja": ("JP", "JP"),
     "en": ("EN", "EN"),
     "ko": ("한국어", "KO"),
-    "zh-cn": ("中文", "中文"),
+    "zh-cn": ("简中", "简"),
+    "zh-tw": ("繁中", "繁"),
 }
 
 SEO = {
@@ -44,6 +45,11 @@ SEO = {
         "desc": "通过举办时间、地区和旅行主题，探索2026年日本全国的艺术节与艺术活动。查看正在举办的活动，发现下一次艺术旅行。",
         "alt": "通过艺术节旅行日本",
     },
+    "zh-tw": {
+        "title": "JAPAN ART MAP｜2026 日本全國藝術祭與藝術活動地圖",
+        "desc": "依舉辦時間、地區與旅行主題，探索2026年日本全國的藝術祭與藝術活動。查看正在舉辦的活動，發現下一趟日本藝術旅行。",
+        "alt": "透過藝術祭旅行日本",
+    },
 }
 
 UI = {
@@ -57,6 +63,10 @@ UI = {
         "F_WHEN": "いつ行く？", "F_WHEN_EN": "When to go",
         "F_MONTH": "何月に行く？", "F_MONTH_EN": "Month",
         "F_THEME": "旅のテーマ", "F_THEME_EN": "Travel Theme",
+        "F_VISITOR": "海外旅行者向け", "F_VISITOR_EN": "Visitor Guide",
+        "V_TOKYO": "東京から行きやすい", "V_KANSAI": "大阪・京都から行きやすい",
+        "V_WEEKEND": "週末旅向き", "V_ONSEN": "温泉と組み合わせ",
+        "V_NOTE": "アクセスの目安です。実際の交通手段・所要時間は最新情報をご確認ください。",
         "F_STYLE": "東京からの旅の日数目安", "F_STYLE_EN": "Trip length from Tokyo",
         "UPCOMING": "2026年これから", "YEARROUND": "通年", "FUTURE": "2027〜",
         "TT_ISLAND": "島・海", "TT_ONSEN": "温泉", "TT_ARCH": "建築",
@@ -87,6 +97,10 @@ UI = {
         "F_WHEN": "When to go", "F_WHEN_EN": "",
         "F_MONTH": "By month", "F_MONTH_EN": "",
         "F_THEME": "Travel theme", "F_THEME_EN": "",
+        "F_VISITOR": "For international visitors", "F_VISITOR_EN": "",
+        "V_TOKYO": "Easy from Tokyo", "V_KANSAI": "Easy from Osaka / Kyoto",
+        "V_WEEKEND": "Weekend trip", "V_ONSEN": "Pair with onsen",
+        "V_NOTE": "Travel-access hints are approximate. Please check current transport details before you go.",
         "F_STYLE": "Trip length from Tokyo", "F_STYLE_EN": "",
         "UPCOMING": "Later in 2026", "YEARROUND": "Year-round", "FUTURE": "2027+",
         "TT_ISLAND": "Islands &amp; sea", "TT_ONSEN": "Onsen", "TT_ARCH": "Architecture",
@@ -117,6 +131,10 @@ UI = {
         "F_WHEN": "언제 갈까요?", "F_WHEN_EN": "",
         "F_MONTH": "월별로 찾기", "F_MONTH_EN": "",
         "F_THEME": "여행 테마", "F_THEME_EN": "",
+        "F_VISITOR": "해외 여행자 가이드", "F_VISITOR_EN": "",
+        "V_TOKYO": "도쿄에서 가기 쉬움", "V_KANSAI": "오사카·교토에서 가기 쉬움",
+        "V_WEEKEND": "주말 여행", "V_ONSEN": "온천과 함께",
+        "V_NOTE": "교통 접근성은 대략적인 참고입니다. 실제 이동 방법과 소요 시간은 최신 정보를 확인해 주세요.",
         "F_STYLE": "도쿄 출발 여행 일수(예상)", "F_STYLE_EN": "",
         "UPCOMING": "2026년 예정", "YEARROUND": "연중", "FUTURE": "2027년 이후",
         "TT_ISLAND": "섬·바다", "TT_ONSEN": "온천", "TT_ARCH": "건축",
@@ -147,6 +165,10 @@ UI = {
         "F_WHEN": "什么时候去？", "F_WHEN_EN": "",
         "F_MONTH": "按月份", "F_MONTH_EN": "",
         "F_THEME": "旅行主题", "F_THEME_EN": "",
+        "F_VISITOR": "海外旅行者参考", "F_VISITOR_EN": "",
+        "V_TOKYO": "从东京出发方便", "V_KANSAI": "从大阪·京都出发方便",
+        "V_WEEKEND": "适合周末旅行", "V_ONSEN": "可搭配温泉",
+        "V_NOTE": "交通便利度仅供参考，实际交通方式和所需时间请确认最新信息。",
         "F_STYLE": "从东京出发的旅行天数（参考）", "F_STYLE_EN": "",
         "UPCOMING": "2026年即将举办", "YEARROUND": "全年", "FUTURE": "2027年以后",
         "TT_ISLAND": "岛屿·海", "TT_ONSEN": "温泉", "TT_ARCH": "建筑",
@@ -167,6 +189,42 @@ UI = {
         "INFO_NOTE_LABEL": "关于刊载信息",
         "INFO_AI_NOTE": "本站信息在AI辅助调研的基础上整理。我们尽力保证准确性，但最新信息请务必以各活动官方网站为准。",
     },
+
+    "zh-tw": {
+        "HDR_TITLE": "透過藝術祭旅行日本",
+        "HDR_SUB": "今年，你想去哪個藝術祭？",
+        "A11Y_PICKS": "推薦藝術祭",
+        "PICKS_TITLE": "今年值得去的藝術祭",
+        "ONGOING": "正在舉辦",
+        "MORE_FILTERS": "更多篩選條件",
+        "F_WHEN": "什麼時候去？", "F_WHEN_EN": "",
+        "F_MONTH": "按月份", "F_MONTH_EN": "",
+        "F_THEME": "旅行主題", "F_THEME_EN": "",
+        "F_VISITOR": "海外旅行者參考", "F_VISITOR_EN": "",
+        "V_TOKYO": "東京出發方便", "V_KANSAI": "大阪・京都出發方便",
+        "V_WEEKEND": "適合週末旅行", "V_ONSEN": "可搭配溫泉",
+        "V_NOTE": "交通便利度僅供參考，實際交通方式與所需時間請確認最新資訊。",
+        "F_STYLE": "從東京出發的旅行天數（參考）", "F_STYLE_EN": "",
+        "UPCOMING": "2026年即將舉辦", "YEARROUND": "全年", "FUTURE": "2027年以後",
+        "TT_ISLAND": "島嶼・海", "TT_ONSEN": "溫泉", "TT_ARCH": "建築",
+        "TT_PHOTO": "攝影・影像", "TT_CRAFT": "工藝", "TT_NATURE": "自然・鄉野",
+        "TT_CITY": "城市散步", "TT_FOOD": "美食",
+        "A_DAY": "一日遊", "A_NIGHT": "1晚", "A_LONG": "2晚以上",
+        "SEARCH_PH": "搜尋",
+        "DP_TITLE": "尋找旅行目的地", "DP_TITLE_EN": "",
+        "INTRO_STRONG": "在地圖上探索2026年日本全國的藝術祭與藝術活動。",
+        "INTRO_BODY": "從正在舉辦的藝術祭到接下來即將開始的活動，可以依地區、時間與旅行主題尋找下一趟藝術旅行。",
+        "SHOWING": "顯示中",
+        "LEGEND_HEAD": "WHEN",
+        "CLOSE": "關閉",
+        "INFO_TITLE": "關於本網站",
+        "INFO_LEAD": "JAPAN ART MAP 是一個由個人持續整理與經營的地圖，希望讓日本各地的藝術祭與藝術計畫成為旅行靈感的入口。",
+        "INFO_OPERATOR": "營運・編輯",
+        "INFO_CONTACT": "若有內容修正、圖片使用或其他問題，請透過下方連結與我們聯絡。",
+        "INFO_NOTE_LABEL": "關於刊載資訊",
+        "INFO_AI_NOTE": "本站資訊使用 AI 輔助調查整理。我們會盡力維持正確性，但最新資訊仍請務必以各活動官方網站為準。",
+    },
+
 }
 
 HREFLANG = "\n".join(
@@ -202,7 +260,7 @@ def head_seo(lang):
 
   <meta property="og:site_name" content="JAPAN ART MAP" />
   <meta property="og:type" content="website" />
-  <meta property="og:locale" content="{ {'ja':'ja_JP','en':'en_US','ko':'ko_KR','zh-cn':'zh_CN'}[lang] }" />
+  <meta property="og:locale" content="{ {'ja':'ja_JP','en':'en_US','ko':'ko_KR','zh-cn':'zh_CN','zh-tw':'zh_TW'}[lang] }" />
   <meta property="og:url" content="{URLS[lang]}" />
   <meta property="og:title" content="{s['title']}" />
   <meta property="og:description" content="{s['desc']}" />

@@ -24,6 +24,7 @@
   <link rel="alternate" hreflang="en" href="https://artslogix.github.io/japan-art-map/en/" />
   <link rel="alternate" hreflang="ko" href="https://artslogix.github.io/japan-art-map/ko/" />
   <link rel="alternate" hreflang="zh-CN" href="https://artslogix.github.io/japan-art-map/zh-cn/" />
+  <link rel="alternate" hreflang="zh-TW" href="https://artslogix.github.io/japan-art-map/zh-tw/" />
   <link rel="alternate" hreflang="x-default" href="https://artslogix.github.io/japan-art-map/" />
 
   <meta property="og:site_name" content="JAPAN ART MAP" />
@@ -611,6 +612,42 @@
       font-family: var(--mono);
     }
 
+    .visitor-guide-block { background: rgba(217,102,80,.035); }
+    .visitor-guide-note {
+      margin-top: 7px;
+      font-family: var(--sans);
+      font-size: 8.5px;
+      line-height: 1.45;
+      color: var(--dim);
+    }
+    .visitor-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+      margin: -5px 0 12px;
+    }
+    .visitor-tags-k {
+      margin-right: 2px;
+      font-family: var(--mono);
+      font-size: 7.5px;
+      letter-spacing: .09em;
+      color: var(--accent);
+    }
+    .visitor-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 21px;
+      padding: 3px 6px;
+      border: 1px solid rgba(217,102,80,.38);
+      background: rgba(217,102,80,.06);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 8.5px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
     @media (max-width: 768px) {
       #month-filters {
         flex-wrap: nowrap !important;
@@ -620,11 +657,13 @@
         padding-left: 6px !important;
         padding-right: 6px !important;
       }
-      #travel-tag-filters {
+      #travel-tag-filters,
+      #visitor-tag-filters {
         flex-wrap: wrap !important;
         row-gap: 4px;
       }
       .travel-theme-block { padding-bottom: 10px; }
+      .visitor-guide-note { font-size: 8px; }
       .travel-tag { font-size: 9px; }
     }
     .discover-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--sans); font-size: 10px; color: var(--dim); line-height: 1.6; }
@@ -2413,12 +2452,12 @@
       .lang-full { display: none; }
       .lang-short { display: inline; }
       /* the switcher eats horizontal room, so give the brand less */
-      .site-header-brand { max-width: calc(100vw - 244px); }
+      .site-header-brand { max-width: calc(100vw - 270px); }
     }
     @media (max-width: 560px) {
       /* drop the tagline before the language switcher wraps */
       .site-header-divider, .site-header-sub { display: none; }
-      .site-header-brand { max-width: calc(100vw - 232px); }
+      .site-header-brand { max-width: calc(100vw - 258px); }
       .site-info-trigger { min-width: 0; font-size: 0; padding: 0 7px; }
       .site-info-trigger::after {
         content: 'INFO';
@@ -2451,15 +2490,16 @@
     <div class="site-header-sub">今年、どの芸術祭に行く？</div>
   </div>
   <div class="site-header-actions">
-    <div class="language-availability-badge" aria-label="Available in 4 languages">
-      <span class="language-availability-full">4 LANGUAGES</span>
-      <span class="language-availability-short">4L</span>
+    <div class="language-availability-badge" aria-label="Available in 5 languages">
+      <span class="language-availability-full">5 LANGUAGES</span>
+      <span class="language-availability-short">5L</span>
     </div>
     <nav class="lang-switch" aria-label="Language">
       <a href="https://artslogix.github.io/japan-art-map/" hreflang="ja" lang="ja" aria-current="true"><span class="lang-full">JP</span><span class="lang-short">JP</span></a>
       <a href="https://artslogix.github.io/japan-art-map/en/" hreflang="en" lang="en"><span class="lang-full">EN</span><span class="lang-short">EN</span></a>
       <a href="https://artslogix.github.io/japan-art-map/ko/" hreflang="ko" lang="ko"><span class="lang-full">한국어</span><span class="lang-short">KO</span></a>
-      <a href="https://artslogix.github.io/japan-art-map/zh-cn/" hreflang="zh-CN" lang="zh-CN"><span class="lang-full">中文</span><span class="lang-short">中文</span></a>
+      <a href="https://artslogix.github.io/japan-art-map/zh-cn/" hreflang="zh-CN" lang="zh-CN"><span class="lang-full">简中</span><span class="lang-short">简</span></a>
+      <a href="https://artslogix.github.io/japan-art-map/zh-tw/" hreflang="zh-TW" lang="zh-TW"><span class="lang-full">繁中</span><span class="lang-short">繁</span></a>
     </nav>
     <button class="site-info-trigger" id="site-info-open" type="button"
             aria-haspopup="dialog" aria-controls="site-info-modal">
@@ -2535,6 +2575,21 @@
       </div>
     </div>
 
+    <div class="filter-block visitor-guide-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">海外旅行者向け</span>
+        <span class="fl-label-en">Visitor Guide</span>
+      </div>
+      <div class="chips visitor-guide-chips" id="visitor-tag-filters">
+        <button class="chip active" data-visitor-tag="all">ALL</button>
+        <button class="chip" data-visitor-tag="tokyo-easy">東京から行きやすい</button>
+        <button class="chip" data-visitor-tag="osaka-kyoto-easy">大阪・京都から行きやすい</button>
+        <button class="chip" data-visitor-tag="weekend">週末旅向き</button>
+        <button class="chip" data-visitor-tag="onsen">温泉と組み合わせ</button>
+      </div>
+      <div class="visitor-guide-note">アクセスの目安です。実際の交通手段・所要時間は最新情報をご確認ください。</div>
+    </div>
+
     <div class="filter-block">
       <div class="fl-label">
         <span class="fl-label-jp" style="font-family: Helvetica">東京からの旅の日数目安</span>
@@ -2596,8 +2651,8 @@
 
     <p class="site-info-lead">JAPAN ART MAP は、全国の芸術祭やアートプロジェクトを、次の旅のきっかけとして見つけるための個人運営のマップです。</p>
     <div class="site-language-availability" aria-label="Available languages">
-      <span class="site-language-availability-kicker">4 LANGUAGES</span>
-      <span class="site-language-availability-list">日本語 / English / 한국어 / 中文</span>
+      <span class="site-language-availability-kicker">5 LANGUAGES</span>
+      <span class="site-language-availability-list">日本語 / English / 한국어 / 简体中文 / 繁體中文</span>
     </div>
 
     <div class="site-info-section">
@@ -2620,7 +2675,7 @@
 
     <div class="site-info-meta">
       <span>82 CASES</span>
-      <span>LAST UPDATED · 2026.08</span>
+      <span>LAST UPDATED · 2026.09</span>
     </div>
   </section>
 </div>
@@ -2638,7 +2693,7 @@
    ────────────────────────────────────────────────────────────── */
 const LANG = "ja";
 
-/* Site root on GitHub Pages. Language pages live in /en/, /ko/, /zh-cn/,
+/* Site root on GitHub Pages. Language pages live in /en/, /ko/, /zh-cn/, /zh-tw/,
    so relative "images/..." would resolve to "/en/images/..." and 404.
    Every in-site asset therefore goes through assetUrl(). */
 const ASSET_BASE = "/japan-art-map/";
@@ -2652,6 +2707,8 @@ const I18N = {
   ja: {
     regions: { "北海道・東北":"北海道・東北","関東":"関東","中部":"中部","関西":"関西","中国・四国":"中国・四国","九州・沖縄":"九州・沖縄" },
     travelTags: { "島・海":"島・海","温泉":"温泉","建築":"建築","写真・映像":"写真・映像","工芸":"工芸","自然・里山":"自然・里山","街歩き":"街歩き","食":"食" },
+    visitorTags: {"tokyo-easy":"東京から行きやすい","osaka-kyoto-easy":"大阪・京都から行きやすい","weekend":"週末旅向き","onsen":"温泉と組み合わせ"},
+    visitorGuide: "海外旅行者向け",
     cats: {
       "都市で楽しむ芸術祭":"都市で楽しむ芸術祭","里山・島を巡る芸術祭":"里山・島を巡る芸術祭",
       "こぢんまり楽しむアート":"こぢんまり楽しむアート","アートな街歩き":"アートな街歩き",
@@ -2702,6 +2759,8 @@ const I18N = {
   en: {
     regions: { "北海道・東北":"Hokkaido & Tohoku","関東":"Kanto","中部":"Chubu","関西":"Kansai","中国・四国":"Chugoku & Shikoku","九州・沖縄":"Kyushu & Okinawa" },
     travelTags: { "島・海":"Islands & sea","温泉":"Onsen","建築":"Architecture","写真・映像":"Photo & film","工芸":"Craft","自然・里山":"Nature & rural","街歩き":"City walks","食":"Food" },
+    visitorTags: {"tokyo-easy":"Easy from Tokyo","osaka-kyoto-easy":"Easy from Osaka / Kyoto","weekend":"Weekend trip","onsen":"Pair with onsen"},
+    visitorGuide: "VISITOR GUIDE",
     cats: {
       "都市で楽しむ芸術祭":"City art festival","里山・島を巡る芸術祭":"Rural & island festival",
       "こぢんまり楽しむアート":"Small-scale art project","アートな街歩き":"Art neighbourhood",
@@ -2752,6 +2811,8 @@ const I18N = {
   ko: {
     regions: { "北海道・東北":"홋카이도·도호쿠","関東":"간토","中部":"주부","関西":"간사이","中国・四国":"주고쿠·시코쿠","九州・沖縄":"규슈·오키나와" },
     travelTags: { "島・海":"섬·바다","温泉":"온천","建築":"건축","写真・映像":"사진·영상","工芸":"공예","自然・里山":"자연·마을","街歩き":"동네 산책","食":"음식" },
+    visitorTags: {"tokyo-easy":"도쿄에서 가기 쉬움","osaka-kyoto-easy":"오사카·교토에서 가기 쉬움","weekend":"주말 여행","onsen":"온천과 함께"},
+    visitorGuide: "해외 여행자 가이드",
     cats: {
       "都市で楽しむ芸術祭":"도시형 예술제","里山・島を巡る芸術祭":"마을·섬 예술제",
       "こぢんまり楽しむアート":"소규모 아트 프로젝트","アートな街歩き":"아트 동네 산책",
@@ -2802,6 +2863,8 @@ const I18N = {
   "zh-cn": {
     regions: { "北海道・東北":"北海道·东北","関東":"关东","中部":"中部","関西":"关西","中国・四国":"中国·四国","九州・沖縄":"九州·冲绳" },
     travelTags: { "島・海":"岛屿·海","温泉":"温泉","建築":"建筑","写真・映像":"摄影·影像","工芸":"工艺","自然・里山":"自然·乡野","街歩き":"城市漫步","食":"美食" },
+    visitorTags: {"tokyo-easy":"从东京出发方便","osaka-kyoto-easy":"从大阪·京都出发方便","weekend":"适合周末旅行","onsen":"可搭配温泉"},
+    visitorGuide: "海外旅行者参考",
     cats: {
       "都市で楽しむ芸術祭":"城市型艺术节","里山・島を巡る芸術祭":"乡野·岛屿艺术节",
       "こぢんまり楽しむアート":"小型艺术项目","アートな街歩き":"艺术街区漫步",
@@ -2846,6 +2909,47 @@ const I18N = {
     recommendEmptyMobile: "没有符合该条件的推荐艺术节。",
     discoverFoot: (y) => `可以组合“正在举办”“${y}年即将举办”“按月份”“旅行主题”“旅行方式”来查找。`,
     noResults: "没有符合条件的艺术节", noResultsEn: "No results",
+    countUnit: (n,t) => `${n} / ${t}`
+  },
+
+  "zh-tw": {
+    regions: { "北海道・東北":"北海道・東北","関東":"關東","中部":"中部","関西":"關西","中国・四国":"中國・四國","九州・沖縄":"九州・沖繩" },
+    travelTags: { "島・海":"島嶼・海","温泉":"溫泉","建築":"建築","写真・映像":"攝影・影像","工芸":"工藝","自然・里山":"自然・鄉野","街歩き":"城市散步","食":"美食" },
+    visitorTags: {"tokyo-easy":"東京出發方便","osaka-kyoto-easy":"大阪・京都出發方便","weekend":"適合週末旅行","onsen":"可搭配溫泉"},
+    visitorGuide: "海外旅行者參考",
+    cats: {
+      "都市で楽しむ芸術祭":"城市型藝術節","里山・島を巡る芸術祭":"鄉野・島嶼藝術節",
+      "こぢんまり楽しむアート":"小型藝術計畫","アートな街歩き":"藝術街區散步",
+      "アーティストの制作拠点":"藝術家創作基地","美術館・アート施設":"美術館・藝術設施",
+      "伝統工芸×現代アート":"傳統工藝×當代藝術"
+    },
+    ym: (y,m) => `${y}年${m}月`,
+    monthStart: (y,m) => `${y}年${m}月開始`,
+    monthOnwards: (y,m) => `${y}年${m}月以後`,
+    yearOnwards: (y) => `${y}年以後`,
+    upcomingThisYear: (y) => `${y}年即將舉辦`,
+    ongoing: "正在舉辦", yearround: "全年", unannouncedOrEnded: "未公布・已結束",
+    ended: "已結束", noDate: "日期尚未公布", yearRoundLong: "全年皆可參觀",
+    plannedYear: (y) => `預計${y}年舉辦`, plannedShort: (y) => `${y}預定`,
+    annualProgram: "年度計畫", fromMonth: (m) => `${m}月開始`,
+    inDays: (d) => `還有${d}天`, fromMD: (md) => `${md}開始`,
+    tripDay: "一日遊", tripNight: "1晚", tripLong: "2晚以上",
+    inTokyo: (t) => `東京都內 · ${t}`, hoursFromTokyo: (h,t) => `約 ${h}小時 · ${t}`,
+    noImage: "No Image", tripGuide: "旅行參考", fromTokyo: "從東京出發",
+    featuredArtists: "參展藝術家", officialSite: "官方網站",
+    detailTitle: "藝術節詳情", detailTitleEn: "Detail",
+    selectedTitle: "已選擇的藝術節", selectedTitleEn: "Selected",
+    detailGuideTitle: "所選藝術節的詳細資訊會顯示在這裡。",
+    detailGuideCopy: "請從左側列表或右側地圖選擇感興趣的藝術節。圖片、展期、旅行參考與亮點都會顯示在中央欄位。",
+    arrowList: "← 從列表選擇", arrowMap: "從地圖選擇 →",
+    recommendTitleMonth: (m) => `${m}月可以去的推薦藝術節`,
+    recommendTitleYear: "今年值得去的藝術節",
+    recommendLeadMonth: (m) => `從展期涵蓋${m}月的藝術節中，挑選現在就能前往的3個。`,
+    recommendLeadYear: (y) => `從正在舉辦、${y}年即將開始，以及全年開放的藝術節中挑選3個。`,
+    recommendEmpty: "目前沒有符合此條件的推薦藝術節。",
+    recommendEmptyMobile: "沒有符合此條件的推薦藝術節。",
+    discoverFoot: (y) => `可以組合「正在舉辦」「${y}年即將舉辦」「按月份」「旅行主題」「旅行方式」來查找。`,
+    noResults: "沒有符合條件的藝術節", noResultsEn: "No results",
     countUnit: (n,t) => `${n} / ${t}`
   }
 };
@@ -3008,6 +3112,57 @@ const PREFECTURE_ZH_CN = {
   "鹿児島": "鹿儿岛",
   "沖縄": "冲绳"
 };
+
+const PREFECTURE_ZH_TW = {
+  "北海道": "北海道",
+  "青森": "青森",
+  "岩手": "岩手",
+  "宮城": "宮城",
+  "秋田": "秋田",
+  "山形": "山形",
+  "福島": "福島",
+  "茨城": "茨城",
+  "栃木": "栃木",
+  "群馬": "群馬",
+  "埼玉": "埼玉",
+  "千葉": "千葉",
+  "東京": "東京",
+  "神奈川": "神奈川",
+  "新潟": "新潟",
+  "富山": "富山",
+  "石川": "石川",
+  "福井": "福井",
+  "山梨": "山梨",
+  "長野": "長野",
+  "岐阜": "岐阜",
+  "静岡": "靜岡",
+  "愛知": "愛知",
+  "三重": "三重",
+  "滋賀": "滋賀",
+  "京都": "京都",
+  "大阪": "大阪",
+  "兵庫": "兵庫",
+  "奈良": "奈良",
+  "和歌山": "和歌山",
+  "鳥取": "鳥取",
+  "島根": "島根",
+  "岡山": "岡山",
+  "広島": "廣島",
+  "山口": "山口",
+  "徳島": "德島",
+  "香川": "香川",
+  "愛媛": "愛媛",
+  "高知": "高知",
+  "福岡": "福岡",
+  "佐賀": "佐賀",
+  "長崎": "長崎",
+  "熊本": "熊本",
+  "大分": "大分",
+  "宮崎": "宮崎",
+  "鹿児島": "鹿兒島",
+  "沖縄": "沖繩"
+};
+
 
 
 const CASE_TRANSLATIONS = {
@@ -4430,6 +4585,434 @@ const CASE_CONTENT_ZH_CN = {
   }
 };
 
+const CASE_CONTENT_ZH_TW = {
+  "札幌国際芸術祭（SIAF）": {
+    "name": "札幌國際藝術節（SIAF）",
+    "tagline": "在雪之城札幌探索城市文化與媒體藝術。",
+    "desc": "以“創意城市札幌”為背景，將豐富的自然環境、城市基礎設施、大學以及IT與媒體藝術社群連接起來的國際藝術節。"
+  },
+  "AOMORI GOKAN": {
+    "name": "AOMORI GOKAN 青森五館",
+    "tagline": "穿行於青森的五座美術館與藝術中心之間。",
+    "desc": "由青森縣5座美術館與藝術中心共同開展的聯動計畫，通過跨館旅行推廣當地藝術生態，並促進文化、經濟與教育的發展。",
+    "dateText": "5個場館全年均可參觀。"
+  },
+  "三陸国際芸術祭": {
+    "name": "三陸國際藝術節",
+    "tagline": "旅行三陸，感受扎根於土地的傳統表演藝術。",
+    "desc": "讓三陸傳統藝能與日本及海外藝術家展開對話的藝術節。計畫致力於震後文化復興、培養下一代傳承者，並向更廣泛的觀眾介紹當地多元文化遺產。"
+  },
+  "リボーンアートフェス": {
+    "name": "重生藝術節（Reborn-Art Festival）",
+    "tagline": "在石卷同時體驗藝術、音樂與美食。",
+    "desc": "在東日本大地震受災地石卷舉辦的綜合型藝術節，以“Reborn-Art—生活方式”為理念，將當代藝術、地方飲食與現場音樂結合起來。"
+  },
+  "かみこあにプロジェクト": {
+    "name": "上小阿仁計畫",
+    "tagline": "在秋田的小村莊里發現藝術與日常生活。",
+    "desc": "在老齡化程度較高的秋田縣上小阿仁村持續舉辦的計畫，以當代藝術、音樂和傳統藝能為核心，由當地居民主導的執行委員會長期運營。",
+    "dateText": "2026年舉辦日期尚未公佈。"
+  },
+  "山形ビエンナーレ": {
+    "name": "YAMAGATA BIENNALE 山形雙年展",
+    "tagline": "沿著藏王溫泉與山形市區一路看藝術。",
+    "desc": "由東北藝術工科大學等自2014年起主辦的雙年展，利用城市既有空間推動中心城區活化，2024年首次將計畫擴展至藏王溫泉。",
+    "dateText": "下一屆日期尚未公佈（上一屆：2024年）。"
+  },
+  "ハマカルアートプロジェクト": {
+    "name": "HAMACUL藝術計畫（HAMACUL ART PROJECT）",
+    "tagline": "在福島濱通遇見藝術家、創作現場與地方社區。",
+    "desc": "面向福島濱通12個市町村，支持藝術家和團體與學生、居民共同開展計畫，也支持藝術家在當地駐留創作。",
+    "dateText": "相關計畫將在2026年度持續開展。"
+  },
+  "アーカスプロジェクト（ARCUS）": {
+    "name": "ARCUS藝術計畫（ARCUS Project）",
+    "tagline": "前往守谷，看來自世界各地的藝術家駐村與創作。",
+    "desc": "茨城縣於1994年啓動的日本代表性長期藝術家駐村計畫之一，結合國際藝術家駐村、學習計畫、工作坊與居民參與空間。"
+  },
+  "取手アートプロジェクト": {
+    "name": "取手藝術計畫（TAP）",
+    "tagline": "看看藝術如何融入住區與取手的鄉村景觀。",
+    "desc": "自1999年起由居民、取手市與東京藝術大學共同運營。2010年後從節慶型轉向長期計畫，包括以住宅區和農業為舞台的持續性實踐。"
+  },
+  "KEAT 小砂環境芸術祭": {
+    "name": "KEAT 小砂環境藝術節",
+    "tagline": "在栃木的里山之間行走於自然與藝術之間。",
+    "desc": "在栃木縣那珂川町小砂舉辦的藝術節。通過藝術重新發現地方價值，並探索與自然環境溫和共生的新文化。"
+  },
+  "中之条ビエンナーレ": {
+    "name": "中之條雙年展",
+    "tagline": "以藝術為線索，旅行群馬的溫泉鄉與里山。",
+    "desc": "每兩年在群馬縣中之條町舉辦的國際當代藝術節。藝術家駐村於山村，根據當地裡山文化進行創作，並在雙年展期間展出。"
+  },
+  "さいたま国際芸術祭": {
+    "name": "埼玉國際藝術節",
+    "tagline": "在埼玉市各處探索當代藝術。",
+    "desc": "每三年在埼玉市舉辦的藝術節，以市民參與為核心，在多種場所創造居民、藝術家與社區相遇合作的機會。"
+  },
+  "千葉国際芸術祭": {
+    "name": "千葉國際藝術節",
+    "tagline": "通過藝術重新觀看千葉的日常城市風景。",
+    "desc": "2025年在千葉市啓動的三年一屆藝術節，不只追求短期觀光，而是希望激發市民與訪客的創造力，讓日常生活在中長期中變得更豐富。"
+  },
+  "東京ビエンナーレ": {
+    "name": "東京雙年展",
+    "tagline": "把東京這座城市本身變成藝術現場。",
+    "desc": "始於2020/21年的國際雙年展，以東京城市空間為舞台。作品不僅出現在畫廊，也進入街道、高架橋下和歷史建築等千代田、中央、文京、台東的日常空間。"
+  },
+  "黄金町エリアマネジメント/バザール": {
+    "name": "黃金町Bazaar",
+    "tagline": "漫步黃金町，看一個街區如何因藝術而改變。",
+    "desc": "橫濱黃金町自約2005年起推進的藝術型街區再生計畫。2008年黃金町Bazaar啓動，2009年成立黃金町Area Management Center，持續推動地區轉型。"
+  },
+  "大地の芸術祭": {
+    "name": "越後妻有大地藝術祭",
+    "tagline": "讓藝術帶路，旅行越後妻有的里山。",
+    "desc": "世界規模最大的國際藝術節之一，也是日本地域型藝術節的重要先驅。以藝術為線索旅行裡山的模式受到國際關注，主展之間也持續舉辦季節性計畫。"
+  },
+  "ガラスの街とやま": {
+    "name": "玻璃之城·富山（Glass Art City, Toyama）",
+    "tagline": "探索富山的玻璃文化與標誌性美術館。",
+    "desc": "富山市長期把玻璃作為城市政策與文化認同的重要部分。以2015年開館的富山市玻璃美術館為核心，玻璃造型研究所和工坊共同形成城市級生態。"
+  },
+  "Go FOR KOGEI": {
+    "name": "GO FOR KOGEI（走進工藝）",
+    "tagline": "旅行北陸，遇見工藝與當代藝術。",
+    "desc": "2020年啓動的計畫，從新的角度重新理解擁有悠久製造傳統的北陸工藝。展覽分布於歷史街區、寺院與神社，並通過論壇等討論工藝在當代生活中的意義。"
+  },
+  "Zen AIR（禅×AIR）": {
+    "name": "禪 AIR（ZEN AIR）",
+    "tagline": "體驗由禪文化塑造的藝術家駐村。",
+    "desc": "在福井縣永平寺地區開展的主題型藝術家駐村計畫。藝術家通過禪修體驗與居民交流進行研究和創作，並以作品與研究成果向公眾分享。"
+  },
+  "FUJI TEXTILE WEEK": {
+    "name": "富士紡織周（FUJI TEXTILE WEEK）",
+    "tagline": "漫步富士吉田這座織物與設計之城。",
+    "desc": "2021年在擁有千年以上紡織歷史的山梨縣富士吉田啓動的紡織與藝術節，將當代藝術實踐、傳統產業與地方振興連接起來。",
+    "dateText": "下一屆日期尚未公佈（2025屆已結束）。"
+  },
+  "北アルプス国際芸術祭": {
+    "name": "北阿爾卑斯國際藝術祭",
+    "tagline": "以藝術旅行北阿爾卑斯的城市與風景。",
+    "desc": "在長野縣大町舉辦的國際藝術節，旨在重新發現地區魅力並塑造具有獨特個性的城市。曾於2017、2021和2024年舉辦。"
+  },
+  "美濃和紙あかりアート展": {
+    "name": "美濃和紙燈光藝術展",
+    "tagline": "看美濃古街被和紙燈光柔和照亮。",
+    "desc": "以約300件美濃和紙燈光作品點亮卯建歷史街區的長期展覽。作品從日本全國徵集，並通過展覽與評審形成參與型競賽。"
+  },
+  "アーツカウンシルしずおか": {
+    "name": "靜岡藝術委員會（Arts Council Shizuoka）",
+    "tagline": "發現靜岡各地文化活動的入口。",
+    "desc": "面向靜岡縣全域的藝術文化中間支援機構，通過資助、咨詢和傳播支持藝術家與NPO，並在行政與民間之間發揮橋梁作用。"
+  },
+  "国際芸術祭「あいち」": {
+    "name": "愛知三年展",
+    "tagline": "在愛知各地探索來自世界的當代藝術。",
+    "desc": "愛知縣每三年舉辦的大型國際當代藝術節，以愛知藝術文化中心及縣內城市空間為舞台，融合當代藝術、表演藝術與學習計畫。"
+  },
+  "亀山トリエンナーレ": {
+    "name": "龜山三年展",
+    "tagline": "在龜山市內尋找散落各處的小而有力的表達。",
+    "desc": "三重縣龜山市推動的藝術型社區營造計畫，把跨世代日常生活中“打動人的事物”廣義理解為藝術，並自2014年起舉辦三年展。"
+  },
+  "BIWAKOビエンナーレ": {
+    "name": "BIWAKO BIENNALE 琵琶湖雙年展",
+    "tagline": "在近江八幡的歷史町屋中探索當代藝術。",
+    "desc": "以滋賀縣近江八幡的古民居、町屋和倉庫為舞台的國際雙年展。國內外藝術家根據建築的記憶與特質創作裝置，讓整座城市像一座美術館。"
+  },
+  "KYOTOGRAPHIE": {
+    "name": "KYOTOGRAPHIE 京都國際攝影節",
+    "tagline": "在春日京都，以攝影與建築為線索漫步。",
+    "desc": "每年春天在京都的寺院、町屋、近代建築和公共空間舉辦的國際攝影節。2013年創辦，並同步舉辦公開徵集的衛星計畫KG+。2026年第14屆主題為“EDGE”。"
+  },
+  "北加賀屋クリエイティブ・ビレッジ": {
+    "name": "北加賀屋創意村",
+    "tagline": "探索大阪舊造船區里的創意空間。",
+    "desc": "在大阪住之江區北加賀屋舊造船用地逐步形成的藝術與創意空間網絡。較低租金與靈活空間使用吸引了大量創作者，並不主要依賴公共補貼。"
+  },
+  "神戸・新開地（アートひろば等）": {
+    "name": "神戶·新開地藝術計畫",
+    "tagline": "在神戶老城區體驗表演藝術與地方文化。",
+    "desc": "以藝術推動神戶新開地再生的長期實踐。空置建築與店鋪被改造為藝術空間、排練室和小劇場，培養地方文化工作者並形成新的社區據點。"
+  },
+  "はならぁと": {
+    "name": "HANARART 奈良町屋藝術節",
+    "tagline": "在奈良的老街、空屋與村落中發現藝術。",
+    "desc": "利用奈良縣各地村落、町屋、空置建築、寺院與神社舉辦的分散型藝術節。橿原、宇陀、吉野等區域輪流展開計畫，帶領訪客進入平時較少到訪的地方。"
+  },
+  "JAPAN WALLS（和歌山）": {
+    "name": "JAPAN WALLS 白濱壁畫計畫",
+    "tagline": "在和歌山街頭遇見巨型壁畫。",
+    "desc": "邀請日本及海外街頭藝術家在建築外牆創作大型壁畫的計畫。強烈的視覺效果改變城市景觀，也通過社交媒體與口碑吸引新的訪客。"
+  },
+  "鳥取県立美術館の取り組み": {
+    "name": "鳥取縣立美術館",
+    "tagline": "從鳥取的新美術館出發，探索更廣闊的地區。",
+    "desc": "以2025年在倉吉開館的鳥取縣立美術館為中心的文化計畫。美術館在與居民充分對話中誕生，並結合鳥取與民藝運動的聯繫，成為學習、交流與創作的據點。"
+  },
+  "石見アーツプロジェクト": {
+    "name": "石見藝術計畫（IWAMI ARTS PROJECT）",
+    "tagline": "走進扎根於石見文化的藝術實踐。",
+    "desc": "以島根縣西部石見地區為舞台的文化發展計畫，將石見神樂、石見銀山、石州和紙等地方資源與當代藝術實踐連接，並支持年輕藝術家和文化工作者在當地生活與工作。"
+  },
+  "岡山芸術交流": {
+    "name": "OKAYAMA ART SUMMIT 岡山藝術交流",
+    "tagline": "在岡山市中心探索國際當代藝術。",
+    "desc": "每三年在岡山歷史城下町區域舉辦的國際當代藝術展。林原美術館、舊內山下小學等歷史建築與公共空間中設置大型作品，場館緊湊，適合步行巡遊。"
+  },
+  "広島国際建築祭": {
+    "name": "廣島國際建築節",
+    "tagline": "通過建築與城市故事行走尾道和福山。",
+    "desc": "2025年從廣島啓動、專注建築的國際節慶。以福山和尾道為中心，通過導覽、展覽和研討會，從建築角度重新思考城市記憶、重建與再生。"
+  },
+  "YCAM（山口情報芸術センター）": {
+    "name": "YCAM 山口資訊藝術中心",
+    "tagline": "在山口遇見媒體藝術的實驗。",
+    "desc": "由山口市設立的公共媒體藝術中心。通過藝術、技術與研究一體化的研發，以及藝術家和工程師的緊密協作，製作展覽、演出、工作坊與國際合作計畫。"
+  },
+  "神山AIR": {
+    "name": "神山藝術家駐村（KAIR）",
+    "tagline": "在山間小鎮神山探訪正在創作的藝術家。",
+    "desc": "自1990年代末在德島縣神山持續開展的藝術家駐村計畫。它從駐留創作擴展到衛星辦公室、移居與空屋再生，成為廣受討論的“神山模式”地區振興的重要起點。"
+  },
+  "瀬戸内国際芸術祭": {
+    "name": "瀨戶內國際藝術祭",
+    "tagline": "把藝術當作目的地，旅行瀨戶內海諸島。",
+    "desc": "每三年在瀨戶內海島嶼與港口舉辦的大型國際藝術節。直島、豐島、女木島、小豆島等12座島與2個港口分布著常設和臨時作品。主展於2025年舉辦，下一屆為2028年，2026年繼續ART SETOUCHI計畫。"
+  },
+  "道後オンセアート": {
+    "name": "DOGO ART 道後溫泉藝術",
+    "tagline": "漫步道後溫泉，一路與藝術相遇。",
+    "desc": "以日本最古老溫泉地之一松山道後溫泉為舞台的藝術計畫。旅館、公共浴場與商店街化身為展覽空間，呈現國內外藝術家的裝置與參與式作品。"
+  },
+  "高知県芸術祭/KOCHI ART PROJECTS": {
+    "name": "高知縣藝術節 / KOCHI ART PROJECTS",
+    "tagline": "通過多種表達方式探索高知的城市與社區。",
+    "desc": "以高知縣秋季藝術節為基礎，同時開展支持地方藝術計畫的KOCHI ART PROJECTS。戲劇、音樂、美術、傳統文化與地域實踐在縣內各地展開。"
+  },
+  "Fukuoka Art Next": {
+    "name": "福岡藝術Next（Fukuoka Art Next）",
+    "tagline": "在福岡市內各處輕鬆遇見當代藝術。",
+    "desc": "福岡市自2022年度啓動的綜合文化政策，通過行政、大學與民間合作擴大市民接觸藝術的機會，並借助Artist Cafe Fukuoka、公共壁畫和藝博會等計畫支持藝術家成長與交流。"
+  },
+  "Creative Residency in Arita": {
+    "name": "有田創意駐村計畫（Creative Residency in Arita）",
+    "tagline": "在日本陶瓷之鄉有田，遇見國際藝術家的創作。",
+    "desc": "在日本瓷器發源地有田開展的三個月駐村計畫，國內外藝術家和設計師與當地窯元、工匠合作。計畫自2016年啓動，通過國際交流探索有田燒的新可能。",
+    "dateText": "2026年6月至8月（藝術家駐村）。"
+  },
+  "南島原市アートビレッジ・シラキノ": {
+    "name": "南島原市Art Village Shirakino",
+    "tagline": "在南島原的一所舊學校里探訪藝術家駐村。",
+    "desc": "把長崎縣南島原市廢棄學校改造而成的復合藝術設施，支持年輕藝術家駐村創作，並通過工作坊和居民交流推動地方文化發展。"
+  },
+  "くまもとアートポリス": {
+    "name": "熊本Artpolis",
+    "tagline": "沿著建築線索，閱讀熊本的城市與地區。",
+    "desc": "熊本縣自1988年開始的長期建築與城市設計計畫，由知名建築師擔任委員，將設計思維運用於公共設施、橋梁、道路、公園等全縣基礎設施。"
+  },
+  "BEPPU PROJECT": {
+    "name": "別府計畫（BEPPU PROJECT）",
+    "tagline": "在溫泉城市別府遇見藝術與社區實踐。",
+    "desc": "以別府為基地的藝術機構和計畫平台。從利用溫泉城市空置空間的國際藝術節起步，逐漸擴展到駐留、人才培養、空間運營以及連接飲食與文化的計畫，並在公共與民間之間發揮中介作用。"
+  },
+  "新富芸術祭": {
+    "name": "新富藝術祭",
+    "tagline": "在宮崎新富的日常生活中感受藝術。",
+    "desc": "在宮崎縣新富町的農業景觀、日常社區和歷史祭祀空間中舉辦的小型藝術節。國內外藝術家與居民合作，重視低負擔、可持續的運營方式。"
+  },
+  "霧島アートの森活用まちづくり": {
+    "name": "霧島戶外美術館地域營造",
+    "tagline": "在霧島的自然景觀中探索戶外藝術。",
+    "desc": "以湯水町的霧島戶外美術館為核心的地域營造計畫。國內外藝術家的雕塑與裝置散布在霧島火山景觀之中，把藝術欣賞、教育與自然體驗結合起來。"
+  },
+  "やんばるアートフェスティバル": {
+    "name": "山原藝術節（YAMBARU ART FESTIVAL）",
+    "tagline": "通過藝術與工藝探索山原的森林與村落。",
+    "desc": "在沖繩北部山原地區舉辦的藝術節，以世界自然遺產周邊的亞熱帶森林、村落和海岸為舞台，融合當代藝術、傳統表演和工藝，並以人與自然共生為核心主題。"
+  },
+  "恵比寿映像祭2026": {
+    "name": "惠比壽映像祭2026",
+    "tagline": "在惠比壽感受影像與攝影的當下。",
+    "desc": "由東京都寫真美術館主辦的國際影像藝術節，通過攝影、電影、聲音、表演等形式持續追問“影像是甚麼”。2026年主題為“Polyphonic Voices Bathed in Sunlight”。",
+    "dateNote": "2026年主會期已結束。"
+  },
+  "東京建築祭2026": {
+    "name": "東京建築祭2026",
+    "tagline": "用一個週末走進東京最值得看的建築。",
+    "desc": "開放平時難以進入的東京建築的城市建築節。2024年首次舉辦時吸引6.5萬人，2026年擴展至澀谷，參與建築超過70處。",
+    "dateNote": "2026年活動已結束。"
+  },
+  "すみだ五彩の芸術祭": {
+    "name": "墨田五彩藝術祭",
+    "tagline": "漫步墨田，通過藝術遇見地方記憶。",
+    "desc": "由墨田區直接主辦的多月藝術節，是東京23區中首次出現這種規模的區級藝術節。以“墨分五彩”為靈感，在老宅、寺院、商店街等日常空間重新觀看地方歷史、產業與記憶。"
+  },
+  "TOKYO ATLAS（国際文化芸術祭）": {
+    "name": "TOKYO ATLAS 國際文化藝術節",
+    "tagline": "在東京濱水地區探索來自世界的當代藝術。",
+    "desc": "2026年啓動的新東京文化藝術節中的國際藝術展，以台場、青海、天王洲等濱水區域為舞台，同時呈現國際知名藝術家與東京都支持的年輕藝術家。"
+  },
+  "前橋国際芸術祭2026「めぶく。」": {
+    "name": "前橋國際藝術祭2026「萌芽。」",
+    "tagline": "沿著建築與藝術漫步前橋中心城區。",
+    "desc": "以前橋市中心為舞台的首屆國際藝術節。以2016年城市願景“萌芽。”十週年為契機，將藝術與城市更新連接起來，並讓觀眾步行穿梭於商店街、空置建築和公共空間。"
+  },
+  "下呂 Art Discovery 2026": {
+    "name": "下呂藝術探索 2026（Gero Art Discovery 2026）",
+    "tagline": "帶著藝術旅行下呂溫泉、森林與舊校舍。",
+    "desc": "在日本三大名泉之一的岐阜下呂舉辦的新藝術節。森林、歷史街區和舊木造學校中分布場域特定作品，探討人與自然的關係。北川富朗任總導演，共有來自14個國家和地區的59組參加。"
+  },
+  "富士山芸術祭2026": {
+    "name": "富士山藝術節 2026（Fuji Art Festival 2026）",
+    "tagline": "眺望富士山，探索山梨的文化與藝術。",
+    "desc": "以世界遺產富士山為中心，連接山梨的歷史建築、寺院、美術館、酒藏與名人相關場所的廣域藝術節。每四年舉辦一次，通過傳統工藝與當代藝術重新發現地方價值。"
+  },
+  "三島満願芸術祭2026": {
+    "name": "三島滿願藝術祭2026",
+    "tagline": "在三島街頭遇見當代藝術。",
+    "desc": "以靜岡縣三島為基地的當代藝術節。2023年11月首次舉辦，2026年迎來第三屆，持續發展把城市空間、社區與當代藝術連接起來的地方模式。"
+  },
+  "アラフドアートアゲイン": {
+    "name": "ARAFUDO 藝術再啓 2026",
+    "tagline": "在土湯溫泉的山間，進入藝術與思考的旅程。",
+    "desc": "以磐梯朝日國立公園內福島土湯溫泉周邊山地為舞台的藝術計畫。國內外藝術家與溫泉地區的自然環境展開對話，並據此發展創作與研究。"
+  },
+  "神戸六甲ミーツ・アート2026 beyond": {
+    "name": "神戶六甲遇見藝術 2026 beyond（KOBE Rokko Meets Art）",
+    "tagline": "漫步六甲山，尋找散落其中的當代藝術。",
+    "desc": "自2010年起每年秋天在神戶六甲山舉辦的當代藝術節。作品散布於豐富的山地自然中，兼具從神戶市中心出發的便利性與戶外藝術體驗。"
+  },
+  "武雄のあかりめぐり": {
+    "name": "武雄燈光巡遊",
+    "tagline": "沿著光與藝術夜遊武雄溫泉。",
+    "desc": "每年用燈光串聯佐賀縣武雄各處景點的夜間活動。御船山樂園的teamLab《A Forest Where Gods Live》、武雄溫泉樓門、武雄神社、市立圖書館等8處成為夜遊目的地。"
+  },
+  "飛生芸術祭": {
+    "name": "飛生藝術節（TOBIU ART FESTIVAL）",
+    "tagline": "走進北海道森林與舊校舍中的童話般節慶。",
+    "desc": "由1986年圍繞北海道白老舊飛生小學成立的TOBIU Art Community舉辦的年度藝術節。木造校舍與森林變成展覽和交流空間，開幕活動TOBIU CAMP也同期舉行。",
+    "dateNote": "TOBIU CAMP於9月12日舉行。"
+  },
+  "福島ビエンナーレ2026": {
+    "name": "福島雙年展2026",
+    "tagline": "在福島雙葉面對記憶、地方與當代藝術。",
+    "desc": "自2004年起每兩年舉辦的當代藝術計畫。2026年適逢東日本大地震15週年，以“Cinematic ∞ Art”為主題，在雙葉郡8個自治體展開，把福島大學與地方社區通過藝術和文化記憶連接起來。"
+  },
+  "AWANO 夢咲くART FESTIVAL 2026": {
+    "name": "AWANO 夢開ART FESTIVAL 2026",
+    "tagline": "在鹿沼里山中享受花、藝術與美食。",
+    "desc": "自2016年起在栃木縣鹿沼市粟野地區舉辦的藝術節。以現、舊粟野中學為中心，結合展覽、舞台、集市，以及蕎麥花和彼岸花等季節性里山風景。"
+  },
+  "房総国際芸術祭 アート×ミックス2027": {
+    "name": "房總國際藝術祭 Boso Triennale 2027",
+    "tagline": "為了藝術、音樂與美食橫穿房總半島。",
+    "desc": "跨越千葉縣市原、木更津與大多喜的新國際藝術節。由北川富朗與小林武史領銜，把房總半島想象為一座共享“藝術工廠”，鼓勵乘火車、駕車或騎行探索。"
+  },
+  "横浜トリエンナーレ": {
+    "name": "橫濱三年展",
+    "tagline": "在橫濱遇見來自世界的當代藝術。",
+    "desc": "日本代表性的國際當代藝術展之一，2001年創辦，每三年在橫濱中心濱水區域舉辦。第9屆將由Cosmin Costinas與Inti Guerrero擔任藝術總監。"
+  },
+  "逗子アートフェスティバル": {
+    "name": "逗子藝術節",
+    "tagline": "漫步海邊逗子，發現社區型藝術。",
+    "desc": "自2013年起每年在神奈川縣逗子舉辦的藝術活動，以“通過藝術營造社區”為核心，由居民和藝術家共同在城市與海岸各處開展計畫。"
+  },
+  "ART/X/TOYAMA（アートエクストヤマ）": {
+    "name": "藝術×富山（ART/X/TOYAMA）",
+    "tagline": "在富山魚津探索日本與海外的當代藝術。",
+    "desc": "每四年在富山縣魚津市新川文化廳舉辦的國際當代藝術展。自1993年以來持續邀請日本及法國、土耳其、德國、韓國、中國等國藝術家，2026年第10屆匯集9國藝術家。"
+  },
+  "いしかわ舞台芸術祭2026": {
+    "name": "石川表演藝術祭2026",
+    "tagline": "在金澤的秋天穿梭於戲劇、舞蹈與音樂之間。",
+    "desc": "在石川縣舉辦、邀請日本及海外藝術家的表演藝術節，呈現戲劇、舞蹈、音樂與跨領域作品，為觀眾提供新的舞台體驗和文化交流機會。",
+    "dateText": "2026年9月至12月22日。"
+  },
+  "熊川宿若狭芸術祭": {
+    "name": "熊川宿若狹藝術祭",
+    "tagline": "在歷史街宿熊川宿的老屋裡遇見駐留藝術家。",
+    "desc": "自2023年度起在福井縣若狹町熊川宿舉辦，目標是把當地發展為國際文化交流據點。不同年齡、國籍、性別與能力背景的藝術家參與短期駐留、展覽和音樂會。"
+  },
+  "浅間国際フォトフェスティバル（PHOTO MIYOTA）": {
+    "name": "淺間國際攝影節（ASAMA INTERNATIONAL PHOTO FESTIVAL）",
+    "tagline": "在淺間山麓用五感體驗攝影。",
+    "desc": "自2018年起在長野縣御代田町文化復合設施MMoP周邊舉辦的國際攝影節。國內外攝影師作品與淺間山自然相互呼應，2026年展區進一步擴展到町內各處。"
+  },
+  "原泉アートデイズ！": {
+    "name": "原泉藝術日！（HARAIZUMI ART DAYS!）",
+    "tagline": "在掛川鄉野中探索駐留創作誕生的作品。",
+    "desc": "靜岡縣掛川市北部原泉地區的藝術家駐村與展覽計畫。自2018年起支持國內外藝術家，並在舊茶廠、古民居等地區空間中發表作品。",
+    "dateText": "2026年Art Days日期尚未公佈。"
+  },
+  "大野芸術祭（OHNO ART BREW）": {
+    "name": "大野藝術節（OHNO ART BREW）",
+    "tagline": "帶著藝術漫步常滑大野的海邊小鎮。",
+    "desc": "自2024年起在愛知縣常滑市大野町舉辦的藝術節。作品進入海岸、車站廣場、咖啡館等日常場所，以免費、貼近社區的形式逐漸扎根。"
+  },
+  "長浜国際芸術祭": {
+    "name": "長濱國際藝術祭2026",
+    "tagline": "在長濱商店街遇見日本與海外的藝術。",
+    "desc": "以滋賀縣長濱中心商店街為舞台的國際藝術計畫。以城市歷史與文化為背景，創造國內外藝術家與居民交流的機會，並以與波蘭的國際交流為特色。2026年為第二屆。"
+  },
+  "KYOTO EXPERIMENT 京都国際舞台芸術祭2026": {
+    "name": "京都實驗國際舞台藝術節 2026（KYOTO EXPERIMENT）",
+    "tagline": "在秋日京都穿梭於實驗性表演之間。",
+    "desc": "自2010年起在京都各地舉辦的表演藝術節，介紹跨越戲劇、舞蹈、音樂與視覺藝術的國內外先鋒作品，由Kansai Studies、Shows、SKF三條計畫線構成。2026年10月3日至25日舉辦。"
+  },
+  "生きた建築ミュージアムフェスティバル大阪（イケフェス大阪）": {
+    "name": "大阪開放建築節（OPEN HOUSE OSAKA）",
+    "tagline": "用兩天時間走進大阪這座城市的精彩建築。",
+    "desc": "日本規模最大的建築開放活動之一，在秋季週末免費開放大阪各類建築。約200處“活著的建築”從歷史地標、現代建築到街區咖啡館向公眾敞開。2026年為10月24日至25日。"
+  },
+  "紀南アートウィーク": {
+    "name": "紀南藝術周（KINAN ART WEEK）",
+    "tagline": "通過藝術探索紀南的海、山與日常文化。",
+    "desc": "以和歌山縣紀南地區、包括田邊為基地持續開展的藝術計畫。通過展覽與講座，從當代藝術視角觀察柑橘種植、漁業、地方歷史與信仰等當地生活方式。"
+  },
+  "森の芸術祭 晴れの国・岡山2027": {
+    "name": "岡山森林藝術祭2027",
+    "tagline": "旅行岡山北部，遇見森林與藝術。",
+    "desc": "連接津山、高梁、新見、真庭、美作等岡山北部12個市町村的國際藝術節。2024屆部分作品已成為常設作品，下一屆計畫於2027年秋季舉辦。",
+    "dateText": "計畫於2027年秋季舉辦。"
+  },
+  "瀬戸内産業芸術祭": {
+    "name": "瀨戶內產業藝術祭",
+    "tagline": "通過藝術重新觀看瀨戶內的產業景觀。",
+    "desc": "以鹽業、造船、鋼鐵等支撐日本發展的瀨戶內產業為對象的分散型美術館構想。藝術家和創作者與企業工廠合作，從新的角度重新理解產業文化。"
+  },
+  "MAFIN（Miyajima Art Festival in the Narrative）": {
+    "name": "MAFIN（宮島敘事藝術節）",
+    "tagline": "在宮島寺院中觀看歷史與當代藝術相遇。",
+    "desc": "每年在廣島宮島彌山的大聖院舉辦的當代藝術展。計畫通過藝術思考和平與島嶼文化意義，並讓受宮島自然啓發的作品與歷史寺院空間展開對話。"
+  },
+  "ART FAIR ASIA FUKUOKA（AFAF）": {
+    "name": "亞洲福岡藝術博覽會 2026（AFAF）",
+    "tagline": "在福岡一次看見來自亞洲各地的當代藝術。",
+    "desc": "在福岡國際中心舉辦、連接日本與亞洲藝術生態的藝博會。2026年第11屆匯聚國內外主要畫廊，並與Fukuoka Art Next聯動，推動城市藝術生態發展。舉辦日期為10月2日至4日。",
+    "dateNote": "10月1日為VIP View。"
+  },
+  "SAGA ARTIST FAIR 2027": {
+    "name": "佐賀藝術家博覽會 2027",
+    "tagline": "在佐賀藝博會發現新銳藝術家。",
+    "desc": "以佐賀市為基地、聚焦發現與介紹新銳藝術家的公開徵集型藝博會。每屆通過公開報名選出參展藝術家，2027年計畫於2月中旬舉辦，報名自2026年8月中旬開始。",
+    "dateText": "計畫於2027年2月中旬舉辦。"
+  },
+  "種子島宇宙芸術祭": {
+    "name": "種子島宇宙藝術祭",
+    "tagline": "在種子島同時體驗宇宙與藝術。",
+    "desc": "以鹿兒島縣南種子、種子島宇宙中心周邊為舞台的獨特藝術節。受天文學家Carl Sagan思想啓發，以“宇宙藝術”為新領域，並舉辦夏季營地和冬季燈光節。"
+  },
+  "Waza Waza — Iga Art Book Fair 2026": {
+    "name": "Waza Waza — 伊賀藝術書展 2026",
+    "tagline": "在伊賀的歷史學堂里，遇見來自世界各地的藝術書。",
+    "desc": "在三重縣伊賀市國家指定史蹟舊崇廣堂舉辦的國際藝術書展。舊崇廣堂建於1821年，原為藩校，後來曾作為三重縣最古老的公共圖書館使用。活動匯集藝術書、ZINE與獨立出版物，不只進行展示與銷售，也鼓勵讀者拿起書閱讀並直接與創作者交流。2026年共有來自日本、美國、中國、新加坡、伊朗和突尼斯等6個國家和地區的38組參與者，也成為從書籍與建築出發探索伊賀城市文化的契機。"
+  }
+};
+
+
 
 const ARTIST_EN = {
   "坂本龍一（2017年ゲストディレクター）": "Ryuichi Sakamoto (Guest Director, 2017)",
@@ -4682,6 +5265,9 @@ function localizeCases(cases) {
     } else if (LANG === "zh-cn") {
       c.pref = PREFECTURE_ZH_CN[c.prefJa] || c.pref;
       tr = CASE_CONTENT_ZH_CN[c.nameJa] || {};
+    } else if (LANG === "zh-tw") {
+      c.pref = PREFECTURE_ZH_TW[c.prefJa] || c.pref;
+      tr = CASE_CONTENT_ZH_TW[c.nameJa] || {};
     } else {
       return;
     }
@@ -4921,7 +5507,7 @@ const IMPACT_PREFIX = { "経済": "1-", "社会": "2-", "文化": "3-" };
 const REGION_ORDER = ["北海道・東北","関東","中部","関西","中国・四国","九州・沖縄"];
 const REGION_NUM = { "北海道・東北":"01","関東":"02","中部":"03","関西":"04","中国・四国":"05","九州・沖縄":"06" };
 
-let activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeAccess = "all", searchQ = "";
+let activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeVisitorTag = "all", activeAccess = "all", searchQ = "";
 
 
 const TRAVEL_TAG_ORDER = ["島・海","温泉","建築","写真・映像","工芸","自然・里山","街歩き","食"];
@@ -4970,6 +5556,28 @@ function travelTagsHtml(c) {
   const tags = getTravelTags(c);
   if (!tags.length) return '';
   return `<div class="travel-tags">${tags.map(t => `<span class="travel-tag">${travelTagLabel(t)}</span>`).join('')}</div>`;
+}
+
+const VISITOR_TAG_ORDER = ["tokyo-easy","osaka-kyoto-easy","weekend","onsen"];
+
+function getVisitorTags(c) {
+  const tags = new Set();
+  const pref = c.prefJa || c.pref;
+  if (Number.isFinite(c.tokyoHours) && c.tokyoHours <= 2.5) tags.add("tokyo-easy");
+  if (["滋賀","京都","大阪","兵庫","奈良","和歌山","三重","岡山"].includes(pref)) tags.add("osaka-kyoto-easy");
+  if (Number.isFinite(c.tokyoHours) && c.tokyoHours <= 4) tags.add("weekend");
+  if (getTravelTags(c).includes("温泉")) tags.add("onsen");
+  return VISITOR_TAG_ORDER.filter(t => tags.has(t));
+}
+
+function visitorTagLabel(t) {
+  return (T.visitorTags && T.visitorTags[t]) || t;
+}
+
+function visitorTagsHtml(c) {
+  const tags = getVisitorTags(c);
+  if (!tags.length) return '';
+  return `<div class="visitor-tags"><span class="visitor-tags-k">${T.visitorGuide}</span>${tags.map(t => `<span class="visitor-tag">${visitorTagLabel(t)}</span>`).join('')}</div>`;
 }
 
 function updateDynamicFilterLabels() {
@@ -5105,6 +5713,8 @@ function getFiltered() {
 
     if (activeTravelTag !== "all" && !getTravelTags(c).includes(activeTravelTag)) return false;
 
+    if (activeVisitorTag !== "all" && !getVisitorTags(c).includes(activeVisitorTag)) return false;
+
     if (activeAccess !== "all") {
       const h = c.tokyoHours;
       if (activeAccess === "daytrip" && h > 2) return false;
@@ -5190,6 +5800,7 @@ function popupHtml(c) {
     <div class="popup-name">${c.name}</div>
     <div class="popup-tagline">${c.tagline}</div>
     ${travelTagsHtml(c)}
+    ${visitorTagsHtml(c)}
     <div class="event-date-primary">${dateLabel}${c.dateNote ? `<div class="event-date-note">${c.dateNote}</div>` : ''}</div>
     <div class="popup-meta">
       <div class="popup-meta-item"><span class="popup-meta-k">${T.tripGuide}</span><span class="popup-meta-v">${tripType}</span></div>
@@ -5287,6 +5898,7 @@ function renderDiscoveryPanel(candidates = CASES) {
     activeStatus === 'all' &&
     activeMonth === 'all' &&
     activeTravelTag === 'all' &&
+    activeVisitorTag === 'all' &&
     activeAccess === 'all' &&
     !searchQ;
 
@@ -5675,6 +6287,16 @@ document.querySelectorAll('#travel-tag-filters .chip').forEach(btn => {
     document.querySelectorAll('#travel-tag-filters .chip').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeTravelTag = btn.dataset.travelTag;
+    rebuild();
+  });
+});
+
+document.querySelectorAll('#visitor-tag-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#visitor-tag-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeVisitorTag = btn.dataset.visitorTag;
+    selectedCaseName = null;
     rebuild();
   });
 });

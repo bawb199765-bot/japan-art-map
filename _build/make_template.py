@@ -626,3 +626,195 @@ print("template.html written OK")
 print("placeholders found:", len(set(re.findall(r"__[A-Z0-9_]+__", html))))
 for p in sorted(set(re.findall(r"__[A-Z0-9_]+__", html))):
     print("   ", p)
+
+
+# ── PHASE 2I POSTPROCESS: zh-TW + international traveler guide ──
+# This runs after the normal template build so future rebuilds retain Phase 2I.
+html = io.open(OUT, encoding="utf-8").read()
+
+# 5-language visibility
+html = html.replace("Available in 4 languages", "Available in 5 languages")
+html = html.replace(">4 LANGUAGES<", ">5 LANGUAGES<")
+html = html.replace(">4L<", ">5L<")
+html = html.replace("日本語 / English / 한국어 / 中文", "日本語 / English / 한국어 / 简体中文 / 繁體中文")
+html = html.replace("max-width: calc(100vw - 244px)", "max-width: calc(100vw - 270px)")
+html = html.replace("max-width: calc(100vw - 232px)", "max-width: calc(100vw - 258px)")
+html = html.replace("LAST UPDATED · 2026.08", "LAST UPDATED · 2026.09")
+
+# Add an international-traveler filter before trip length.
+style_anchor = """    <div class="filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_STYLE__</span>
+        <span class="fl-label-en">__F_STYLE_EN__</span>
+      </div>"""
+visitor_block = """    <div class="filter-block visitor-guide-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_VISITOR__</span>
+        <span class="fl-label-en">__F_VISITOR_EN__</span>
+      </div>
+      <div class="chips visitor-guide-chips" id="visitor-tag-filters">
+        <button class="chip active" data-visitor-tag="all">ALL</button>
+        <button class="chip" data-visitor-tag="tokyo-easy">__V_TOKYO__</button>
+        <button class="chip" data-visitor-tag="osaka-kyoto-easy">__V_KANSAI__</button>
+        <button class="chip" data-visitor-tag="weekend">__V_WEEKEND__</button>
+        <button class="chip" data-visitor-tag="onsen">__V_ONSEN__</button>
+      </div>
+      <div class="visitor-guide-note">__V_NOTE__</div>
+    </div>
+
+"""
+if visitor_block not in html:
+    if style_anchor not in html:
+        raise RuntimeError("Phase2I: trip length anchor not found")
+    html = html.replace(style_anchor, visitor_block + style_anchor, 1)
+
+# Styling
+css_anchor = """    .travel-tag::before {
+      content: '#';
+      color: var(--accent);
+      margin-right: 2px;
+      font-family: var(--mono);
+    }
+"""
+visitor_css = css_anchor + """
+    .visitor-guide-block { background: rgba(217,102,80,.035); }
+    .visitor-guide-note {
+      margin-top: 7px;
+      font-family: var(--sans);
+      font-size: 8.5px;
+      line-height: 1.45;
+      color: var(--dim);
+    }
+    .visitor-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+      margin: -5px 0 12px;
+    }
+    .visitor-tags-k {
+      margin-right: 2px;
+      font-family: var(--mono);
+      font-size: 7.5px;
+      letter-spacing: .09em;
+      color: var(--accent);
+    }
+    .visitor-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 21px;
+      padding: 3px 6px;
+      border: 1px solid rgba(217,102,80,.38);
+      background: rgba(217,102,80,.06);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 8.5px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+"""
+if ".visitor-guide-block" not in html:
+    if css_anchor not in html:
+        raise RuntimeError("Phase2I: travel tag CSS anchor not found")
+    html = html.replace(css_anchor, visitor_css, 1)
+
+mobile_anchor = """      #travel-tag-filters {
+        flex-wrap: wrap !important;
+        row-gap: 4px;
+      }
+      .travel-theme-block { padding-bottom: 10px; }"""
+if mobile_anchor in html:
+    html = html.replace(mobile_anchor, """      #travel-tag-filters,
+      #visitor-tag-filters {
+        flex-wrap: wrap !important;
+        row-gap: 4px;
+      }
+      .travel-theme-block { padding-bottom: 10px; }
+      .visitor-guide-note { font-size: 8px; }""", 1)
+
+# State
+old_state = 'let activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeAccess = "all", searchQ = "";'
+new_state = 'let activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeVisitorTag = "all", activeAccess = "all", searchQ = "";'
+if old_state in html:
+    html = html.replace(old_state, new_state, 1)
+
+# Visitor tag inference + detail badges.
+travel_end = """function travelTagsHtml(c) {
+  const tags = getTravelTags(c);
+  if (!tags.length) return '';
+  return `<div class="travel-tags">${tags.map(t => `<span class="travel-tag">${travelTagLabel(t)}</span>`).join('')}</div>`;
+}
+"""
+visitor_logic = travel_end + """
+const VISITOR_TAG_ORDER = ["tokyo-easy","osaka-kyoto-easy","weekend","onsen"];
+
+function getVisitorTags(c) {
+  const tags = new Set();
+  const pref = c.prefJa || c.pref;
+  if (Number.isFinite(c.tokyoHours) && c.tokyoHours <= 2.5) tags.add("tokyo-easy");
+  if (["滋賀","京都","大阪","兵庫","奈良","和歌山","三重","岡山"].includes(pref)) tags.add("osaka-kyoto-easy");
+  if (Number.isFinite(c.tokyoHours) && c.tokyoHours <= 4) tags.add("weekend");
+  if (getTravelTags(c).includes("温泉")) tags.add("onsen");
+  return VISITOR_TAG_ORDER.filter(t => tags.has(t));
+}
+
+function visitorTagLabel(t) {
+  return (T.visitorTags && T.visitorTags[t]) || t;
+}
+
+function visitorTagsHtml(c) {
+  const tags = getVisitorTags(c);
+  if (!tags.length) return '';
+  return `<div class="visitor-tags"><span class="visitor-tags-k">${T.visitorGuide}</span>${tags.map(t => `<span class="visitor-tag">${visitorTagLabel(t)}</span>`).join('')}</div>`;
+}
+"""
+if "function getVisitorTags(c)" not in html:
+    if travel_end not in html:
+        raise RuntimeError("Phase2I: travelTagsHtml anchor not found")
+    html = html.replace(travel_end, visitor_logic, 1)
+
+# Filter logic.
+flt = '    if (activeTravelTag !== "all" && !getTravelTags(c).includes(activeTravelTag)) return false;\n\n'
+if 'activeVisitorTag !== "all"' not in html:
+    if flt not in html:
+        raise RuntimeError("Phase2I: travel filter anchor not found")
+    html = html.replace(flt, flt + '    if (activeVisitorTag !== "all" && !getVisitorTags(c).includes(activeVisitorTag)) return false;\n\n', 1)
+
+# Detail card.
+popup_anchor = '    ${travelTagsHtml(c)}\n    <div class="event-date-primary">'
+if '${visitorTagsHtml(c)}' not in html:
+    if popup_anchor not in html:
+        raise RuntimeError("Phase2I: popup tag anchor not found")
+    html = html.replace(popup_anchor, '    ${travelTagsHtml(c)}\n    ${visitorTagsHtml(c)}\n    <div class="event-date-primary">', 1)
+
+# Recommended/default state must treat visitor filter as active.
+default_anchor = """    activeTravelTag === 'all' &&
+    activeAccess === 'all' &&"""
+if "activeVisitorTag === 'all'" not in html:
+    if default_anchor not in html:
+        raise RuntimeError("Phase2I: default discovery anchor not found")
+    html = html.replace(default_anchor, """    activeTravelTag === 'all' &&
+    activeVisitorTag === 'all' &&
+    activeAccess === 'all' &&""", 1)
+
+# Event handler.
+access_listener = """document.querySelectorAll('#access-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {"""
+visitor_listener = """document.querySelectorAll('#visitor-tag-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#visitor-tag-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeVisitorTag = btn.dataset.visitorTag;
+    selectedCaseName = null;
+    rebuild();
+  });
+});
+
+"""
+if "#visitor-tag-filters .chip" not in html:
+    if access_listener not in html:
+        raise RuntimeError("Phase2I: access listener anchor not found")
+    html = html.replace(access_listener, visitor_listener + access_listener, 1)
+
+io.open(OUT, "w", encoding="utf-8").write(html)
+print("Phase 2I postprocess OK")

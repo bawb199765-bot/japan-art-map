@@ -7,6 +7,7 @@
       <xhtml:link rel="alternate" hreflang="en" href="https://artslogix.github.io/japan-art-map/en/" />
       <xhtml:link rel="alternate" hreflang="ko" href="https://artslogix.github.io/japan-art-map/ko/" />
       <xhtml:link rel="alternate" hreflang="zh-CN" href="https://artslogix.github.io/japan-art-map/zh-cn/" />
+      <xhtml:link rel="alternate" hreflang="zh-TW" href="https://artslogix.github.io/japan-art-map/zh-tw/" />
       <xhtml:link rel="alternate" hreflang="x-default" href="https://artslogix.github.io/japan-art-map/" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -17,6 +18,7 @@
       <xhtml:link rel="alternate" hreflang="en" href="https://artslogix.github.io/japan-art-map/en/" />
       <xhtml:link rel="alternate" hreflang="ko" href="https://artslogix.github.io/japan-art-map/ko/" />
       <xhtml:link rel="alternate" hreflang="zh-CN" href="https://artslogix.github.io/japan-art-map/zh-cn/" />
+      <xhtml:link rel="alternate" hreflang="zh-TW" href="https://artslogix.github.io/japan-art-map/zh-tw/" />
       <xhtml:link rel="alternate" hreflang="x-default" href="https://artslogix.github.io/japan-art-map/" />
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -27,6 +29,7 @@
       <xhtml:link rel="alternate" hreflang="en" href="https://artslogix.github.io/japan-art-map/en/" />
       <xhtml:link rel="alternate" hreflang="ko" href="https://artslogix.github.io/japan-art-map/ko/" />
       <xhtml:link rel="alternate" hreflang="zh-CN" href="https://artslogix.github.io/japan-art-map/zh-cn/" />
+      <xhtml:link rel="alternate" hreflang="zh-TW" href="https://artslogix.github.io/japan-art-map/zh-tw/" />
       <xhtml:link rel="alternate" hreflang="x-default" href="https://artslogix.github.io/japan-art-map/" />
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -37,6 +40,18 @@
       <xhtml:link rel="alternate" hreflang="en" href="https://artslogix.github.io/japan-art-map/en/" />
       <xhtml:link rel="alternate" hreflang="ko" href="https://artslogix.github.io/japan-art-map/ko/" />
       <xhtml:link rel="alternate" hreflang="zh-CN" href="https://artslogix.github.io/japan-art-map/zh-cn/" />
+      <xhtml:link rel="alternate" hreflang="zh-TW" href="https://artslogix.github.io/japan-art-map/zh-tw/" />
+      <xhtml:link rel="alternate" hreflang="x-default" href="https://artslogix.github.io/japan-art-map/" />
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://artslogix.github.io/japan-art-map/zh-tw/</loc>
+      <xhtml:link rel="alternate" hreflang="ja" href="https://artslogix.github.io/japan-art-map/" />
+      <xhtml:link rel="alternate" hreflang="en" href="https://artslogix.github.io/japan-art-map/en/" />
+      <xhtml:link rel="alternate" hreflang="ko" href="https://artslogix.github.io/japan-art-map/ko/" />
+      <xhtml:link rel="alternate" hreflang="zh-CN" href="https://artslogix.github.io/japan-art-map/zh-cn/" />
+      <xhtml:link rel="alternate" hreflang="zh-TW" href="https://artslogix.github.io/japan-art-map/zh-tw/" />
       <xhtml:link rel="alternate" hreflang="x-default" href="https://artslogix.github.io/japan-art-map/" />
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
