@@ -675,6 +675,57 @@
       letter-spacing: .1em;
       color: var(--accent);
     }
+    /* Phase 2L: compact filter stack */
+    @media (min-width: 769px) {
+      .sidebar {
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--line2) transparent;
+      }
+      .sidebar::-webkit-scrollbar { width: 4px; }
+      .sidebar::-webkit-scrollbar-thumb { background: var(--line2); }
+      .festival-list {
+        flex: none !important;
+        overflow-y: visible !important;
+        min-height: 220px;
+      }
+    }
+    .content-type-block { padding: 9px 14px 8px !important; }
+    .content-type-kicker { margin-bottom: 5px !important; }
+    .content-type-btn { min-height: 30px !important; font-size: 8px !important; }
+    .filter-block { padding: 10px 14px !important; }
+    .fl-label {
+      margin-bottom: 7px !important;
+      padding-bottom: 0 !important;
+      border-bottom: 0 !important;
+    }
+    .fl-label-jp { font-size: 11px !important; }
+    .fl-label-en { font-size: 7px !important; }
+    .compact-filter-chips { gap: 4px !important; align-items: center; }
+    .month-chip-inline { display: contents; }
+    .chip { padding: 4px 7px !important; font-size: 9px !important; }
+    .chip[data-status]:not([data-status="all"]),
+    .chip[data-access]:not([data-access="all"]),
+    .chip[data-trip-filter]:not([data-trip-filter="all"]) {
+      font-size: 10px !important;
+    }
+    .travel-theme-block .chip { padding-left: 6px !important; padding-right: 6px !important; }
+    .search-block { padding: 9px 14px 10px !important; }
+    .search-block input { height: 31px !important; }
+    .trip-access-block { background: rgba(217,102,80,.025); }
+    @media (max-width: 768px) {
+      .content-type-block { padding: 8px 10px 7px !important; }
+      .when-filter-block .compact-filter-chips,
+      .trip-access-block .compact-filter-chips {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .when-filter-block .compact-filter-chips::-webkit-scrollbar,
+      .trip-access-block .compact-filter-chips::-webkit-scrollbar { display: none; }
+    }
     .visitor-guide-block { background: rgba(217,102,80,.035); }
     .visitor-guide-note {
       margin-top: 7px;
@@ -2606,26 +2657,18 @@
       </div>
     </div>
 
-    <div class="filter-block">
+    <div class="filter-block when-filter-block">
       <div class="fl-label">
         <span class="fl-label-jp" style="font-family: Helvetica">When to go</span>
-        <span class="fl-label-en"></span>
+        <span class="fl-label-en">WHEN</span>
       </div>
-      <div class="chips" id="status-filters">
+      <div class="chips compact-filter-chips" id="status-filters">
         <button class="chip active" data-status="all">ALL</button>
         <button class="chip chip-now" data-status="ongoing">Happening now</button>
-        <button class="chip" id="upcoming-filter-label" data-status="upcoming" style="font-family: Helvetica">Later in 2026</button>
+        <div class="month-chip-inline" id="month-filters"></div>
         <button class="chip" data-status="yearround" style="font-family: Helvetica">Year-round</button>
         <button class="chip" id="future-filter-label" data-status="future" style="font-family: Helvetica">2027+</button>
       </div>
-    </div>
-
-    <div class="filter-block month-filter-block">
-      <div class="fl-label">
-        <span class="fl-label-jp" style="font-family: Helvetica">By month</span>
-        <span class="fl-label-en"></span>
-      </div>
-      <div class="chips" id="month-filters"></div>
     </div>
 
     <div class="filter-block travel-theme-block">
@@ -2646,31 +2689,18 @@
       </div>
     </div>
 
-    <div class="filter-block visitor-guide-block">
+    <div class="filter-block trip-access-block">
       <div class="fl-label">
-        <span class="fl-label-jp" style="font-family: Helvetica">For international visitors</span>
+        <span class="fl-label-jp" style="font-family: Helvetica">Travel access</span>
         <span class="fl-label-en"></span>
       </div>
-      <div class="chips visitor-guide-chips" id="visitor-tag-filters">
-        <button class="chip active" data-visitor-tag="all">ALL</button>
-        <button class="chip" data-visitor-tag="tokyo-easy">Easy from Tokyo</button>
-        <button class="chip" data-visitor-tag="osaka-kyoto-easy">Easy from Osaka / Kyoto</button>
-        <button class="chip" data-visitor-tag="weekend">Weekend trip</button>
-        <button class="chip" data-visitor-tag="onsen">Pair with onsen</button>
-      </div>
-      <div class="visitor-guide-note">Travel-access hints are approximate. Please check current transport details before you go.</div>
-    </div>
-
-    <div class="filter-block">
-      <div class="fl-label">
-        <span class="fl-label-jp" style="font-family: Helvetica">Trip length from Tokyo</span>
-        <span class="fl-label-en"></span>
-      </div>
-      <div class="chips" id="access-filters">
-        <button class="chip active" data-access="all">ALL</button>
-        <button class="chip" data-access="daytrip" style="font-family: Helvetica">Day trip</button>
-        <button class="chip" data-access="overnight" style="font-family: Helvetica">1 night</button>
-        <button class="chip" data-access="longtrip" style="font-family: Helvetica">2+ nights</button>
+      <div class="chips compact-filter-chips" id="trip-access-filters">
+        <button class="chip active" data-trip-filter="all">ALL</button>
+        <button class="chip" data-trip-filter="daytrip" style="font-family: Helvetica">Day trip</button>
+        <button class="chip" data-trip-filter="overnight" style="font-family: Helvetica">1 night</button>
+        <button class="chip" data-trip-filter="longtrip" style="font-family: Helvetica">2+ nights</button>
+        <button class="chip" data-trip-filter="osaka-kyoto-easy">Easy from Osaka / Kyoto</button>
+        <button class="chip" data-trip-filter="onsen">Pair with onsen</button>
       </div>
     </div>
 
@@ -5778,17 +5808,16 @@ function renderMonthFilters() {
   const months = [];
   for (let m = currentMonth; m <= 12; m++) months.push(m);
 
-  wrap.innerHTML = [
-    `<button class="chip ${activeMonth === 'all' ? 'active' : ''}" data-month="all">ALL</button>`,
-    ...months.map(m =>
-      `<button class="chip ${String(m) === activeMonth ? 'active' : ''}" data-month="${m}" style="font-family: Helvetica">${T.ym(today.getFullYear(), m)}</button>`
-    )
-  ].join('');
+  wrap.innerHTML = months.map(m =>
+    `<button class="chip ${String(m) === activeMonth ? 'active' : ''}" data-month="${m}" style="font-family: Helvetica">${T.ym(today.getFullYear(), m)}</button>`
+  ).join('');
 
   wrap.querySelectorAll('.chip').forEach(btn => {
     btn.addEventListener('click', () => {
       wrap.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#status-filters > .chip').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      activeStatus = 'all';
       activeMonth = btn.dataset.month;
       selectedCaseName = null;
       rebuild();
@@ -6441,17 +6470,20 @@ document.querySelectorAll('#content-type-switch .content-type-btn').forEach(btn 
     selectedCaseName = null;
     document.querySelectorAll('#status-filters .chip, #travel-tag-filters .chip, #visitor-tag-filters .chip, #access-filters .chip').forEach(b => b.classList.toggle('active', b.dataset.status === 'all' || b.dataset.travelTag === 'all' || b.dataset.visitorTag === 'all' || b.dataset.access === 'all'));
     const si = document.getElementById('search-input'); if (si) si.value = '';
+    document.querySelectorAll('#trip-access-filters .chip').forEach(b => b.classList.toggle('active', b.dataset.tripFilter === 'all'));
     renderMonthFilters();
     rebuild();
     trackEvent('content_type_switch', { content_type: activeContentType });
   });
 });
 
-document.querySelectorAll('#status-filters .chip').forEach(btn => {
+document.querySelectorAll('#status-filters > .chip').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('#status-filters .chip').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#status-filters > .chip').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeStatus = btn.dataset.status;
+    activeMonth = 'all';
+    renderMonthFilters();
     selectedCaseName = null;
     rebuild();
   });
@@ -6481,6 +6513,20 @@ document.querySelectorAll('#access-filters .chip').forEach(btn => {
     document.querySelectorAll('#access-filters .chip').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeAccess = btn.dataset.access;
+    selectedCaseName = null;
+    rebuild();
+  });
+});
+
+document.querySelectorAll('#trip-access-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#trip-access-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const value = btn.dataset.tripFilter || 'all';
+    activeAccess = 'all';
+    activeVisitorTag = 'all';
+    if (['daytrip','overnight','longtrip'].includes(value)) activeAccess = value;
+    if (['osaka-kyoto-easy','onsen'].includes(value)) activeVisitorTag = value;
     selectedCaseName = null;
     rebuild();
   });

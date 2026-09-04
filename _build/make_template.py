@@ -1144,3 +1144,244 @@ html = html.replace("<span>82 CASES</span>", "<span>82 FESTIVALS + 12 EXHIBITION
 
 io.open(OUT, "w", encoding="utf-8").write(html)
 print("Phase 2K postprocess OK")
+
+# ── PHASE 2L POSTPROCESS: compact merged filters ──
+html = io.open(OUT, encoding="utf-8").read()
+
+# 1) Merge WHEN + MONTH into one visual block.
+old_when = '''    <div class="filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_WHEN__</span>
+        <span class="fl-label-en">__F_WHEN_EN__</span>
+      </div>
+      <div class="chips" id="status-filters">
+        <button class="chip active" data-status="all">ALL</button>
+        <button class="chip chip-now" data-status="ongoing">__ONGOING__</button>
+        <button class="chip" id="upcoming-filter-label" data-status="upcoming" style="font-family: Helvetica">__UPCOMING__</button>
+        <button class="chip" data-status="yearround" style="font-family: Helvetica">__YEARROUND__</button>
+        <button class="chip" id="future-filter-label" data-status="future" style="font-family: Helvetica">__FUTURE__</button>
+      </div>
+    </div>
+
+    <div class="filter-block month-filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_MONTH__</span>
+        <span class="fl-label-en">__F_MONTH_EN__</span>
+      </div>
+      <div class="chips" id="month-filters"></div>
+    </div>'''
+new_when = '''    <div class="filter-block when-filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_WHEN__</span>
+        <span class="fl-label-en">WHEN</span>
+      </div>
+      <div class="chips compact-filter-chips" id="status-filters">
+        <button class="chip active" data-status="all">ALL</button>
+        <button class="chip chip-now" data-status="ongoing">__ONGOING__</button>
+        <div class="month-chip-inline" id="month-filters"></div>
+        <button class="chip" data-status="yearround" style="font-family: Helvetica">__YEARROUND__</button>
+        <button class="chip" id="future-filter-label" data-status="future" style="font-family: Helvetica">__FUTURE__</button>
+      </div>
+    </div>'''
+if old_when not in html:
+    raise RuntimeError("Phase2L: WHEN/MONTH blocks not found")
+html = html.replace(old_when, new_when, 1)
+
+# 2) Merge overseas-traveler hints + Tokyo trip length into one single-choice block.
+old_trip = '''    <div class="filter-block visitor-guide-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_VISITOR__</span>
+        <span class="fl-label-en">__F_VISITOR_EN__</span>
+      </div>
+      <div class="chips visitor-guide-chips" id="visitor-tag-filters">
+        <button class="chip active" data-visitor-tag="all">ALL</button>
+        <button class="chip" data-visitor-tag="tokyo-easy">__V_TOKYO__</button>
+        <button class="chip" data-visitor-tag="osaka-kyoto-easy">__V_KANSAI__</button>
+        <button class="chip" data-visitor-tag="weekend">__V_WEEKEND__</button>
+        <button class="chip" data-visitor-tag="onsen">__V_ONSEN__</button>
+      </div>
+      <div class="visitor-guide-note">__V_NOTE__</div>
+    </div>
+
+    <div class="filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_STYLE__</span>
+        <span class="fl-label-en">__F_STYLE_EN__</span>
+      </div>
+      <div class="chips" id="access-filters">
+        <button class="chip active" data-access="all">ALL</button>
+        <button class="chip" data-access="daytrip" style="font-family: Helvetica">__A_DAY__</button>
+        <button class="chip" data-access="overnight" style="font-family: Helvetica">__A_NIGHT__</button>
+        <button class="chip" data-access="longtrip" style="font-family: Helvetica">__A_LONG__</button>
+      </div>
+    </div>'''
+new_trip = '''    <div class="filter-block trip-access-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_STYLE__</span>
+        <span class="fl-label-en">__F_STYLE_EN__</span>
+      </div>
+      <div class="chips compact-filter-chips" id="trip-access-filters">
+        <button class="chip active" data-trip-filter="all">ALL</button>
+        <button class="chip" data-trip-filter="daytrip" style="font-family: Helvetica">__A_DAY__</button>
+        <button class="chip" data-trip-filter="overnight" style="font-family: Helvetica">__A_NIGHT__</button>
+        <button class="chip" data-trip-filter="longtrip" style="font-family: Helvetica">__A_LONG__</button>
+        <button class="chip" data-trip-filter="osaka-kyoto-easy">__V_KANSAI__</button>
+        <button class="chip" data-trip-filter="onsen">__V_ONSEN__</button>
+      </div>
+    </div>'''
+if old_trip not in html:
+    raise RuntimeError("Phase2L: VISITOR/ACCESS blocks not found")
+html = html.replace(old_trip, new_trip, 1)
+
+# 3) Compact the entire desktop sidebar and make the WHOLE sidebar scroll, so the list is always reachable.
+css_anchor = '''    .visitor-guide-block { background: rgba(217,102,80,.035); }'''
+compact_css = '''    /* Phase 2L: compact filter stack */
+    @media (min-width: 769px) {
+      .sidebar {
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--line2) transparent;
+      }
+      .sidebar::-webkit-scrollbar { width: 4px; }
+      .sidebar::-webkit-scrollbar-thumb { background: var(--line2); }
+      .festival-list {
+        flex: none !important;
+        overflow-y: visible !important;
+        min-height: 220px;
+      }
+    }
+    .content-type-block { padding: 9px 14px 8px !important; }
+    .content-type-kicker { margin-bottom: 5px !important; }
+    .content-type-btn { min-height: 30px !important; font-size: 8px !important; }
+    .filter-block { padding: 10px 14px !important; }
+    .fl-label {
+      margin-bottom: 7px !important;
+      padding-bottom: 0 !important;
+      border-bottom: 0 !important;
+    }
+    .fl-label-jp { font-size: 11px !important; }
+    .fl-label-en { font-size: 7px !important; }
+    .compact-filter-chips { gap: 4px !important; align-items: center; }
+    .month-chip-inline { display: contents; }
+    .chip { padding: 4px 7px !important; font-size: 9px !important; }
+    .chip[data-status]:not([data-status="all"]),
+    .chip[data-access]:not([data-access="all"]),
+    .chip[data-trip-filter]:not([data-trip-filter="all"]) {
+      font-size: 10px !important;
+    }
+    .travel-theme-block .chip { padding-left: 6px !important; padding-right: 6px !important; }
+    .search-block { padding: 9px 14px 10px !important; }
+    .search-block input { height: 31px !important; }
+    .trip-access-block { background: rgba(217,102,80,.025); }
+    @media (max-width: 768px) {
+      .content-type-block { padding: 8px 10px 7px !important; }
+      .when-filter-block .compact-filter-chips,
+      .trip-access-block .compact-filter-chips {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .when-filter-block .compact-filter-chips::-webkit-scrollbar,
+      .trip-access-block .compact-filter-chips::-webkit-scrollbar { display: none; }
+    }
+'''
+if css_anchor not in html:
+    raise RuntimeError("Phase2L: CSS anchor not found")
+html = html.replace(css_anchor, compact_css + css_anchor, 1)
+
+# 4) Month buttons: no second ALL; choosing a month clears status selection.
+old_render = '''  wrap.innerHTML = [
+    `<button class="chip ${activeMonth === 'all' ? 'active' : ''}" data-month="all">ALL</button>`,
+    ...months.map(m =>
+      `<button class="chip ${String(m) === activeMonth ? 'active' : ''}" data-month="${m}" style="font-family: Helvetica">${T.ym(today.getFullYear(), m)}</button>`
+    )
+  ].join('');
+
+  wrap.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMonth = btn.dataset.month;
+      selectedCaseName = null;
+      rebuild();
+    });
+  });'''
+new_render = '''  wrap.innerHTML = months.map(m =>
+    `<button class="chip ${String(m) === activeMonth ? 'active' : ''}" data-month="${m}" style="font-family: Helvetica">${T.ym(today.getFullYear(), m)}</button>`
+  ).join('');
+
+  wrap.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#status-filters > .chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeStatus = 'all';
+      activeMonth = btn.dataset.month;
+      selectedCaseName = null;
+      rebuild();
+    });
+  });'''
+if old_render not in html:
+    raise RuntimeError("Phase2L: renderMonthFilters body not found")
+html = html.replace(old_render, new_render, 1)
+
+# 5) Status selection clears month selection, making WHEN a single coherent dimension.
+old_status = '''document.querySelectorAll('#status-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#status-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeStatus = btn.dataset.status;
+    selectedCaseName = null;
+    rebuild();
+  });
+});'''
+new_status = '''document.querySelectorAll('#status-filters > .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#status-filters > .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeStatus = btn.dataset.status;
+    activeMonth = 'all';
+    renderMonthFilters();
+    selectedCaseName = null;
+    rebuild();
+  });
+});'''
+if old_status not in html:
+    raise RuntimeError("Phase2L: status listener not found")
+html = html.replace(old_status, new_status, 1)
+
+# 6) One merged travel-access filter. Under the hood it maps to the existing access/visitor logic.
+search_anchor = '''document.getElementById('search-input').addEventListener('input', e => {'''
+trip_listener = '''document.querySelectorAll('#trip-access-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#trip-access-filters .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const value = btn.dataset.tripFilter || 'all';
+    activeAccess = 'all';
+    activeVisitorTag = 'all';
+    if (['daytrip','overnight','longtrip'].includes(value)) activeAccess = value;
+    if (['osaka-kyoto-easy','onsen'].includes(value)) activeVisitorTag = value;
+    selectedCaseName = null;
+    rebuild();
+  });
+});
+
+'''
+if search_anchor not in html:
+    raise RuntimeError("Phase2L: search listener anchor not found")
+html = html.replace(search_anchor, trip_listener + search_anchor, 1)
+
+# 7) Content-type reset also resets the new merged access UI.
+old_reset = '''    const si = document.getElementById('search-input'); if (si) si.value = '';
+    renderMonthFilters();'''
+new_reset = '''    const si = document.getElementById('search-input'); if (si) si.value = '';
+    document.querySelectorAll('#trip-access-filters .chip').forEach(b => b.classList.toggle('active', b.dataset.tripFilter === 'all'));
+    renderMonthFilters();'''
+if old_reset not in html:
+    raise RuntimeError("Phase2L: type-reset anchor not found")
+html = html.replace(old_reset, new_reset, 1)
+
+io.open(OUT, "w", encoding="utf-8").write(html)
+print("Phase 2L postprocess OK")
