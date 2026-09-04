@@ -818,3 +818,329 @@ if "#visitor-tag-filters .chip" not in html:
 
 io.open(OUT, "w", encoding="utf-8").write(html)
 print("Phase 2I postprocess OK")
+
+
+# ── PHASE 2K POSTPROCESS: ART FESTIVALS / EXHIBITIONS beta ──
+html = io.open(OUT, encoding="utf-8").read()
+
+# Add the 12 curated exhibition records while preserving the original 82 festival records.
+exhibitions_json = r"""[{"pref":"京都","name":"浮世絵スーパークリエイター 歌川国芳展","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","工芸"],"desc":"京都観光と組み合わせやすく、会場建築と岡崎エリアの街歩きも含めて旅程化しやすい。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-07-18","endDate":"2026-09-23","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"本館 北回廊1階","artTripScore":4,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"京都","name":"テート美術館 ― YBA & BEYOND 世界を変えた90s英国アート","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","建築"],"desc":"京都旅行の目的になりうる大型企画展で、美術館建築や岡崎エリアとの回遊性も高い。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-06-03","endDate":"2026-09-06","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"新館 東山キューブ","artTripScore":5,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"京都","name":"松延総司：壁","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"京都の街歩きに短時間で組み込みやすい無料の現代美術展示。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-09-12","endDate":"2026-12-20","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"ザ・トライアングル","artTripScore":3,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"京都","name":"生誕140年記念 染織家 山鹿清華─宙翔ぶイマジネーション","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","工芸"],"desc":"京都の染織文化と美術館を一度に体験でき、工芸目的の旅と相性が良い。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-09-19","endDate":"2026-12-20","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"本館 南回廊1階","artTripScore":4,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"京都","name":"禅とジブリ","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","建築"],"desc":"京都という土地の禅文化と組み合わせて旅程を組みやすい大型企画。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-10-03","endDate":"2026-12-06","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"新館 東山キューブ","artTripScore":4,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"石川","name":"路上、お邪魔ですか？","tagline":"金沢の街と美術館建築を巡るアート旅へ","region":"中部","lat":36.5609,"lng":136.6581,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","建築"],"desc":"美術館そのものが旅行目的になりやすく、金沢の街歩きとテーマも接続しやすい。","url":"https://www.kanazawa21.jp/exhibition/","localImg":"","startDate":"2026-04-25","endDate":"2026-09-06","nextYear":"2026","tokyoHours":2.5,"artists":[],"contentType":"exhibition","museum":"金沢21世紀美術館","venue":"金沢21世紀美術館","artTripScore":5,"sourceUrl":"https://www.kanazawa21.jp/exhibition/"},{"pref":"石川","name":"コレクション展 歩く、とどまる","tagline":"金沢の街と美術館建築を巡るアート旅へ","region":"中部","lat":36.5609,"lng":136.6581,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","建築"],"desc":"「歩く」というテーマと金沢市街の回遊が重なり、アート旅として編集しやすい。","url":"https://www.kanazawa21.jp/exhibition/","localImg":"","startDate":"2026-05-23","endDate":"2026-10-18","nextYear":"2026","tokyoHours":2.5,"artists":[],"contentType":"exhibition","museum":"金沢21世紀美術館","venue":"金沢21世紀美術館","artTripScore":4,"sourceUrl":"https://www.kanazawa21.jp/exhibition/"},{"pref":"石川","name":"シリーズ「能登と」 牛嶋均 さわひらき　ともにある風景","tagline":"金沢の街と美術館建築を巡るアート旅へ","region":"中部","lat":36.5609,"lng":136.6581,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","自然・里山"],"desc":"能登という地域文脈まで含めて北陸の旅へ接続できる。","url":"https://www.kanazawa21.jp/","localImg":"","startDate":"2026-09-08","endDate":"2027-04-18","nextYear":"2026","tokyoHours":2.5,"artists":[],"contentType":"exhibition","museum":"金沢21世紀美術館","venue":"金沢21世紀美術館","artTripScore":5,"sourceUrl":"https://www.kanazawa21.jp/"},{"pref":"石川","name":"NEUTRAL COLORS　NEW CIRCUIT / ニュー・サーキット","tagline":"金沢の街と美術館建築を巡るアート旅へ","region":"中部","lat":36.5609,"lng":136.6581,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"編集・出版・デザインへの関心がある旅行者に、金沢の文化体験として勧めやすい。","url":"https://www.kanazawa21.jp/exhibition/","localImg":"","startDate":"2026-09-15","endDate":"2027-04-18","nextYear":"2026","tokyoHours":2.5,"artists":[],"contentType":"exhibition","museum":"金沢21世紀美術館","venue":"金沢21世紀美術館","artTripScore":4,"sourceUrl":"https://www.kanazawa21.jp/exhibition/"},{"pref":"東京","name":"共時的星叢 ― 時を共にした星たち　越境する芸術のまなざし","tagline":"清澄白河・木場の街歩きと合わせて見たい展覧会","region":"関東","lat":35.6797,"lng":139.8085,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"清澄白河・木場エリアの散策と組み合わせやすい大型現代美術展。","url":"https://www.mot-art-museum.jp/exhibitions/","localImg":"","startDate":"2026-09-05","endDate":"2026-12-13","nextYear":"2026","tokyoHours":0,"artists":[],"contentType":"exhibition","museum":"東京都現代美術館","venue":"東京都現代美術館","artTripScore":4,"sourceUrl":"https://www.mot-art-museum.jp/exhibitions/motlineup_2026.pdf"},{"pref":"東京","name":"MOTコレクション","tagline":"清澄白河・木場の街歩きと合わせて見たい展覧会","region":"関東","lat":35.6797,"lng":139.8085,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"東京滞在中の半日アート旅に組み込みやすい。","url":"https://www.mot-art-museum.jp/exhibitions/","localImg":"","startDate":"2026-09-19","endDate":"2027-01-06","nextYear":"2026","tokyoHours":0,"artists":[],"contentType":"exhibition","museum":"東京都現代美術館","venue":"コレクション展示室","artTripScore":3,"sourceUrl":"https://www.mot-art-museum.jp/exhibitions/motlineup_2026.pdf"},{"pref":"東京","name":"多田美波　凛と、光―ゆれる","tagline":"清澄白河・木場の街歩きと合わせて見たい展覧会","region":"関東","lat":35.6797,"lng":139.8085,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"作品鑑賞と清澄白河周辺の建築・カフェ巡りを組み合わせやすい。","url":"https://www.mot-art-museum.jp/exhibitions/","localImg":"","startDate":"2026-08-29","endDate":"2026-12-06","nextYear":"2026","tokyoHours":0,"artists":[],"contentType":"exhibition","museum":"東京都現代美術館","venue":"東京都現代美術館","artTripScore":4,"sourceUrl":"https://www.mot-art-museum.jp/exhibitions/motlineup_2026.pdf"}]"""
+case_anchor = "localizeCases(CASES);"
+if "const EXHIBITION_CASES =" not in html:
+    if case_anchor not in html:
+        raise RuntimeError("Phase2K: localizeCases(CASES) anchor not found")
+    data_block = """CASES.forEach(c => { c.contentType = c.contentType || "festival"; });
+const EXHIBITION_CASES = """ + exhibitions_json + """;
+localizeCases(CASES);
+localizeCases(EXHIBITION_CASES);
+
+// Exhibition names remain the official Japanese titles in every locale for this beta.
+// Supporting travel copy is localized to keep foreign-language pages usable.
+const EXHIBITION_TRAVEL_COPY = {
+  ja: {
+    "東京都現代美術館":"清澄白河・木場の街歩きと合わせて見たい展覧会",
+    "金沢21世紀美術館":"金沢の街と美術館建築を巡るアート旅へ",
+    "京都市京セラ美術館":"京都・岡崎エリアの街歩きと合わせて見たい展覧会"
+  },
+  en: {
+    "東京都現代美術館":"An exhibition to pair with an art walk around Kiyosumi-Shirakawa and Kiba.",
+    "金沢21世紀美術館":"Make it part of an art trip through Kanazawa and its architecture.",
+    "京都市京セラ美術館":"Pair it with an art walk through Kyoto's Okazaki museum district."
+  },
+  ko: {
+    "東京都現代美術館":"기요스미시라카와·기바 산책과 함께 보고 싶은 전시.",
+    "金沢21世紀美術館":"가나자와의 거리와 미술관 건축을 함께 즐기는 아트 여행.",
+    "京都市京セラ美術館":"교토 오카자키 지역 산책과 함께 보고 싶은 전시."
+  },
+  "zh-cn": {
+    "東京都現代美術館":"适合与清澄白河、木场一带散步一起安排的展览。",
+    "金沢21世紀美術館":"把展览与金泽街区和美术馆建筑一起纳入艺术旅行。",
+    "京都市京セラ美術館":"适合与京都冈崎地区的美术馆散步一起安排的展览。"
+  },
+  "zh-tw": {
+    "東京都現代美術館":"適合與清澄白河、木場一帶散步一起安排的展覽。",
+    "金沢21世紀美術館":"把展覽與金澤街區和美術館建築一起安排進藝術旅行。",
+    "京都市京セラ美術館":"適合與京都岡崎地區的美術館散步一起安排的展覽。"
+  }
+};
+EXHIBITION_CASES.forEach(c => {
+  const copy = (EXHIBITION_TRAVEL_COPY[LANG] || EXHIBITION_TRAVEL_COPY.ja)[c.museum];
+  if (copy) {
+    c.tagline = copy;
+    c.desc = copy + (LANG === "ja" && c.artTripScore ? ` ART TRIP SCORE ${c.artTripScore}/5。` : "");
+  }
+});
+CASES.push(...EXHIBITION_CASES);"""
+    html = html.replace(case_anchor, data_block, 1)
+
+# Content-type switch in the sidebar.
+switch_anchor = """    <div class="filter-block">
+      <div class="fl-label">
+        <span class="fl-label-jp" style="font-family: Helvetica">__F_WHEN__</span>"""
+switch_block = """    <div class="content-type-block">
+      <div class="content-type-kicker">WHAT TO SEE</div>
+      <div class="content-type-switch" id="content-type-switch">
+        <button class="content-type-btn active" data-content-type="festival">ART FESTIVALS <span>82</span></button>
+        <button class="content-type-btn" data-content-type="exhibition">EXHIBITIONS <span>12</span><em>BETA</em></button>
+      </div>
+    </div>
+
+"""
+if 'id="content-type-switch"' not in html:
+    if switch_anchor not in html:
+        raise RuntimeError("Phase2K: filter switch anchor not found")
+    html = html.replace(switch_anchor, switch_block + switch_anchor, 1)
+
+# Styling.
+css_anchor = "    .visitor-guide-block { background: rgba(217,102,80,.035); }"
+switch_css = """    .content-type-block {
+      padding: 12px 14px 11px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg);
+    }
+    .content-type-kicker {
+      margin-bottom: 7px;
+      font-family: var(--mono);
+      font-size: 7px;
+      letter-spacing: .18em;
+      color: var(--dim);
+    }
+    .content-type-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+    .content-type-btn {
+      min-height: 34px;
+      border: 1px solid var(--line2);
+      background: transparent;
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 8.5px;
+      letter-spacing: .08em;
+      cursor: pointer;
+      position: relative;
+    }
+    .content-type-btn span { margin-left: 4px; color: var(--muted); }
+    .content-type-btn em {
+      position: absolute;
+      top: -5px;
+      right: 5px;
+      padding: 1px 4px;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 6px;
+      font-style: normal;
+      letter-spacing: .08em;
+    }
+    .content-type-btn.active {
+      border-color: var(--accent);
+      background: rgba(217,102,80,.10);
+      color: var(--text);
+    }
+    .content-kind {
+      display: inline-flex;
+      margin-bottom: 7px;
+      padding: 3px 5px;
+      border: 1px solid rgba(217,102,80,.5);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: .14em;
+    }
+    .art-trip-score {
+      margin: 1px 0 10px;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .1em;
+      color: var(--accent);
+    }
+"""
+if ".content-type-block" not in html:
+    if css_anchor not in html:
+        raise RuntimeError("Phase2K: visitor css anchor not found")
+    html = html.replace(css_anchor, switch_css + css_anchor, 1)
+
+# State: add active content type.
+state_old = 'let activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeVisitorTag = "all", activeAccess = "all", searchQ = "";'
+state_new = 'let activeContentType = "festival", activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeVisitorTag = "all", activeAccess = "all", searchQ = "";'
+if state_old in html:
+    html = html.replace(state_old, state_new, 1)
+elif 'let activeContentType = "festival"' not in html:
+    raise RuntimeError("Phase2K: active state anchor not found")
+
+# Dataset helper.
+tag_order_anchor = 'const TRAVEL_TAG_ORDER = ["島・海","温泉","建築","写真・映像","工芸","自然・里山","街歩き","食"];'
+dataset_helper = tag_order_anchor + """
+
+function getActiveDataset() {
+  return CASES.filter(c => (c.contentType || "festival") === activeContentType);
+}
+
+const CONTENT_MODE_COPY = {
+  ja: {
+    exhibitionTitle:"旅先で見たい展覧会", exhibitionDetail:"展覧会の詳細",
+    exhibitionSelected:"選択中の展覧会", exhibitionEmpty:"該当する展覧会がありません",
+    month:m => `${m}月に行ける、おすすめの展覧会`,
+    lead:m => m !== "all" ? `${m}月に会期が重なる展覧会から、アート旅に組み込みたい3件をピックアップ。` : "旅の目的にしたい展覧会から3件をピックアップ。"
+  },
+  en: {
+    exhibitionTitle:"Exhibitions worth a trip", exhibitionDetail:"Exhibition Detail",
+    exhibitionSelected:"Selected Exhibition", exhibitionEmpty:"No exhibitions match these filters.",
+    month:m => m !== "all" ? `Exhibitions to see in month ${m}` : "Exhibitions worth a trip",
+    lead:m => m !== "all" ? "Three exhibitions that fit an art trip this month." : "Three exhibitions selected for their art-trip value."
+  },
+  ko: {
+    exhibitionTitle:"여행하며 보고 싶은 전시", exhibitionDetail:"전시 상세",
+    exhibitionSelected:"선택한 전시", exhibitionEmpty:"조건에 맞는 전시가 없습니다.",
+    month:m => m !== "all" ? `${m}월에 볼 수 있는 추천 전시` : "여행하며 보고 싶은 전시",
+    lead:m => m !== "all" ? "이번 달 아트 여행에 넣고 싶은 전시 3곳." : "아트 여행 가치가 높은 전시 3곳을 골랐습니다."
+  },
+  "zh-cn": {
+    exhibitionTitle:"值得为旅行安排的展览", exhibitionDetail:"展览详情",
+    exhibitionSelected:"已选择的展览", exhibitionEmpty:"没有符合条件的展览。",
+    month:m => m !== "all" ? `${m}月值得看的展览` : "值得为旅行安排的展览",
+    lead:m => m !== "all" ? "挑选3个适合加入本月艺术旅行的展览。" : "从值得专程前往的展览中挑选3个。"
+  },
+  "zh-tw": {
+    exhibitionTitle:"值得安排進旅程的展覽", exhibitionDetail:"展覽詳情",
+    exhibitionSelected:"已選擇的展覽", exhibitionEmpty:"沒有符合條件的展覽。",
+    month:m => m !== "all" ? `${m}月值得看的展覽` : "值得安排進旅程的展覽",
+    lead:m => m !== "all" ? "挑選3個適合放進本月藝術旅行的展覽。" : "從值得專程前往的展覽中挑選3個。"
+  }
+};
+function modeCopy() { return CONTENT_MODE_COPY[LANG] || CONTENT_MODE_COPY.en; }
+"""
+if "function getActiveDataset()" not in html:
+    if tag_order_anchor not in html:
+        raise RuntimeError("Phase2K: tag order anchor not found")
+    html = html.replace(tag_order_anchor, dataset_helper, 1)
+
+# Filter dataset.
+html = html.replace("return CASES.filter(c => {", "return getActiveDataset().filter(c => {", 1)
+
+# Replace default parameters / direct references only in discovery section.
+html = html.replace("function getDiscoveryPicks(candidates = CASES)", "function getDiscoveryPicks(candidates = getActiveDataset())", 1)
+html = html.replace("function renderDiscoveryPanel(candidates = CASES)", "function renderDiscoveryPanel(candidates = getActiveDataset())", 1)
+html = html.replace("function clearDesktopDetail(candidates = CASES)", "function clearDesktopDetail(candidates = getActiveDataset())", 1)
+html = html.replace("function renderMobileDiscovery(candidates = CASES)", "function renderMobileDiscovery(candidates = getActiveDataset())", 1)
+html = html.replace("? getDiscoveryPicks(CASES)", "? getDiscoveryPicks(getActiveDataset())", 1)
+
+# Discovery recommendation title/lead.
+old_disc = """      <div class="recommend-title">${activeMonth !== 'all' ? T.recommendTitleMonth(activeMonth) : T.recommendTitleYear}</div>
+      <div class="recommend-lead">${activeMonth !== 'all'
+        ? T.recommendLeadMonth(activeMonth)
+        : T.recommendLeadYear(currentYear)}</div>"""
+new_disc = """      <div class="recommend-title">${activeContentType === 'exhibition' ? modeCopy().month(activeMonth) : (activeMonth !== 'all' ? T.recommendTitleMonth(activeMonth) : T.recommendTitleYear)}</div>
+      <div class="recommend-lead">${activeContentType === 'exhibition' ? modeCopy().lead(activeMonth) : (activeMonth !== 'all' ? T.recommendLeadMonth(activeMonth) : T.recommendLeadYear(currentYear))}</div>"""
+if old_disc in html:
+    html=html.replace(old_disc,new_disc,1)
+
+# Mobile discovery title.
+old_mobile = """  title.textContent = activeMonth !== 'all'
+    ? T.recommendTitleMonth(activeMonth)
+    : T.recommendTitleYear;"""
+new_mobile = """  title.textContent = activeContentType === 'exhibition'
+    ? modeCopy().month(activeMonth)
+    : (activeMonth !== 'all' ? T.recommendTitleMonth(activeMonth) : T.recommendTitleYear);"""
+if old_mobile in html:
+    html=html.replace(old_mobile,new_mobile,1)
+
+# Discovery-panel heading should follow the selected content type.
+html = html.replace(
+    "if (detailPanelTitle) detailPanelTitle.textContent = T.detailTitle;",
+    "if (detailPanelTitle) detailPanelTitle.textContent = activeContentType === 'exhibition' ? modeCopy().exhibitionDetail : T.detailTitle;",
+    1
+)
+html = html.replace(
+    "if (detailPanelTitleEn) detailPanelTitleEn.textContent = T.detailTitleEn;",
+    "if (detailPanelTitleEn) detailPanelTitleEn.textContent = activeContentType === 'exhibition' ? 'EXHIBITION' : T.detailTitleEn;",
+    1
+)
+
+# Detail heading.
+html = html.replace(
+    "if (detailPanelTitle) detailPanelTitle.textContent = T.selectedTitle;",
+    "if (detailPanelTitle) detailPanelTitle.textContent = activeContentType === 'exhibition' ? modeCopy().exhibitionSelected : T.selectedTitle;",
+    1
+)
+html = html.replace(
+    "if (detailPanelTitleEn) detailPanelTitleEn.textContent = T.selectedTitleEn;",
+    "if (detailPanelTitleEn) detailPanelTitleEn.textContent = activeContentType === 'exhibition' ? 'EXHIBITION' : T.selectedTitleEn;",
+    1
+)
+
+# Popup badge + score.
+popup_anchor = '  return `<div class="popup-inner">\n    ${hasImg ?'
+if popup_anchor in html:
+    html=html.replace(
+        popup_anchor,
+        '  return `<div class="popup-inner">\n    ${c.contentType === "exhibition" ? `<div class="content-kind">EXHIBITION</div>${c.artTripScore ? `<div class="art-trip-score">ART TRIP SCORE ${c.artTripScore}/5</div>` : ""}` : ""}\n    ${hasImg ?',
+        1
+    )
+
+# Totals should reflect current mode, not combined dataset.
+html = html.replace(
+    "const totalEl = document.getElementById('hd-total');  if (totalEl) totalEl.textContent = String(CASES.length);",
+    "const total = getActiveDataset().length;\n  const totalEl = document.getElementById('hd-total');  if (totalEl) totalEl.textContent = String(total);",
+    1
+)
+html = html.replace(
+    "if (mapShow) mapShow.textContent = T.countUnit(filtered.length, CASES.length);",
+    "if (mapShow) mapShow.textContent = T.countUnit(filtered.length, total);",
+    1
+)
+
+# Content type switch behavior.
+listener_anchor = """document.querySelectorAll('#status-filters .chip').forEach(btn => {
+  btn.addEventListener('click', () => {"""
+type_listener = """document.querySelectorAll('#content-type-switch .content-type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#content-type-switch .content-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeContentType = btn.dataset.contentType || 'festival';
+    activeCat = 'all';
+    activeStatus = 'all';
+    activeMonth = 'all';
+    activeTravelTag = 'all';
+    activeVisitorTag = 'all';
+    activeAccess = 'all';
+    searchQ = '';
+    selectedCaseName = null;
+    document.querySelectorAll('#status-filters .chip, #travel-tag-filters .chip, #visitor-tag-filters .chip, #access-filters .chip').forEach(b => b.classList.toggle('active', b.dataset.status === 'all' || b.dataset.travelTag === 'all' || b.dataset.visitorTag === 'all' || b.dataset.access === 'all'));
+    const si = document.getElementById('search-input'); if (si) si.value = '';
+    renderMonthFilters();
+    rebuild();
+    trackEvent('content_type_switch', { content_type: activeContentType });
+  });
+});
+
+"""
+if "#content-type-switch .content-type-btn" not in html:
+    if listener_anchor not in html:
+        raise RuntimeError("Phase2K: status listener anchor not found")
+    html = html.replace(listener_anchor, type_listener + listener_anchor, 1)
+
+# Analytics: add content_type param to detail + recommendation/outbound events.
+html = html.replace(
+    "festival_name: c.name,\n    prefecture: c.pref,",
+    "festival_name: c.name,\n    content_type: c.contentType || 'festival',\n    prefecture: c.pref,",
+    2
+)
+html = html.replace(
+    "festival_name: name,\n    placement: placement || 'unknown'",
+    "festival_name: name,\n    content_type: activeContentType,\n    placement: placement || 'unknown'",
+    1
+)
+html = html.replace(
+    "festival_name: official.dataset.festival || '',\n      destination_url: official.href",
+    "festival_name: official.dataset.festival || '',\n      content_type: activeContentType,\n      destination_url: official.href",
+    1
+)
+
+# Info meta and introductory messaging.
+html = html.replace("<span>82 CASES</span>", "<span>82 FESTIVALS + 12 EXHIBITIONS</span>", 1)
+
+io.open(OUT, "w", encoding="utf-8").write(html)
+print("Phase 2K postprocess OK")

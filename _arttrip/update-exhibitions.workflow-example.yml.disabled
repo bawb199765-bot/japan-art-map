@@ -1,0 +1,28 @@
+name: Update exhibition candidates
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 18 * * *"  # 03:20 JST
+
+permissions:
+  contents: read
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python scripts/scrape_exhibitions.py
+      - run: python scripts/enrich_art_trip.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: exhibition-candidates
+          path: |
+            data/exhibitions_raw.json
+            data/exhibitions_normalized.json
+            data/exhibitions_publishable.json

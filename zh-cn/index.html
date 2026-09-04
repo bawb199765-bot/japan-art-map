@@ -612,6 +612,69 @@
       font-family: var(--mono);
     }
 
+    .content-type-block {
+      padding: 12px 14px 11px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg);
+    }
+    .content-type-kicker {
+      margin-bottom: 7px;
+      font-family: var(--mono);
+      font-size: 7px;
+      letter-spacing: .18em;
+      color: var(--dim);
+    }
+    .content-type-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+    .content-type-btn {
+      min-height: 34px;
+      border: 1px solid var(--line2);
+      background: transparent;
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 8.5px;
+      letter-spacing: .08em;
+      cursor: pointer;
+      position: relative;
+    }
+    .content-type-btn span { margin-left: 4px; color: var(--muted); }
+    .content-type-btn em {
+      position: absolute;
+      top: -5px;
+      right: 5px;
+      padding: 1px 4px;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 6px;
+      font-style: normal;
+      letter-spacing: .08em;
+    }
+    .content-type-btn.active {
+      border-color: var(--accent);
+      background: rgba(217,102,80,.10);
+      color: var(--text);
+    }
+    .content-kind {
+      display: inline-flex;
+      margin-bottom: 7px;
+      padding: 3px 5px;
+      border: 1px solid rgba(217,102,80,.5);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: .14em;
+    }
+    .art-trip-score {
+      margin: 1px 0 10px;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .1em;
+      color: var(--accent);
+    }
     .visitor-guide-block { background: rgba(217,102,80,.035); }
     .visitor-guide-note {
       margin-top: 7px;
@@ -2535,6 +2598,14 @@
       </button>
     </div>
 
+    <div class="content-type-block">
+      <div class="content-type-kicker">WHAT TO SEE</div>
+      <div class="content-type-switch" id="content-type-switch">
+        <button class="content-type-btn active" data-content-type="festival">ART FESTIVALS <span>82</span></button>
+        <button class="content-type-btn" data-content-type="exhibition">EXHIBITIONS <span>12</span><em>BETA</em></button>
+      </div>
+    </div>
+
     <div class="filter-block">
       <div class="fl-label">
         <span class="fl-label-jp" style="font-family: Helvetica">什么时候去？</span>
@@ -2621,7 +2692,7 @@
 
         <section class="seo-intro" aria-label="About JAPAN ART MAP">
           <strong>在地图上探索2026年日本全国的艺术节与艺术活动。</strong>
-          从正在举办的艺术节到未来几个月即将开始的活动，可按地区、时间和旅行主题寻找下一次艺术之旅。
+          从正在举办的艺术节到精选的美术馆展览，可按地区、时间和旅行主题寻找下一次艺术之旅。
         </section>
 </div>
   </section>
@@ -2649,7 +2720,7 @@
     <div class="site-info-kicker">ABOUT / CONTACT</div>
     <h2 class="site-info-title" id="site-info-title">关于本网站</h2>
 
-    <p class="site-info-lead">JAPAN ART MAP是一个个人运营的地图，希望把日本各地的艺术节与艺术项目变成旅行的灵感入口。</p>
+    <p class="site-info-lead">JAPAN ART MAP是一个个人运营的地图，希望把日本各地的艺术节、艺术项目和旅行途中值得看的美术馆展览变成旅行的灵感入口。</p>
     <div class="site-language-availability" aria-label="Available languages">
       <span class="site-language-availability-kicker">5 LANGUAGES</span>
       <span class="site-language-availability-list">日本語 / English / 한국어 / 简体中文 / 繁體中文</span>
@@ -2674,7 +2745,7 @@
     </div>
 
     <div class="site-info-meta">
-      <span>82 CASES</span>
+      <span>82 FESTIVALS + 12 EXHIBITIONS</span>
       <span>LAST UPDATED · 2026.09</span>
     </div>
   </section>
@@ -5501,16 +5572,96 @@ const CASES = [
   { pref:"三重", name:"Waza Waza — Iga Art Book Fair 2026", tagline:"伊賀の歴史ある学びの場で、世界のアートブックに出会う", region:"関西", lat:34.77, lng:136.13, slug:"", cat:"小規模プロジェクト型", tags:[], desc:"三重県伊賀市の国指定史跡・旧崇広堂を会場に開催される国際アートブックフェア。アートブック、ZINE、独立系出版物を、売買だけでなく手に取り、読み、つくり手と語り合う場として展開する。1821年に藩校として建てられ、後に三重県最古の公立図書館として使われた歴史的建造物に、日本・アメリカ・中国・シンガポール・イラン・チュニジアの6の国と地域から38組が集まる。伊賀の街と本の文化を巡るきっかけにもなる。", url:"https://wazawaza-artbookfair.com/", startDate:"2026-09-26", endDate:"2026-09-27", nextYear:"2026", tokyoHours:3.5, artists:["51 Personae","Angelica Ong","Anna Darab","Jaron Menzimer","Polly Fossey"] }
 
 ];
+CASES.forEach(c => { c.contentType = c.contentType || "festival"; });
+const EXHIBITION_CASES = [{"pref":"京都","name":"浮世絵スーパークリエイター 歌川国芳展","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","工芸"],"desc":"京都観光と組み合わせやすく、会場建築と岡崎エリアの街歩きも含めて旅程化しやすい。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-07-18","endDate":"2026-09-23","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"本館 北回廊1階","artTripScore":4,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"京都","name":"テート美術館 ― YBA & BEYOND 世界を変えた90s英国アート","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","建築"],"desc":"京都旅行の目的になりうる大型企画展で、美術館建築や岡崎エリアとの回遊性も高い。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-06-03","endDate":"2026-09-06","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"新館 東山キューブ","artTripScore":5,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"京都","name":"松延総司：壁","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"京都の街歩きに短時間で組み込みやすい無料の現代美術展示。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-09-12","endDate":"2026-12-20","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"ザ・トライアングル","artTripScore":3,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"京都","name":"生誕140年記念 染織家 山鹿清華─宙翔ぶイマジネーション","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","工芸"],"desc":"京都の染織文化と美術館を一度に体験でき、工芸目的の旅と相性が良い。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-09-19","endDate":"2026-12-20","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"本館 南回廊1階","artTripScore":4,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"京都","name":"禅とジブリ","tagline":"京都・岡崎エリアの街歩きと合わせて見たい展覧会","region":"関西","lat":35.0122,"lng":135.7824,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","建築"],"desc":"京都という土地の禅文化と組み合わせて旅程を組みやすい大型企画。","url":"https://kyotocity-kyocera.museum/exhibition?select_year=2026","localImg":"","startDate":"2026-10-03","endDate":"2026-12-06","nextYear":"2026","tokyoHours":3.0,"artists":[],"contentType":"exhibition","museum":"京都市京セラ美術館","venue":"新館 東山キューブ","artTripScore":4,"sourceUrl":"https://kyotocity-kyocera.museum/exhibition?select_year=2026"},{"pref":"石川","name":"路上、お邪魔ですか？","tagline":"金沢の街と美術館建築を巡るアート旅へ","region":"中部","lat":36.5609,"lng":136.6581,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","建築"],"desc":"美術館そのものが旅行目的になりやすく、金沢の街歩きとテーマも接続しやすい。","url":"https://www.kanazawa21.jp/exhibition/","localImg":"","startDate":"2026-04-25","endDate":"2026-09-06","nextYear":"2026","tokyoHours":2.5,"artists":[],"contentType":"exhibition","museum":"金沢21世紀美術館","venue":"金沢21世紀美術館","artTripScore":5,"sourceUrl":"https://www.kanazawa21.jp/exhibition/"},{"pref":"石川","name":"コレクション展 歩く、とどまる","tagline":"金沢の街と美術館建築を巡るアート旅へ","region":"中部","lat":36.5609,"lng":136.6581,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","建築"],"desc":"「歩く」というテーマと金沢市街の回遊が重なり、アート旅として編集しやすい。","url":"https://www.kanazawa21.jp/exhibition/","localImg":"","startDate":"2026-05-23","endDate":"2026-10-18","nextYear":"2026","tokyoHours":2.5,"artists":[],"contentType":"exhibition","museum":"金沢21世紀美術館","venue":"金沢21世紀美術館","artTripScore":4,"sourceUrl":"https://www.kanazawa21.jp/exhibition/"},{"pref":"石川","name":"シリーズ「能登と」 牛嶋均 さわひらき　ともにある風景","tagline":"金沢の街と美術館建築を巡るアート旅へ","region":"中部","lat":36.5609,"lng":136.6581,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き","自然・里山"],"desc":"能登という地域文脈まで含めて北陸の旅へ接続できる。","url":"https://www.kanazawa21.jp/","localImg":"","startDate":"2026-09-08","endDate":"2027-04-18","nextYear":"2026","tokyoHours":2.5,"artists":[],"contentType":"exhibition","museum":"金沢21世紀美術館","venue":"金沢21世紀美術館","artTripScore":5,"sourceUrl":"https://www.kanazawa21.jp/"},{"pref":"石川","name":"NEUTRAL COLORS　NEW CIRCUIT / ニュー・サーキット","tagline":"金沢の街と美術館建築を巡るアート旅へ","region":"中部","lat":36.5609,"lng":136.6581,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"編集・出版・デザインへの関心がある旅行者に、金沢の文化体験として勧めやすい。","url":"https://www.kanazawa21.jp/exhibition/","localImg":"","startDate":"2026-09-15","endDate":"2027-04-18","nextYear":"2026","tokyoHours":2.5,"artists":[],"contentType":"exhibition","museum":"金沢21世紀美術館","venue":"金沢21世紀美術館","artTripScore":4,"sourceUrl":"https://www.kanazawa21.jp/exhibition/"},{"pref":"東京","name":"共時的星叢 ― 時を共にした星たち　越境する芸術のまなざし","tagline":"清澄白河・木場の街歩きと合わせて見たい展覧会","region":"関東","lat":35.6797,"lng":139.8085,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"清澄白河・木場エリアの散策と組み合わせやすい大型現代美術展。","url":"https://www.mot-art-museum.jp/exhibitions/","localImg":"","startDate":"2026-09-05","endDate":"2026-12-13","nextYear":"2026","tokyoHours":0,"artists":[],"contentType":"exhibition","museum":"東京都現代美術館","venue":"東京都現代美術館","artTripScore":4,"sourceUrl":"https://www.mot-art-museum.jp/exhibitions/motlineup_2026.pdf"},{"pref":"東京","name":"MOTコレクション","tagline":"清澄白河・木場の街歩きと合わせて見たい展覧会","region":"関東","lat":35.6797,"lng":139.8085,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"東京滞在中の半日アート旅に組み込みやすい。","url":"https://www.mot-art-museum.jp/exhibitions/","localImg":"","startDate":"2026-09-19","endDate":"2027-01-06","nextYear":"2026","tokyoHours":0,"artists":[],"contentType":"exhibition","museum":"東京都現代美術館","venue":"コレクション展示室","artTripScore":3,"sourceUrl":"https://www.mot-art-museum.jp/exhibitions/motlineup_2026.pdf"},{"pref":"東京","name":"多田美波　凛と、光―ゆれる","tagline":"清澄白河・木場の街歩きと合わせて見たい展覧会","region":"関東","lat":35.6797,"lng":139.8085,"slug":"","cat":"ミュージアム・拠点型","tags":[],"travelTags":["街歩き"],"desc":"作品鑑賞と清澄白河周辺の建築・カフェ巡りを組み合わせやすい。","url":"https://www.mot-art-museum.jp/exhibitions/","localImg":"","startDate":"2026-08-29","endDate":"2026-12-06","nextYear":"2026","tokyoHours":0,"artists":[],"contentType":"exhibition","museum":"東京都現代美術館","venue":"東京都現代美術館","artTripScore":4,"sourceUrl":"https://www.mot-art-museum.jp/exhibitions/motlineup_2026.pdf"}];
 localizeCases(CASES);
+localizeCases(EXHIBITION_CASES);
+
+// Exhibition names remain the official Japanese titles in every locale for this beta.
+// Supporting travel copy is localized to keep foreign-language pages usable.
+const EXHIBITION_TRAVEL_COPY = {
+  ja: {
+    "東京都現代美術館":"清澄白河・木場の街歩きと合わせて見たい展覧会",
+    "金沢21世紀美術館":"金沢の街と美術館建築を巡るアート旅へ",
+    "京都市京セラ美術館":"京都・岡崎エリアの街歩きと合わせて見たい展覧会"
+  },
+  en: {
+    "東京都現代美術館":"An exhibition to pair with an art walk around Kiyosumi-Shirakawa and Kiba.",
+    "金沢21世紀美術館":"Make it part of an art trip through Kanazawa and its architecture.",
+    "京都市京セラ美術館":"Pair it with an art walk through Kyoto's Okazaki museum district."
+  },
+  ko: {
+    "東京都現代美術館":"기요스미시라카와·기바 산책과 함께 보고 싶은 전시.",
+    "金沢21世紀美術館":"가나자와의 거리와 미술관 건축을 함께 즐기는 아트 여행.",
+    "京都市京セラ美術館":"교토 오카자키 지역 산책과 함께 보고 싶은 전시."
+  },
+  "zh-cn": {
+    "東京都現代美術館":"适合与清澄白河、木场一带散步一起安排的展览。",
+    "金沢21世紀美術館":"把展览与金泽街区和美术馆建筑一起纳入艺术旅行。",
+    "京都市京セラ美術館":"适合与京都冈崎地区的美术馆散步一起安排的展览。"
+  },
+  "zh-tw": {
+    "東京都現代美術館":"適合與清澄白河、木場一帶散步一起安排的展覽。",
+    "金沢21世紀美術館":"把展覽與金澤街區和美術館建築一起安排進藝術旅行。",
+    "京都市京セラ美術館":"適合與京都岡崎地區的美術館散步一起安排的展覽。"
+  }
+};
+EXHIBITION_CASES.forEach(c => {
+  const copy = (EXHIBITION_TRAVEL_COPY[LANG] || EXHIBITION_TRAVEL_COPY.ja)[c.museum];
+  if (copy) {
+    c.tagline = copy;
+    c.desc = copy + (LANG === "ja" && c.artTripScore ? ` ART TRIP SCORE ${c.artTripScore}/5。` : "");
+  }
+});
+CASES.push(...EXHIBITION_CASES);
 
 const IMPACT_PREFIX = { "経済": "1-", "社会": "2-", "文化": "3-" };
 const REGION_ORDER = ["北海道・東北","関東","中部","関西","中国・四国","九州・沖縄"];
 const REGION_NUM = { "北海道・東北":"01","関東":"02","中部":"03","関西":"04","中国・四国":"05","九州・沖縄":"06" };
 
-let activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeVisitorTag = "all", activeAccess = "all", searchQ = "";
+let activeContentType = "festival", activeCat = "all", activeStatus = "all", activeMonth = "all", activeTravelTag = "all", activeVisitorTag = "all", activeAccess = "all", searchQ = "";
 
 
 const TRAVEL_TAG_ORDER = ["島・海","温泉","建築","写真・映像","工芸","自然・里山","街歩き","食"];
+
+function getActiveDataset() {
+  return CASES.filter(c => (c.contentType || "festival") === activeContentType);
+}
+
+const CONTENT_MODE_COPY = {
+  ja: {
+    exhibitionTitle:"旅先で見たい展覧会", exhibitionDetail:"展覧会の詳細",
+    exhibitionSelected:"選択中の展覧会", exhibitionEmpty:"該当する展覧会がありません",
+    month:m => `${m}月に行ける、おすすめの展覧会`,
+    lead:m => m !== "all" ? `${m}月に会期が重なる展覧会から、アート旅に組み込みたい3件をピックアップ。` : "旅の目的にしたい展覧会から3件をピックアップ。"
+  },
+  en: {
+    exhibitionTitle:"Exhibitions worth a trip", exhibitionDetail:"Exhibition Detail",
+    exhibitionSelected:"Selected Exhibition", exhibitionEmpty:"No exhibitions match these filters.",
+    month:m => m !== "all" ? `Exhibitions to see in month ${m}` : "Exhibitions worth a trip",
+    lead:m => m !== "all" ? "Three exhibitions that fit an art trip this month." : "Three exhibitions selected for their art-trip value."
+  },
+  ko: {
+    exhibitionTitle:"여행하며 보고 싶은 전시", exhibitionDetail:"전시 상세",
+    exhibitionSelected:"선택한 전시", exhibitionEmpty:"조건에 맞는 전시가 없습니다.",
+    month:m => m !== "all" ? `${m}월에 볼 수 있는 추천 전시` : "여행하며 보고 싶은 전시",
+    lead:m => m !== "all" ? "이번 달 아트 여행에 넣고 싶은 전시 3곳." : "아트 여행 가치가 높은 전시 3곳을 골랐습니다."
+  },
+  "zh-cn": {
+    exhibitionTitle:"值得为旅行安排的展览", exhibitionDetail:"展览详情",
+    exhibitionSelected:"已选择的展览", exhibitionEmpty:"没有符合条件的展览。",
+    month:m => m !== "all" ? `${m}月值得看的展览` : "值得为旅行安排的展览",
+    lead:m => m !== "all" ? "挑选3个适合加入本月艺术旅行的展览。" : "从值得专程前往的展览中挑选3个。"
+  },
+  "zh-tw": {
+    exhibitionTitle:"值得安排進旅程的展覽", exhibitionDetail:"展覽詳情",
+    exhibitionSelected:"已選擇的展覽", exhibitionEmpty:"沒有符合條件的展覽。",
+    month:m => m !== "all" ? `${m}月值得看的展覽` : "值得安排進旅程的展覽",
+    lead:m => m !== "all" ? "挑選3個適合放進本月藝術旅行的展覽。" : "從值得專程前往的展覽中挑選3個。"
+  }
+};
+function modeCopy() { return CONTENT_MODE_COPY[LANG] || CONTENT_MODE_COPY.en; }
+
 
 function getTravelTags(c) {
   const rawName = c.nameJa || c.name;
@@ -5689,7 +5840,7 @@ function getEventStatus(c) {
 
 function getFiltered() {
   const currentYear = todayLocal().getFullYear();
-  return CASES.filter(c => {
+  return getActiveDataset().filter(c => {
     if (activeCat !== "all" && c.cat !== activeCat) return false;
 
     if (activeStatus !== "all") {
@@ -5795,6 +5946,7 @@ function popupHtml(c) {
   const hasImg = thumbSrc.length > 0;
   const hasArtists = c.artists && c.artists.length > 0;
   return `<div class="popup-inner">
+    ${c.contentType === "exhibition" ? `<div class="content-kind">EXHIBITION</div>${c.artTripScore ? `<div class="art-trip-score">ART TRIP SCORE ${c.artTripScore}/5</div>` : ""}` : ""}
     ${hasImg ? `<div class="popup-thumb"><img src="${assetUrl(thumbSrc)}" alt="${c.name}" onerror="this.parentElement.style.display='none'" /></div>` : `<div class="popup-thumb popup-thumb-empty">${T.noImage}</div>`}
     <div class="popup-pref-row">${c.pref}<span class="status-badge ${status.key}">${status.label}</span></div>
     <div class="popup-name">${c.name}</div>
@@ -5824,7 +5976,7 @@ const detailPanelContent = document.getElementById('detail-panel-content');
 const detailPanelTitle = document.getElementById('detail-panel-title');
 const detailPanelTitleEn = document.getElementById('detail-panel-title-en');
 
-function getDiscoveryPicks(candidates = CASES) {
+function getDiscoveryPicks(candidates = getActiveDataset()) {
   const today = todayLocal();
 
   // Editorial priority for the first impression.
@@ -5888,11 +6040,11 @@ function getDiscoveryPicks(candidates = CASES) {
   return [...featured, ...remaining].slice(0, 3);
 }
 
-function renderDiscoveryPanel(candidates = CASES) {
+function renderDiscoveryPanel(candidates = getActiveDataset()) {
   if (!detailPanelContent || window.innerWidth <= 768) return;
   selectedCaseName = null;
-  if (detailPanelTitle) detailPanelTitle.textContent = T.detailTitle;
-  if (detailPanelTitleEn) detailPanelTitleEn.textContent = T.detailTitleEn;
+  if (detailPanelTitle) detailPanelTitle.textContent = activeContentType === 'exhibition' ? modeCopy().exhibitionDetail : T.detailTitle;
+  if (detailPanelTitleEn) detailPanelTitleEn.textContent = activeContentType === 'exhibition' ? 'EXHIBITION' : T.detailTitleEn;
   const isDefaultDiscovery =
     activeCat === 'all' &&
     activeStatus === 'all' &&
@@ -5903,7 +6055,7 @@ function renderDiscoveryPanel(candidates = CASES) {
     !searchQ;
 
   const picks = isDefaultDiscovery
-    ? getDiscoveryPicks(CASES)
+    ? getDiscoveryPicks(getActiveDataset())
     : getDiscoveryPicks(candidates);
 
   const cards = picks.map(c => {
@@ -5927,10 +6079,8 @@ function renderDiscoveryPanel(candidates = CASES) {
 
     <div class="recommend-block">
       <div class="recommend-kicker">ART TRIP PICKS · ${currentYear}</div>
-      <div class="recommend-title">${activeMonth !== 'all' ? T.recommendTitleMonth(activeMonth) : T.recommendTitleYear}</div>
-      <div class="recommend-lead">${activeMonth !== 'all'
-        ? T.recommendLeadMonth(activeMonth)
-        : T.recommendLeadYear(currentYear)}</div>
+      <div class="recommend-title">${activeContentType === 'exhibition' ? modeCopy().month(activeMonth) : (activeMonth !== 'all' ? T.recommendTitleMonth(activeMonth) : T.recommendTitleYear)}</div>
+      <div class="recommend-lead">${activeContentType === 'exhibition' ? modeCopy().lead(activeMonth) : (activeMonth !== 'all' ? T.recommendLeadMonth(activeMonth) : T.recommendLeadYear(currentYear))}</div>
       ${cards || `<div class="detail-empty-sub">${T.recommendEmpty}</div>`}
       <div class="discover-foot">${T.discoverFoot(currentYear)}</div>
     </div>
@@ -5938,20 +6088,20 @@ function renderDiscoveryPanel(candidates = CASES) {
   detailPanelContent.scrollTop = 0;
 }
 
-function clearDesktopDetail(candidates = CASES) {
+function clearDesktopDetail(candidates = getActiveDataset()) {
   renderDiscoveryPanel(candidates);
 }
 
 
-function renderMobileDiscovery(candidates = CASES) {
+function renderMobileDiscovery(candidates = getActiveDataset()) {
   const wrap = document.getElementById('mobile-discovery-cards');
   const title = document.getElementById('mobile-discovery-title');
   if (!wrap || !title) return;
 
   const currentYear = todayLocal().getFullYear();
-  title.textContent = activeMonth !== 'all'
-    ? T.recommendTitleMonth(activeMonth)
-    : T.recommendTitleYear;
+  title.textContent = activeContentType === 'exhibition'
+    ? modeCopy().month(activeMonth)
+    : (activeMonth !== 'all' ? T.recommendTitleMonth(activeMonth) : T.recommendTitleYear);
 
   const picks = getDiscoveryPicks(candidates);
   if (!picks.length) {
@@ -6083,12 +6233,13 @@ function openDesktopDetail(c) {
   if (!detailPanelContent || window.innerWidth <= 768) return;
   trackEvent('festival_detail_open', {
     festival_name: c.name,
+    content_type: c.contentType || 'festival',
     prefecture: c.pref,
     device_view: 'desktop'
   });
   selectedCaseName = c.name;
-  if (detailPanelTitle) detailPanelTitle.textContent = T.selectedTitle;
-  if (detailPanelTitleEn) detailPanelTitleEn.textContent = T.selectedTitleEn;
+  if (detailPanelTitle) detailPanelTitle.textContent = activeContentType === 'exhibition' ? modeCopy().exhibitionSelected : T.selectedTitle;
+  if (detailPanelTitleEn) detailPanelTitleEn.textContent = activeContentType === 'exhibition' ? 'EXHIBITION' : T.selectedTitleEn;
   detailPanelContent.innerHTML = popupHtml(c);
   detailPanelContent.scrollTop = 0;
 }
@@ -6101,6 +6252,7 @@ window.focusNamedCase = function(name) {
 window.focusRecommendedCase = function(name, placement) {
   trackEvent('recommendation_click', {
     festival_name: name,
+    content_type: activeContentType,
     placement: placement || 'unknown'
   });
   window.focusNamedCase(name);
@@ -6183,6 +6335,7 @@ const mobileSheet = document.getElementById('mobile-sheet');
 function openMobileSheet(c) {
   trackEvent('festival_detail_open', {
     festival_name: c.name,
+    content_type: c.contentType || 'festival',
     prefecture: c.pref,
     device_view: 'mobile'
   });
@@ -6221,8 +6374,9 @@ function renderList(filtered) {
   const list = document.getElementById('festival-list');
   // header counters
   const showEl = document.getElementById('hd-showing'); if (showEl) showEl.textContent = String(filtered.length).padStart(3,'0');
-  const totalEl = document.getElementById('hd-total');  if (totalEl) totalEl.textContent = String(CASES.length);
-  const mapShow = document.getElementById('map-showing'); if (mapShow) mapShow.textContent = T.countUnit(filtered.length, CASES.length);
+  const total = getActiveDataset().length;
+  const totalEl = document.getElementById('hd-total');  if (totalEl) totalEl.textContent = String(total);
+  const mapShow = document.getElementById('map-showing'); if (mapShow) mapShow.textContent = T.countUnit(filtered.length, total);
 
   if (!filtered.length) {
     list.innerHTML = `<div class="empty-state">${T.noResults}<span class="es-en">${T.noResultsEn}</span></div>`;
@@ -6271,6 +6425,27 @@ window.focusCase = function(idx) {
   setActive(idx);
   scrollListTo(idx);
 };
+
+document.querySelectorAll('#content-type-switch .content-type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#content-type-switch .content-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeContentType = btn.dataset.contentType || 'festival';
+    activeCat = 'all';
+    activeStatus = 'all';
+    activeMonth = 'all';
+    activeTravelTag = 'all';
+    activeVisitorTag = 'all';
+    activeAccess = 'all';
+    searchQ = '';
+    selectedCaseName = null;
+    document.querySelectorAll('#status-filters .chip, #travel-tag-filters .chip, #visitor-tag-filters .chip, #access-filters .chip').forEach(b => b.classList.toggle('active', b.dataset.status === 'all' || b.dataset.travelTag === 'all' || b.dataset.visitorTag === 'all' || b.dataset.access === 'all'));
+    const si = document.getElementById('search-input'); if (si) si.value = '';
+    renderMonthFilters();
+    rebuild();
+    trackEvent('content_type_switch', { content_type: activeContentType });
+  });
+});
 
 document.querySelectorAll('#status-filters .chip').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -6349,6 +6524,7 @@ document.addEventListener('click', e => {
   if (official) {
     trackEvent('official_site_click', {
       festival_name: official.dataset.festival || '',
+      content_type: activeContentType,
       destination_url: official.href
     });
     return;

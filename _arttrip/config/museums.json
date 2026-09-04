@@ -1,0 +1,26 @@
+[
+  {
+    "museum": "京都市京セラ美術館",
+    "url": "https://kyotocity-kyocera.museum/exhibition?select_year=2026",
+    "adapter": "kyocera",
+    "format": "html",
+    "status": "PoC adapter",
+    "notes": "開催中・開催予定一覧からタイトル、会期、会場を取得する想定。"
+  },
+  {
+    "museum": "金沢21世紀美術館",
+    "url": "https://www.kanazawa21.jp/exhibition/",
+    "adapter": "kanazawa21",
+    "format": "html",
+    "status": "PoC adapter",
+    "notes": "開催中/開催予定一覧を取得。主催展と市民ギャラリーが混在するため後段フィルタが必要。"
+  },
+  {
+    "museum": "東京都現代美術館",
+    "url": "https://www.mot-art-museum.jp/exhibitions/",
+    "adapter": "mot",
+    "format": "html+pdf",
+    "status": "PoC adapter",
+    "notes": "HTML一覧に将来展が出ない期間があるため、年度ラインアップPDFをフォールバックとして利用。"
+  }
+]
