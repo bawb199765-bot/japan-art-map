@@ -22,5 +22,53 @@
     "format": "html+pdf",
     "status": "PoC adapter",
     "notes": "HTML一覧に将来展が出ない期間があるため、年度ラインアップPDFをフォールバックとして利用。"
+  },
+  {
+    "museum": "森美術館",
+    "url": "https://www.mori.art.museum/jp/exhibitions/",
+    "adapter": "manual_seed",
+    "format": "html",
+    "status": "official-site seed; adapter pending",
+    "notes": "Phase 2Nで公式サイトから手動検証した初期データ。自動取得アダプターは未実装。"
+  },
+  {
+    "museum": "国立新美術館",
+    "url": "https://www.nact.jp/exhibition_and_event/index.html",
+    "adapter": "manual_seed",
+    "format": "html",
+    "status": "official-site seed; adapter pending",
+    "notes": "Phase 2Nで公式サイトから手動検証した初期データ。自動取得アダプターは未実装。"
+  },
+  {
+    "museum": "横浜美術館",
+    "url": "https://yokohama.art.museum/exhibition/",
+    "adapter": "manual_seed",
+    "format": "html",
+    "status": "official-site seed; adapter pending",
+    "notes": "Phase 2Nで公式サイトから手動検証した初期データ。自動取得アダプターは未実装。"
+  },
+  {
+    "museum": "国立国際美術館",
+    "url": "https://www.nmao.go.jp/",
+    "adapter": "manual_seed",
+    "format": "html",
+    "status": "official-site seed; adapter pending",
+    "notes": "Phase 2Nで公式サイトから手動検証した初期データ。自動取得アダプターは未実装。"
+  },
+  {
+    "museum": "兵庫県立美術館",
+    "url": "https://www.artm.pref.hyogo.jp/exhibition/",
+    "adapter": "manual_seed",
+    "format": "html",
+    "status": "official-site seed; adapter pending",
+    "notes": "Phase 2Nで公式サイトから手動検証した初期データ。自動取得アダプターは未実装。"
+  },
+  {
+    "museum": "青森県立美術館",
+    "url": "https://www.aomori-museum.jp/schedule/",
+    "adapter": "manual_seed",
+    "format": "html",
+    "status": "official-site seed; adapter pending",
+    "notes": "Phase 2Nで公式サイトから手動検証した初期データ。自動取得アダプターは未実装。"
   }
 ]
