@@ -1225,8 +1225,6 @@ new_trip = '''    <div class="filter-block trip-access-block">
         <button class="chip" data-trip-filter="daytrip" style="font-family: Helvetica">__A_DAY__</button>
         <button class="chip" data-trip-filter="overnight" style="font-family: Helvetica">__A_NIGHT__</button>
         <button class="chip" data-trip-filter="longtrip" style="font-family: Helvetica">__A_LONG__</button>
-        <button class="chip" data-trip-filter="osaka-kyoto-easy">__V_KANSAI__</button>
-        <button class="chip" data-trip-filter="onsen">__V_ONSEN__</button>
       </div>
     </div>'''
 if old_trip not in html:
